@@ -7,7 +7,7 @@ CREATE TYPE stage as ENUM ('Integration','In Development','In Testing','In Plann
 -- creating the table
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    title text NOT NULL;
+    title text NOT NULL,
     description text NOT NULL,
     tag tag,
     priority priority,
