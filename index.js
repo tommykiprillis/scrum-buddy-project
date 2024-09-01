@@ -22,9 +22,38 @@ db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// homepage route
+// send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", (req,res) => {
-	res.render("index.ejs");
+	res.render("index.ejs",{});
+});
+
+// add a new task (name, description) to the database (Lii)
+app.post("/add", async (req,res) => {
+	// req.body.taskName, req.body.taskDescription
+
+
+	res.redirect("/");
+});
+
+// edit a task (name or description) to the database (May)
+app.post("/edit", async (req,res) => {
+	// req.body.id, req.body.newName, req.body.newDescription
+
+	res.redirect("/");
+});
+
+// delete a task (Ray)
+app.post("/delete", async (req,res) => {
+	// req.body.id
+
+	res.redirect("/");
+});
+
+// assign a task to a user (Lily)
+app.post("/assign", async (req,res) => {
+	// req.body.id, req.body.assignee
+
+	res.redirect("/");
 });
 
 // starts the application
