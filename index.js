@@ -45,7 +45,9 @@ app.post("/edit", async (req,res) => {
 // delete a task (Ray)
 app.post("/delete", async (req,res) => {
 	// req.body.id
-
+	const taskId = req.body.id;
+	const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
+	await db.query(deleteQuery, [taskId]);
 	res.redirect("/");
 });
 
