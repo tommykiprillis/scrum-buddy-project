@@ -46,19 +46,24 @@ app.post("/add", async (req,res) => {
 	} 
 });
 
-// edit a task (name or description) to the database (May)
-app.post("/edit", async (req,res) => {
+// edit a task product backlog to the database (May) 
+app.post("/edit-product-backlog", async (req,res) => {
 	try {	
         const id = req.body.id;
-	    const newName = req.body.newName
-	    const newDescription = req.body.newDescription
-	    await db.query('UPDATE tasks SET title = $1, description = $2 WHERE id = $3', [newName, newDescription, id])
+	    const newName = req.body.taskName
+	    const newDescription = req.body.taskDescription
+		const newTag = req.body.taskTag
+		const newPriority = req.body.taskPriority
+		const newStoryPoint = req.body.taskStoryPoint
+	    await db.query('UPDATE tasks WHERE id = $1 SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 ', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
 	} 
 
 });
+
+// edit a task sprint backlog to the database
 
 // delete a task (Ray)
 app.post("/delete", async (req,res) => {
