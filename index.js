@@ -23,8 +23,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // send all the tasks from the database as an array called tasks (Tommy)
-app.get("/", (req,res) => {
-	res.render("index.ejs",{});
+app.get("/", async (req,res) => {
+	try {
+		const result = await db.query("SELECT id, title, description FROM tasks");
+		const tasks_array = result.rows;
+		res.render("index.ejs", {tasks: tasks_array});
+	} catch (err) {
+		console.log(err);
+	} 
 });
 
 // add a new task (name, description) to the database (Lii)
