@@ -35,7 +35,6 @@ app.get("/", async (req,res) => {
 
 // add a new task (name, description) to the database (Lii)
 app.post("/add", async (req,res) => {
-	// req.body.taskName, req.body.taskDescription
 	try {
 		const taskName = req.body.taskName;
 		const taskDescription = req.body.taskDescription;
@@ -49,23 +48,21 @@ app.post("/add", async (req,res) => {
 
 // edit a task (name or description) to the database (May)
 app.post("/edit", async (req,res) => {
-	// req.body.id, req.body.newName, req.body.newDescription
-	const id = req.body.id;
-	const newName = req.body.newName
-	const newDescription = req.body.newDescription
-
-	try {
-	db.query('UPDATE tasks SET title = $1, description = $2 WHERE id = $3', [newName, newDescription, id])
+	try {	
+        const id = req.body.id;
+	    const newName = req.body.newName
+	    const newDescription = req.body.newDescription
+	    await db.query('UPDATE tasks SET title = $1, description = $2 WHERE id = $3', [newName, newDescription, id])
+        res.redirect("/");
 	} catch (err) {
 		console.log(err);
 	} 
-	res.redirect("/");
+
 });
 
 // delete a task (Ray)
 app.post("/delete", async (req,res) => {
 	try {
-		// req.body.id
 		const taskId = req.body.id;
 		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
 		await db.query(deleteQuery, [taskId]);
