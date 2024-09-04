@@ -50,7 +50,15 @@ app.post("/add", async (req,res) => {
 // edit a task (name or description) to the database (May)
 app.post("/edit", async (req,res) => {
 	// req.body.id, req.body.newName, req.body.newDescription
+	const id = req.body.id;
+	const newName = req.body.newName
+	const newDescription = req.body.newDescription
 
+	try {
+	db.query('UPDATE tasks SET title = $1, description = $2 WHERE id = $3', [newName, newDescription, id])
+	} catch (err) {
+		console.log(err);
+	} 
 	res.redirect("/");
 });
 
