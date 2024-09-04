@@ -39,8 +39,16 @@ app.get("/sorted" async (req,res) => {
 });
 
 // move the task within the sprint backlog to either to do, in progress, done
-app.post("/moveProgress" async (req,res) => {
+app.post("/moveProgress", async (req,res) => {
     // req.body.id, req.body.destination
+	try {
+    	const taskID = req.body.id;
+    	const newTaskProgress = req.body.destination
+        await db.query('UPDATE tasks WHERE id = $1 SET status = $2 ', [taskID, newTaskProgress])
+        res.redirect("/");
+    } catch (err) {
+        console.log(err);
+    } 
 });
 
 // add a new task (name, description) to the database (Lii)
