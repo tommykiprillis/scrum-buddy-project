@@ -30,9 +30,15 @@ app.get("/", (req,res) => {
 // add a new task (name, description) to the database (Lii)
 app.post("/add", async (req,res) => {
 	// req.body.taskName, req.body.taskDescription
-
-
-	res.redirect("/");
+	try {
+		const taskName = req.body.taskName;
+		const taskDescription = req.body.taskDescription;
+		insertQuery = "INSERT INTO tasks($1,$2)"
+		await db.query(insertQuery, [taskName,taskDescription]);
+		res.redirect("/");
+	} catch (err) {
+		console.log(err);
+	} 
 });
 
 // edit a task (name or description) to the database (May)
