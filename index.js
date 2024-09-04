@@ -57,20 +57,13 @@ app.post("/delete", async (req,res) => {
 
 // assign a task to a user (Lily)
 app.post("/assign", async (req,res) => {
-	// req.body.id, req.body.assignee
 	try {
         const { id, assignee } = req.body;
-
-        await db.query(
-            "UPDATE tasks SET assignee = $1 WHERE id = $2",
-            [assignee, id]
-        );
-
+        await db.query("UPDATE tasks SET assignee = $1 WHERE id = $2",[assignee, id]);
         res.redirect("/");
 
     } catch (err) {
-        // 
-        res.redirect("/");
+        console.log(err);
     }
 });
 
