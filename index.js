@@ -26,8 +26,8 @@ app.use(express.static("public"));
 app.get("/", async (req,res) => {
 	try {
 		const result = await db.query("SELECT id, title, description FROM tasks");
-		const tasks = result.rows;
-		res.render("index.ejs", {tasks});
+		const tasks_array = result.rows;
+		res.render("index.ejs", {tasks: tasks_array});
 	} catch (err) {
 		console.log(err);
 	} 
