@@ -46,8 +46,8 @@ app.post("/add", async (req,res) => {
 	} 
 });
 
-// edit a task (name or description) to the database (May)
-app.post("/edit", async (req,res) => {
+// edit a task product backlog to the database (May) 
+app.post("/edit-product-backlog", async (req,res) => {
 	try {	
         const id = req.body.id;
 	    const newName = req.body.taskName
@@ -62,6 +62,8 @@ app.post("/edit", async (req,res) => {
 	} 
 
 });
+
+// edit a task sprint backlog to the database
 
 // delete a task (Ray)
 app.post("/delete", async (req,res) => {
