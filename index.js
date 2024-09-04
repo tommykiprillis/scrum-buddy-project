@@ -25,7 +25,8 @@ app.use(express.static("public"));
 // send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", async (req,res) => {
 	try {
-		const result = await db.query("SELECT id, title, description FROM tasks");
+		
+		const result = await db.query("SELECT * FROM tasks");
 		const tasks_array = result.rows;
 		res.render("index.ejs", {tasks: tasks_array});
 	} catch (err) {
