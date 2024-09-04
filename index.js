@@ -33,6 +33,16 @@ app.get("/", async (req,res) => {
 	} 
 });
 
+// get all of the tasks in the specified order (Tommy)
+app.get("/sorted" async (req,res) => {
+    // req.body.order = priority,title,story-points,status
+});
+
+// move the task within the sprint backlog to either to do, in progress, done
+app.post("/moveProgress" async (req,res) => {
+    // req.body.id, req.body.destination
+});
+
 // add a new task (name, description) to the database (Lii)
 app.post("/add", async (req,res) => {
 	try {
@@ -47,7 +57,7 @@ app.post("/add", async (req,res) => {
 });
 
 // edit a task product backlog to the database (May) 
-app.post("/edit-product-backlog", async (req,res) => {
+app.post("/edit", async (req,res) => {
 	try {	
         const id = req.body.id;
 	    const newName = req.body.taskName
