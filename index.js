@@ -33,15 +33,15 @@ app.get("/", async (req,res) => {
 	} 
 });
 
-// get all of the tasks in the specified order (Tommy)
-app.get("/sorted" async (req,res) => {
-    // req.body.order = priority,title,story-points,status
-});
+// // get all of the tasks in the specified order (Tommy)
+// app.get("/sorted" async (req,res) => {
+//     // req.body.order = priority,title,story-points,status
+// });
 
-// move the task within the sprint backlog to either to do, in progress, done
-app.post("/moveProgress" async (req,res) => {
-    // req.body.id, req.body.destination
-});
+// // move the task within the sprint backlog to either to do, in progress, done
+// app.post("/moveProgress" async (req,res) => {
+//     // req.body.id, req.body.destination
+// });
 
 // add a new task (name, description) to the database (Lii)
 app.post("/add", async (req,res) => {

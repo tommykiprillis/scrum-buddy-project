@@ -25,8 +25,10 @@
 </head>
 
 <body>
+  <!-- header of the scrum board-->
   <div class="mt-5 px-5">
     <h1 class="mb-4">Sprint Board</h1>
+
     <div class="btn-group">
       <button type="button" class="btn bg-body-secondary dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
@@ -39,6 +41,7 @@
         <li><button class="dropdown-item" type="button">List View</button></li>
       </ul>      
     </div>
+
     <div class="btn-group">
       <button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
@@ -53,20 +56,23 @@
         <li><button class="dropdown-item" type="button">Name</button></li>
       </ul>    
     </div>
+
   </div>
 
+  <!-- Card View Start-->
   <div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
-    <!--STARTS HERE-->
+    
+    <!-- To Do Column-->
     <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
-      
+      <!-- Title of Column-->
       <div class="d-flex gap-2 justify-content-start" style="width:20rem">
         <h4 class="text-start">To Do</h4>
         <h4 class="text-body-secondary">1</h4>
       </div>
       
+      <!-- Task Entry-->
       <div class="card border border-0 shadow-sm" style = "width:20rem;">
         <div class="card-body">
-
           <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
             <span class="badge text-bg-dark rounded-pill p-2 me-auto">Urgent</span>
             <div class="text-body-secondary">15pts</div>
@@ -76,7 +82,6 @@
               </svg>
             </button>         
           </div>
-
           <h5 class="card-title">Create a login page</h5>
           <h6 class="card-subtitle mb-2 text-body-secondary">Kayden</h6>
           <div class="d-flex gap-2 justify-content-start w-100 align-items-center">
@@ -98,6 +103,7 @@
         </div>
       </div>
 
+      <!-- Add Task Form-->
       <div class="collapse" id="createTask" style = "width:20rem;">
         <div class="card border border-0 shadow-sm">
           <div class="card-body">
@@ -107,6 +113,7 @@
         </div>
       </div>
 
+      <!-- Add Task Button-->
       <div class="d-flex justify-content-center" style = "width:20rem;">
         <button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
           <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
@@ -115,76 +122,76 @@
         </button>
       </div>
     </div>
+    <!-- To Do Column End-->
+  </div>
+  <!-- Card View End-->
 
-    <div class="modal fade" id="detailed" tabindex="-1">
-      <div class="modal-dialog" style="max-width: 50rem;">
-        <div class="modal-content">
-          <div class="modal-body">
-            <!--Task Name at top (prefill + save)-->
-            <label for="titleInput1" class="form-label">Task Name</label>
-            <input class="form-control form-control" id="titleInput1" type="text" value="Create a login page" name="taskName">
-            
-            <!--Delete Task Option (own form)-->
+  <!-- Edit/View More for each task (for both list and card views)-->
+  <div class="modal fade" id="detailed" tabindex="-1">
+    <div class="modal-dialog" style="max-width: 50rem;">
+      <div class="modal-content">
+        <div class="modal-body">
+          <!--Task Name at top (prefill + save)-->
+          <label for="titleInput1" class="form-label">Task Name</label>
+          <input class="form-control form-control" id="titleInput1" type="text" value="Create a login page" name="taskName">
+          
+          <!--Delete Task Option (own form)-->
 
-            <!--Assignee (prefill + save)-->
-            <label for="assigneeInput1" class="form-label mt-3">Assignee</label>
-            <input class="form-control form-control" id="assigneeInput1" type="text" value="Kayden" name="taskAssignee">
-            
-            
-            <div class="row mt-3">
-              <div class="col">
-                <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
-                <label for="tag1" class="form-label">Tag</label>
-                <select class="form-control form-control-sm" id="tag1" name="taskTag">
-                  <option value="default" selected>Back-End</option>
-                  <option value="option1">Front-End</option>
-                  <option value="option2">API</option>
-                  <option value="option3">Databases</option>
-                  <option value="option4">Testing</option>
-                  <option value="option5">UI/UX</option>
-                </select>
+          <!--Assignee (prefill + save)-->
+          <label for="assigneeInput1" class="form-label mt-3">Assignee</label>
+          <input class="form-control form-control" id="assigneeInput1" type="text" value="Kayden" name="taskAssignee">
+          
+          
+          <div class="row mt-3">
+            <div class="col">
+              <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
+              <label for="tag1" class="form-label">Tag</label>
+              <select class="form-control form-control-sm" id="tag1" name="taskTag">
+                <option value="default" selected>Back-End</option>
+                <option value="option1">Front-End</option>
+                <option value="option2">API</option>
+                <option value="option3">Databases</option>
+                <option value="option4">Testing</option>
+                <option value="option5">UI/UX</option>
+              </select>
 
-              </div>
-
-              <div class="col">
-                <!--Priority (dropdown prefill + save)-->
-                <label for="priority1" class="form-label">Priority</label>
-                <select class="form-control form-control-sm" id="priority1" name="taskPriority">
-                  <option value="default" selected>Urgent</option>
-                  <option value="option1">Low</option>
-                  <option value="option2">Medium</option>
-                  <option value="option3">Important</option>
-                </select>
-
-              </div>
-
-              <div class="col">
-                <!--Story Points (prefill + save)-->
-                <label for="storyInput1" class="form-label">Story Points</label>
-                <input class="form-control form-control-sm" id="storyInput1" type="text" value="15" name="taskStoryPoint">
-              </div>
             </div>
 
-            
-            <!--Description (prefill + save)-->
-            <label for="descriptionInput1" class="form-label mt-3">Description</label>
-            <textarea class="form-control" id="descriptionInput1" rows="3" name="taskDescription">This task involves creating the login page for the website</textarea>
+            <div class="col">
+              <!--Priority (dropdown prefill + save)-->
+              <label for="priority1" class="form-label">Priority</label>
+              <select class="form-control form-control-sm" id="priority1" name="taskPriority">
+                <option value="default" selected>Urgent</option>
+                <option value="option1">Low</option>
+                <option value="option2">Medium</option>
+                <option value="option3">Important</option>
+              </select>
 
-            <div class="d-flex justify-content-start gap-4">
-              <!--Saving Changes-->
-              <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
-
-              <!--Saving Changes-->
-              <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
             </div>
 
+            <div class="col">
+              <!--Story Points (prefill + save)-->
+              <label for="storyInput1" class="form-label">Story Points</label>
+              <input class="form-control form-control-sm" id="storyInput1" type="text" value="15" name="taskStoryPoint">
+            </div>
           </div>
+
+          
+          <!--Description (prefill + save)-->
+          <label for="descriptionInput1" class="form-label mt-3">Description</label>
+          <textarea class="form-control" id="descriptionInput1" rows="3" name="taskDescription">This task involves creating the login page for the website</textarea>
+
+          <div class="d-flex justify-content-start gap-4">
+            <!--Saving Changes-->
+            <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+
+            <!--Saving Changes-->
+            <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
+          </div>
+
         </div>
       </div>
     </div>
-
-    <!--ENDS HERE-->
-
   </div>
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

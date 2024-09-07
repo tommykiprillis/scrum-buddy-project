@@ -19,3 +19,7 @@ CREATE TABLE tasks (
 
 -- add a user column
 ALTER TABLE tasks ADD assignee text;
+
+-- alter description to not be NOT NULL
+ALTER TABLE tasks DROP COLUMN description;
+ALTER TABLE tasks ADD description text;
