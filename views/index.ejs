@@ -1,21 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scrum Buddy</title>
-  </head>
 
-  <body>
-    <% if (locals.message) { %>
-    <h1>Incoming Message: <%= message %>. From : <%= person %></h1>
-    <% } else { %>
-    <h1>Enter the task below 👇</h1>
-    <% } %>
-    <form action="/submit" method="POST">
-      <input type="text" name="taskTitle" placeholder="Title" />
-      <input type="text" name="tastDescription" placeholder="Description" />
-      <input type="submit" value="OK" />
-    </form>
-  </body>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<title>Scrum Buddy</title>
+	<style>
+		.frontend-badge {
+			background-color:#F38181;
+			color: white;
+		}
+
+		.backend-badge {
+			background-color:#FCE38A;
+			color: white;
+		}
+
+		.ui-badge {
+			background-color:#95E1D3;
+			color: white;
+		}
+	</style>
+</head>
+
+<body>
+  <div class="mt-5 px-5">
+    <h1 class="mb-4">Sprint Board</h1>
+    <div class="btn-group">
+      <button type="button" class="btn bg-body-secondary dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
+          <path d="M6 1v3H1V1zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1zm14 12v3h-5v-3zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM6 8v7H1V8zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm14-6v7h-5V1zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1z"/>
+        </svg>
+        View
+      </button>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" type="button">Card View</button></li>
+        <li><button class="dropdown-item" type="button">List View</button></li>
+      </ul>      
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+        </svg>
+        Sort By
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button">Priority</button></li>
+        <li><button class="dropdown-item" type="button">Name</button></li>
+        <li><button class="dropdown-item" type="button">Tag</button></li>
+        <li><button class="dropdown-item" type="button">Name</button></li>
+      </ul>    
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
+    <!--STARTS HERE-->
+    <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
+      
+      <div class="d-flex gap-2 justify-content-start" style="width:20rem">
+        <h4 class="text-start">To Do</h4>
+        <h4 class="text-body-secondary">1</h4>
+      </div>
+
+      <div class="card border border-0 shadow-sm" style = "width:20rem;">
+        <div class="card-body">
+
+          <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
+            <span class="badge text-bg-dark rounded-pill p-2 me-auto">Urgent!</span>
+            <div class="text-body-secondary">15pts</div>
+            <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton" data-bs-toggle="modal" data-bs-target="#detailed" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+              </svg>
+            </button>         
+          </div>
+
+          <h5 class="card-title">Create a login page</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">Kayden</h6>
+          <div class="d-flex gap-2 justify-content-start w-100 align-items-center">
+            <span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
+            <div class="btn-group dropend ms-auto">
+              <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+                </svg>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><h6 class="dropdown-header">Move to</h6></li>
+                <li><button class="dropdown-item" type="button">To Do</button></li>
+                <li><button class="dropdown-item" type="button">In Progress</button></li>
+                <li><button class="dropdown-item" type="button">Done</button></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="collapse" id="createTask" style = "width:20rem;">
+        <div class="card border border-0 shadow-sm">
+          <div class="card-body">
+              <h5 class="card-title">Add Task</h5>
+              <input type="text" id="inputPassword5" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center" style = "width:20rem;">
+        <button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal fade" id="detailed" tabindex="-1">
+      <div class="modal-dialog" style="max-width: 50rem;">
+        <div class="modal-content">
+          <div class="modal-body">
+            <!--Task Name at top (prefill + save)-->
+            <label for="titleInput1" class="form-label">Task Name</label>
+            <input class="form-control form-control" id="titleInput1" type="text" value="Create a login page" name="taskName">
+            
+            <!--Delete Task Option (own form)-->
+
+            <!--Assignee (prefill + save)-->
+            <label for="assigneeInput1" class="form-label mt-3">Assignee</label>
+            <input class="form-control form-control" id="assigneeInput1" type="text" value="Kayden" name="taskAssignee">
+            
+            
+            <div class="row mt-3">
+              <div class="col">
+                <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
+                <label for="tag1" class="form-label">Tag</label>
+                <select class="form-control form-control-sm" id="tag1" name="taskTag">
+                  <option value="default" selected>Back-End</option>
+                  <option value="option1">Front-End</option>
+                  <option value="option2">API</option>
+                  <option value="option3">Databases</option>
+                  <option value="option4">Testing</option>
+                  <option value="option5">UI/UX</option>
+                </select>
+
+              </div>
+
+              <div class="col">
+                <!--Priority (dropdown prefill + save)-->
+                <label for="priority1" class="form-label">Priority</label>
+                <select class="form-control form-control-sm" id="priority1" name="taskPriority">
+                  <option value="default" selected>Urgent</option>
+                  <option value="option1">Low</option>
+                  <option value="option2">Medium</option>
+                  <option value="option3">Important</option>
+                </select>
+
+              </div>
+
+              <div class="col">
+                <!--Story Points (prefill + save)-->
+                <label for="storyInput1" class="form-label">Story Points</label>
+                <input class="form-control form-control-sm" id="storyInput1" type="text" value="15" name="taskStoryPoint">
+              </div>
+            </div>
+
+            
+            <!--Description (prefill + save)-->
+            <label for="descriptionInput1" class="form-label mt-3">Description</label>
+            <textarea class="form-control" id="descriptionInput1" rows="3" name="taskDescription">This task involves creating the login page for the website</textarea>
+
+            <div class="d-flex justify-content-start gap-4">
+              <!--Saving Changes-->
+              <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+
+              <!--Saving Changes-->
+              <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--ENDS HERE-->
+
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+
 </html>
