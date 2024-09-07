@@ -137,7 +137,7 @@
               <h5 class="card-title">Add Task</h5>
 
               <form action="/add" method="POST">
-                <input type="text" class="form-control" name="taskName">
+                <input type="text" class="form-control" name="taskName" autocomplete="off">
               </form>
 
           </div>
@@ -187,7 +187,7 @@
 
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName">
+              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
               
               <!--Delete Task Option (own form)-->
 
@@ -197,7 +197,7 @@
               <% if (task.assignee !== null) { %>
                 value="<%=task.assignee%>"
               <% } %>
-              name="taskAssignee">
+              name="taskAssignee" autocomplete="off">
               
               
               <div class="row mt-3">
@@ -244,14 +244,14 @@
                   <% if (task.story_points !== null) { %>
                     value="<%=task.story_points%>"
                   <% } %>
-                  name="taskStoryPoint">
+                  name="taskStoryPoint" autocomplete="off">
                 </div>
               </div>
 
               
               <!--Description (prefill + save)-->
               <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
+              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
 
               <!--Saving Changes-->
               <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
