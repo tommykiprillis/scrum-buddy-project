@@ -47,9 +47,9 @@ app.get("/", async (req,res) => {
 app.post("/add", async (req,res) => {
 	try {
 		const taskName = req.body.taskName;
-		const taskDescription = req.body.taskDescription;
-		insertQuery = "INSERT INTO tasks($1,$2)"
-		await db.query(insertQuery, [taskName,taskDescription]);
+		//const taskDescription = req.body.taskDescription;
+		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
+		await db.query(insertQuery, [taskName]);
 		res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -59,13 +59,14 @@ app.post("/add", async (req,res) => {
 // edit a task product backlog to the database (May) 
 app.post("/edit", async (req,res) => {
 	try {	
+		console.log(req.body)
         const id = req.body.id;
 	    const newName = req.body.taskName
-	    const newDescription = req.body.taskDescription
-		const newTag = req.body.taskTag
-		const newPriority = req.body.taskPriority
-		const newStoryPoint = req.body.taskStoryPoint
-	    await db.query('UPDATE tasks WHERE id = $1 SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 ', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
+		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
+		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
