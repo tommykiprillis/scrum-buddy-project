@@ -25,38 +25,174 @@
 </head>
 
 <body>
-	<div class="d-flex align-items-center flex-column mt-5">
-		<% tasks.forEach(task => { %>
-			<div class="card border-dark" style = "width:20rem;">
-				<div class="card-body">
-					<span class="badge text-bg-dark rounded-pill mb-2 p-2">Priority</span>
-					<h5 class="card-title"><%= task.title %></h5>
-					<h5 class="card-subtitle mb-2 text-body-secondary">Assignee</h5>
-					<div class="d-flex gap-2 justify-content-start w-100">
-						<span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
-						<span class="badge ui-badge py-1 d-flex align-items-center">UI/UX</span>
-						<h6 class="ms-auto text-body-secondary">15pts</h6>
-					</div>
-				</div>
-			</div>
-		<% }) %>
-        <div class="collapse" id="createTask" style = "width:20rem;">
-            <div class="card border-dark">
-              <div class="card-body">
-                    <h5 class="card-title">Create Task Here</h5>
-              </div>
-            </div>
-          </div>
+  
+  <div class="d-flex w-100 mt-5 px-5 justify-content-end align-items-center gap-3">
+    <h1 class="me-auto">Sprint 1</h1>
+    <div class="btn-group">
+      <button type="button" class="btn btn-outline-dark dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
+          <path d="M6 1v3H1V1zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1zm14 12v3h-5v-3zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM6 8v7H1V8zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm14-6v7h-5V1zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1z"/>
+        </svg>
+        View
+      </button>
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item" type="button">Card View</button></li>
+        <li><button class="dropdown-item" type="button">List View</button></li>
+      </ul>      
+    </div>
 
-		<div class="d-flex justify-content-center" style = "width:20rem;">
-			<button class="btn btn-dark rounded-circle p-1 lh-1 mt-4" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
-				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-				  </svg>
-			</button>
-		</div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+        </svg>
+        Sort By
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item" type="button">Priority</button></li>
+        <li><button class="dropdown-item" type="button">Name</button></li>
+        <li><button class="dropdown-item" type="button">Tag</button></li>
+        <li><button class="dropdown-item" type="button">Name</button></li>
+      </ul>    
+    </div>
+    
+  </div>
+
+  <hr>
+
+  <div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
+    <!--STARTS HERE-->
+	<div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0" style = "width:25rem;">
+    
+    <div class="d-flex gap-2 justify-content-start" style="width:20rem">
+      <h4 class="text-start">To Do</h4>
+      <h4 class="text-body-secondary">1</h4>
+    </div>
+
+    <div class="card border-dark" style = "width:20rem;">
+      <div class="card-body">
+        <span class="badge text-bg-dark rounded-pill mb-2 p-2">Urgent!</span>
+        <h5 class="card-title">Create a login page</h5>
+        <h5 class="card-subtitle mb-2 text-body-secondary">Kayden</h5>
+        <div class="d-flex gap-2 justify-content-start w-100">
+          <span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
+          <span class="badge ui-badge py-1 d-flex align-items-center">UI/UX</span>
+          <button class="btn btn-dark rounded-circle p-1 lh-1 ms-auto" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-arrow-left-right ms-auto" viewBox="0 0 17 17">
+              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapse" id="createTask" style = "width:20rem;">
+      <div class="card border-dark">
+        <div class="card-body">
+              <h5 class="card-title">Create Task Here</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center" style = "width:20rem;">
+      <button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+          </svg>
+      </button>
+    </div>
+
 	</div>
-	
+	<!--ENDS HERE-->
+
+  <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0" style = "width:25rem;">
+    
+    <div class="d-flex gap-2 justify-content-start" style="width:20rem">
+      <h4 class="text-start">In Progress</h4>
+      <h4 class="text-body-secondary">3</h4>
+    </div>
+
+    <div class="card border-dark" style = "width:20rem;">
+      <div class="card-body">
+        <span class="badge text-bg-dark rounded-pill mb-2 p-2">Low</span>
+        <h5 class="card-title">Create an email</h5>
+        <h5 class="card-subtitle mb-2 text-body-secondary">Tommy</h5>
+        <div class="d-flex gap-2 justify-content-start w-100">
+          <span class="badge backend-badge py-1 d-flex align-items-center">Back-End</span>
+          <button class="btn btn-dark rounded-circle p-1 lh-1 ms-auto" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-arrow-left-right ms-auto" viewBox="0 0 17 17">
+              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-dark" style = "width:20rem;">
+      <div class="card-body">
+        <span class="badge text-bg-dark rounded-pill mb-2 p-2">Urgent!</span>
+        <h5 class="card-title">Create a login page</h5>
+        <h5 class="card-subtitle mb-2 text-body-secondary">Kayden</h5>
+        <div class="d-flex gap-2 justify-content-start w-100">
+          <span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
+          <span class="badge ui-badge py-1 d-flex align-items-center">UI/UX</span>
+          <button class="btn btn-dark rounded-circle p-1 lh-1 ms-auto" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-arrow-left-right ms-auto" viewBox="0 0 17 17">
+              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-dark" style = "width:20rem;">
+      <div class="card-body">
+        <span class="badge text-bg-dark rounded-pill mb-2 p-2">Urgent!</span>
+        <h5 class="card-title">Create a login page</h5>
+        <h5 class="card-subtitle mb-2 text-body-secondary">Kayden</h5>
+        <div class="d-flex gap-2 justify-content-start w-100">
+          <span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
+          <span class="badge ui-badge py-1 d-flex align-items-center">UI/UX</span>
+          <button class="btn btn-dark rounded-circle p-1 lh-1 ms-auto" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-arrow-left-right ms-auto" viewBox="0 0 17 17">
+              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+	</div>
+
+  <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0" style = "width:25rem;">
+    
+    <div class="d-flex gap-2 justify-content-start" style="width:20rem">
+      <h4 class="text-start">Done</h4>
+      <h4 class="text-body-secondary">1</h4>
+    </div>
+
+    <div class="card border-dark" style = "width:20rem;">
+      <div class="card-body">
+        <span class="badge text-bg-dark rounded-pill mb-2 p-2">Urgent!</span>
+        <h5 class="card-title">Create a login page</h5>
+        <h5 class="card-subtitle mb-2 text-body-secondary">Kayden</h5>
+        <div class="d-flex gap-2 justify-content-start w-100">
+          <span class="badge frontend-badge py-1 d-flex align-items-center">Front-End</span>
+          <span class="badge ui-badge py-1 d-flex align-items-center">UI/UX</span>
+          <button class="btn btn-dark rounded-circle p-1 lh-1 ms-auto" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-arrow-left-right ms-auto" viewBox="0 0 17 17">
+              <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+	</div>
+
+  </div>
+  
+
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
