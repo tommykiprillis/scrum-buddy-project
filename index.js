@@ -28,6 +28,9 @@ app.use(cookieParser());
 app.get("/", async (req,res) => {
 	try {
         const viewPreference = req.cookies.view || "card";
+        const sortPreference = req.cookies.sort || "priority";
+
+        // NOTE: when doing the sorts, use for loops andappend for each into a bigger array, then output that one arry as below VV VV
 
         // get the tasks from each column
 		const resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started'");
