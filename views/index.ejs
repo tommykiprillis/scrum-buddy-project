@@ -75,48 +75,61 @@
 
   </div>
 
-  <!-- Card View Start-->
-  <div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
-    
-    <!-- Not Started Column-->
-    <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
-      <!-- Title of Column-->
-      <div class="d-flex gap-2 justify-content-start" style="width:20rem">
-        <h4 class="text-start">Not Started</h4>
-        <h4 class="text-body-secondary"><%= notStarted.length %></h4>
-      </div>
-      
-      <% notStarted.forEach(task => { %>
-        <!-- Task Entry-->
-        <div class="card border border-0 shadow-sm" style = "width:20rem;">
-          <div class="card-body">
-            <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-              <% if (task.priority !== null) { %>
-                <span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-              <% } %>
-              <% if (task.story_points !== null) { %>
-                <div class="text-body-secondary"><%=task.story_points%>pts</div>
-              <% } %>
-              <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-                </svg>
-              </button>         
-            </div>
-            <h5 class="card-title"><%= task.title %></h5>
-            <% if (task.assignee !== null) { %>
-              <h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
-            <% } %>
-            <div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-              <% if (task.tag !== null) { %>
-                <span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
-              <% } %>
-              <div class="btn-group dropend ms-auto">
-                <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-                  </svg>
-                </button>
+   <!--List View Start-->
+
+	<!--Not Started Column-->
+	<div class="card d-flex p-3 bg-body-secondary flex-column gap-3 border border-0 m-5">
+		<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<h4 class="text-start">Not Started</h4>
+				<h4 class="text-body-secondary"><%= notStarted.length %></h4>
+		</div>
+		
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Title</th>
+					<th scope="col">Priority</th>
+					<th scope="col">Tag</th>
+					<th scope="col">Assignee</th>
+					<th scope="col">Story Points</th>
+					<th scope="col">More</th>
+					<th scope="col">Move</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% notStarted.forEach(task => { %>
+					<tr>
+						<td><%= task.title %></td>
+						<td>
+							<% if (task.priority !== null) { %>
+								<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.tag !== null) { %>
+								<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.assignee !== null) { %>
+								<%=task.assignee%>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.story_points !== null) { %>
+								<%=task.story_points%>pts
+							<% } %>
+						</td>
+						<td>
+							<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+									View/Edit
+							</a>  
+						</td>
+						<td>
+							<div class="btn-group dropstart">
+								<a href="#" data-bs-toggle="dropdown">
+									Move To
+								</a>
 								<form action="/moveProgress" method="POST">
 									<input type="hidden" name="id" value="<%=task.id%>">
 									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -138,78 +151,89 @@
 										</li>
 									</ul>
 								</form>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% }) %>
-      
+							</div>
+						</td>
+					</tr>					 
+				<% }) %>
+			</tbody>
+		</table>
 
-      <!-- Add Task Form-->
-      <div class="collapse" id="createTask" style = "width:20rem;">
-        <div class="card border border-0 shadow-sm">
-          <div class="card-body">
-              <h5 class="card-title">Add Task</h5>
+		<!-- Add Task Form-->
+		<div class="collapse" id="createTask2">
+			<div class="card border border-0 shadow-sm">
+				<div class="card-body">
+						<h5 class="card-title">Add Task</h5>
 
-              <form action="/add" method="POST">
-                <input type="text" class="form-control" name="taskName" autocomplete="off">
-              </form>
+						<form action="/add" method="POST">
+							<input type="text" class="form-control" name="taskName" autocomplete="off">
+						</form>
+				</div>
+			</div>
+		</div>
 
-          </div>
-        </div>
-      </div>
+		<!-- Add Task Button-->
+		<div class="d-flex justify-content-center">
+			<button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
+				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+					</svg>
+			</button>
+		</div>
+	</div>
 
-      <!-- Add Task Button-->
-      <div class="d-flex justify-content-center" style = "width:20rem;">
-        <button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-            </svg>
-        </button>
-      </div>
-    </div>
-    <!-- To Do Column End-->
+	<!--In Progress Column-->
+	<div class="card d-flex p-3 bg-body-secondary flex-column gap-3 border border-0 m-5">
+		<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<h4 class="text-start">In Progress</h4>
+				<h4 class="text-body-secondary"><%= inProgress.length %></h4>
+		</div>
 
-
-    <!-- In Progress Column-->
-    <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
-      <!-- Title of Column-->
-      <div class="d-flex gap-2 justify-content-start" style="width:20rem">
-        <h4 class="text-start">In Progress</h4>
-        <h4 class="text-body-secondary"><%= inProgress.length %></h4>
-      </div>
-
-      <% inProgress.forEach(task => { %>
-        <!-- Task Entry-->
-        <div class="card border border-0 shadow-sm" style = "width:20rem;">
-          <div class="card-body">
-            <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-              <% if (task.priority !== null) { %>
-                <span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-              <% } %>
-              <% if (task.story_points !== null) { %>
-                <div class="text-body-secondary"><%=task.story_points%>pts</div>
-              <% } %>
-              <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-                </svg>
-              </button>         
-            </div>
-            <h5 class="card-title"><%= task.title %></h5>
-            <% if (task.assignee !== null) { %>
-              <h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
-            <% } %>
-            <div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-              <% if (task.tag !== null) { %>
-                <span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
-              <% } %>
-              <div class="btn-group dropend ms-auto">
-                <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-                  </svg>
-                </button>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Title</th>
+					<th scope="col">Priority</th>
+					<th scope="col">Tag</th>
+					<th scope="col">Assignee</th>
+					<th scope="col">Story Points</th>
+					<th scope="col">More</th>
+					<th scope="col">Move</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% inProgress.forEach(task => { %>
+					<tr>
+						<td><%= task.title %></td>
+						<td>
+							<% if (task.priority !== null) { %>
+								<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.tag !== null) { %>
+								<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.assignee !== null) { %>
+								<%=task.assignee%>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.story_points !== null) { %>
+								<%=task.story_points%>pts
+							<% } %>
+						</td>
+						<td>
+							<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+									View/Edit
+							</a>  
+						</td>
+						<td>
+							<div class="btn-group dropstart">
+								<a href="#" data-bs-toggle="dropdown">
+									Move To
+								</a>
 								<form action="/moveProgress" method="POST">
 									<input type="hidden" name="id" value="<%=task.id%>">
 									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -231,51 +255,66 @@
 										</li>
 									</ul>
 								</form>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% }) %>
-    </div>
-
-    <!-- Completed Column-->
-    <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
-      <!-- Title of Column-->
-      <div class="d-flex gap-2 justify-content-start" style="width:20rem">
-        <h4 class="text-start">Completed</h4>
-        <h4 class="text-body-secondary"><%= completed.length %></h4>
-      </div>
-      <% completed.forEach(task => { %>
-        <!-- Task Entry-->
-        <div class="card border border-0 shadow-sm" style = "width:20rem;">
-          <div class="card-body">
-            <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-              <% if (task.priority !== null) { %>
-                <span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-              <% } %>
-              <% if (task.story_points !== null) { %>
-                <div class="text-body-secondary"><%=task.story_points%>pts</div>
-              <% } %>
-              <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-                </svg>
-              </button>         
-            </div>
-            <h5 class="card-title"><%= task.title %></h5>
-            <% if (task.assignee !== null) { %>
-              <h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
-            <% } %>
-            <div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-              <% if (task.tag !== null) { %>
-                <span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
-              <% } %>
-              <div class="btn-group dropend ms-auto">
-                <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-                  </svg>
-                </button>
+							</div>
+						</td>
+					</tr>					 
+				<% }) %>
+			</tbody>
+		</table>
+	</div>
+	
+	<!--Completed Column-->
+	<div class="card d-flex p-3 bg-body-secondary flex-column gap-3 border border-0 m-5">
+		<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<h4 class="text-start">Completed</h4>
+				<h4 class="text-body-secondary"><%= completed.length %></h4>
+		</div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Title</th>
+					<th scope="col">Priority</th>
+					<th scope="col">Tag</th>
+					<th scope="col">Assignee</th>
+					<th scope="col">Story Points</th>
+					<th scope="col">More</th>
+					<th scope="col">Move</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% completed.forEach(task => { %>
+					<tr>
+						<td><%= task.title %></td>
+						<td>
+							<% if (task.priority !== null) { %>
+								<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.tag !== null) { %>
+								<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.assignee !== null) { %>
+								<%=task.assignee%>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.story_points !== null) { %>
+								<%=task.story_points%>pts
+							<% } %>
+						</td>
+						<td>
+							<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+									View/Edit
+							</a>  
+						</td>
+						<td>
+							<div class="btn-group dropstart">
+								<a href="#" data-bs-toggle="dropdown">
+									Move To
+								</a>
 								<form action="/moveProgress" method="POST">
 									<input type="hidden" name="id" value="<%=task.id%>">
 									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -297,14 +336,15 @@
 										</li>
 									</ul>
 								</form>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% }) %>
-    </div>
-  </div>
-  <!-- Card View End-->
+							</div>
+						</td>
+					</tr>					 
+				<% }) %>
+			</tbody>
+		</table>
+	</div>
+	
+  <!--List View End-->
 
   <% notStarted.forEach(task => { %>
     <!-- Edit/View More for each task (for both list and card views)-->
