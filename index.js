@@ -66,8 +66,7 @@ app.post("/add", async (req,res) => {
 
 // edit a task product backlog to the database (May) 
 app.post("/edit", async (req,res) => {
-	try {	
-		console.log(req.body)
+	try {
         const id = req.body.id;
 	    const newName = req.body.taskName
 	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
@@ -97,7 +96,7 @@ app.post("/delete", async (req,res) => {
 	} 
 });
 
-// assign a task to a user (Lily)
+// assign a task to a user (Lily) NOTE: to be used for when the product backlog is used
 // app.post("/assign", async (req,res) => {
 // 	try {
 //         const { id, assignee } = req.body;
