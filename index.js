@@ -25,7 +25,7 @@ app.use(express.static("public"));
 // send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", async (req,res) => {
 	try {
-		const result = await db.query("SELECT id, title, description FROM tasks");
+		const result = await db.query("SELECT * FROM tasks");
 		const tasks_array = result.rows;
 		res.render("index.ejs", {tasks: tasks_array});
 	} catch (err) {
@@ -33,10 +33,10 @@ app.get("/", async (req,res) => {
 	} 
 });
 
-// get all of the tasks in the specified order (Tommy)
-app.get("/sorted" async (req,res) => {
-    // req.body.order = priority,title,story-points,status
-});
+// // get all of the tasks in the specified order (Tommy)
+// app.get("/sorted" async (req,res) => {
+//     // req.body.order = priority,title,story-points,status
+// });
 
 // move the task within the sprint backlog to either to do, in progress, done
 app.post("/moveProgress", async (req,res) => {
@@ -55,9 +55,9 @@ app.post("/moveProgress", async (req,res) => {
 app.post("/add", async (req,res) => {
 	try {
 		const taskName = req.body.taskName;
-		const taskDescription = req.body.taskDescription;
-		insertQuery = "INSERT INTO tasks($1,$2)"
-		await db.query(insertQuery, [taskName,taskDescription]);
+		//const taskDescription = req.body.taskDescription;
+		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
+		await db.query(insertQuery, [taskName]);
 		res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -67,13 +67,15 @@ app.post("/add", async (req,res) => {
 // edit a task product backlog to the database (May) 
 app.post("/edit", async (req,res) => {
 	try {	
+		console.log(req.body)
         const id = req.body.id;
 	    const newName = req.body.taskName
-	    const newDescription = req.body.taskDescription
-		const newTag = req.body.taskTag
-		const newPriority = req.body.taskPriority
-		const newStoryPoint = req.body.taskStoryPoint
-	    await db.query('UPDATE tasks WHERE id = $1 SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 ', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
+		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
+		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
+        const newAssignee = (req.body.taskAssignee === '') ? null : req.body.taskAssignee
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6, assignee = $7 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint, newAssignee])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -96,16 +98,16 @@ app.post("/delete", async (req,res) => {
 });
 
 // assign a task to a user (Lily)
-app.post("/assign", async (req,res) => {
-	try {
-        const { id, assignee } = req.body;
-        await db.query("UPDATE tasks SET assignee = $1 WHERE id = $2",[assignee, id]);
-        res.redirect("/");
+// app.post("/assign", async (req,res) => {
+// 	try {
+//         const { id, assignee } = req.body;
+//         await db.query("UPDATE tasks SET assignee = $1 WHERE id = $2",[assignee, id]);
+//         res.redirect("/");
 
-    } catch (err) {
-        console.log(err);
-    }
-});
+//     } catch (err) {
+//         console.log(err);
+//     }
+// });
 
 // starts the application
 app.listen(port, () => {
