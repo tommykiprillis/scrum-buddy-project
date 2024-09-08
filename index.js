@@ -25,9 +25,13 @@ app.use(express.static("public"));
 // send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", async (req,res) => {
 	try {
-		const result = await db.query("SELECT * FROM tasks");
-		const tasks_array = result.rows;
-		res.render("index.ejs", {tasks: tasks_array});
+		const resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started'");
+		const notStartedTasks = resultNotStarted.rows;
+		const resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress'");
+		const inProgressTasks = resultInProgress.rows;
+		const resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed'");
+		const completedTasks = resultCompleted.rows;
+		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks});
 	} catch (err) {
 		console.log(err);
 	} 
@@ -56,7 +60,7 @@ app.post("/add", async (req,res) => {
 	try {
 		const taskName = req.body.taskName;
 		//const taskDescription = req.body.taskDescription;
-		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
+		const insertQuery = "INSERT INTO tasks(title,status) VALUES ($1,'Not Started')"
 		await db.query(insertQuery, [taskName]);
 		res.redirect("/");
 	} catch (err) {

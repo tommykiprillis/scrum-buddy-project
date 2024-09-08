@@ -1,15 +1,15 @@
   <!-- Card View Start-->
   <div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
     
-    <!-- To Do Column-->
+    <!-- Not Started Column-->
     <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
       <!-- Title of Column-->
       <div class="d-flex gap-2 justify-content-start" style="width:20rem">
-        <h4 class="text-start">To Do</h4>
-        <h4 class="text-body-secondary"><%= tasks.length %></h4>
+        <h4 class="text-start">Not Started</h4>
+        <h4 class="text-body-secondary"><%= notStarted.length %></h4>
       </div>
       
-      <% tasks.forEach(task => { %>
+      <% notStarted.forEach(task => { %>
         <!-- Task Entry-->
         <div class="card border border-0 shadow-sm" style = "width:20rem;">
           <div class="card-body">
@@ -42,9 +42,9 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <li><h6 class="dropdown-header">Move to</h6></li>
-                  <li><button class="dropdown-item" type="button">To Do</button></li>
+                  <li><button class="dropdown-item" type="button">Not Started</button></li>
                   <li><button class="dropdown-item" type="button">In Progress</button></li>
-                  <li><button class="dropdown-item" type="button">Done</button></li>
+                  <li><button class="dropdown-item" type="button">Completed</button></li>
                 </ul>
               </div>
             </div>
@@ -84,16 +84,16 @@
       <!-- Title of Column-->
       <div class="d-flex gap-2 justify-content-start" style="width:20rem">
         <h4 class="text-start">In Progress</h4>
-        <h4 class="text-body-secondary"><%= tasks.length %></h4>
+        <h4 class="text-body-secondary"><%= inProgress.length %></h4>
       </div>
     </div>
 
-    <!-- Done Column-->
+    <!-- Completed Column-->
     <div class="card d-flex align-items-center flex-column bg-body-secondary gap-3 py-3 border border-0 px-3">
       <!-- Title of Column-->
       <div class="d-flex gap-2 justify-content-start" style="width:20rem">
-        <h4 class="text-start">Done</h4>
-        <h4 class="text-body-secondary"><%= tasks.length %></h4>
+        <h4 class="text-start">Completed</h4>
+        <h4 class="text-body-secondary"><%= completed.length %></h4>
       </div>
     </div>
   </div>
