@@ -48,7 +48,7 @@ app.post("/moveProgress", async (req,res) => {
 	try {
     	const taskID = req.body.id;
     	const newTaskProgress = req.body.destination
-        await db.query('UPDATE tasks WHERE id = $1 SET status = $2 ', [taskID, newTaskProgress])
+        await db.query('UPDATE tasks SET status = $2 WHERE id = $1', [taskID, newTaskProgress])
         res.redirect("/");
     } catch (err) {
         console.log(err);
