@@ -67,14 +67,15 @@
         </svg>
         Sort By
       </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><button class="dropdown-item" type="button">Priority</button></li>
-        <li><button class="dropdown-item" type="button">Name</button></li>
-        <li><button class="dropdown-item" type="button">Tag</button></li>
-        <li><button class="dropdown-item" type="button">Story Points</button></li>
-      </ul>    
+			<form action="/changeSort" method="POST">
+				<ul class="dropdown-menu">
+					<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
+					<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
+          <li><button class="dropdown-item" type="submit" name="sort" value="tag">Tag</button></li>
+          <li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+				</ul>  
+			</form>     
     </div>
-
   </div>
 
 	<% if (view === "card") { %>

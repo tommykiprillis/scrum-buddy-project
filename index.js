@@ -27,35 +27,84 @@ app.use(cookieParser());
 // send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", async (req,res) => {
 	try {
+		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
-        const sortPreference = req.cookies.sort || "priority";
-
-        // NOTE: when doing the sorts, use for loops andappend for each into a bigger array, then output that one arry as below VV VV
-
+		const sortPreference = req.cookies.sort || "priority";
+		
+		
         // get the tasks from each column
-		const resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started'");
-		const notStartedTasks = resultNotStarted.rows;
+		let resultNotStarted;
+		let notStartedTasks;
 
-		const resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress'");
-		const inProgressTasks = resultInProgress.rows;
+		let resultInProgress;
+		let inProgressTasks;
 
-		const resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed'");
-		const completedTasks = resultCompleted.rows;
+		let resultCompleted;
+		let completedTasks;
+		
+		// sort by alphabetical order
+		if (sortPreference === "name"){
+			// get the tasks from each column
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY title");
+			notStartedTasks = resultNotStarted.rows;
+
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY title");
+			inProgressTasks = resultInProgress.rows;
+
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY title");
+			completedTasks = resultCompleted.rows;
+		// // group the tags together
+		} else if (sortPreference === "tag"){
+			// get the tasks from each column
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY tag IS NULL, tag DESC");
+			notStartedTasks = resultNotStarted.rows;
+
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY tag IS NULL, tag DESC");
+			inProgressTasks = resultInProgress.rows;
+
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY tag IS NULL, tag DESC");
+			completedTasks = resultCompleted.rows;
+		// // sort in story point order
+		} else if (sortPreference === "story_points"){
+			// get the tasks from each column
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY story_points IS NULL, story_points DESC");
+			notStartedTasks = resultNotStarted.rows;
+
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY story_points IS NULL, story_points DESC");
+			inProgressTasks = resultInProgress.rows;
+
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY story_points IS NULL, story_points DESC");
+			completedTasks = resultCompleted.rows;
+		// // sort by priority
+		} else if (sortPreference === "priority"){
+			// get the tasks from each column
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY priority IS NULL, priority DESC");
+			notStartedTasks = resultNotStarted.rows;
+
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY priority IS NULL, priority DESC");
+			inProgressTasks = resultInProgress.rows;
+
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY priority IS NULL, priority DESC");
+			completedTasks = resultCompleted.rows;
+		}
 		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks,view:viewPreference});
 	} catch (err) {
 		console.log(err);
 	} 
 });
 
-// // get all of the tasks in the specified order (Tommy)
-// app.get("/sorted" async (req,res) => {
-//     // req.body.order = priority,title,story-points,status
-// });
 
 // change the view
 app.post("/changeView", async (req,res) => {
     const viewPreference = req.body.view;
     res.cookie('view', viewPreference);
+    res.redirect("/");
+});
+
+// change the sort
+app.post("/changeSort", async (req,res) => {
+    const sortPreference = req.body.sort;
+    res.cookie('sort', sortPreference);
     res.redirect("/");
 });
 
