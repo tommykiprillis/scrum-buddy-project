@@ -66,7 +66,8 @@ app.post("/edit", async (req,res) => {
 		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+        const newAssignee = (req.body.taskAssignee === '') ? null : req.body.taskAssignee
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6, assignee = $7 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint, newAssignee])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -89,16 +90,16 @@ app.post("/delete", async (req,res) => {
 });
 
 // assign a task to a user (Lily)
-app.post("/assign", async (req,res) => {
-	try {
-        const { id, assignee } = req.body;
-        await db.query("UPDATE tasks SET assignee = $1 WHERE id = $2",[assignee, id]);
-        res.redirect("/");
+// app.post("/assign", async (req,res) => {
+// 	try {
+//         const { id, assignee } = req.body;
+//         await db.query("UPDATE tasks SET assignee = $1 WHERE id = $2",[assignee, id]);
+//         res.redirect("/");
 
-    } catch (err) {
-        console.log(err);
-    }
-});
+//     } catch (err) {
+//         console.log(err);
+//     }
+// });
 
 // starts the application
 app.listen(port, () => {
