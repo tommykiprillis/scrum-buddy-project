@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import env from "dotenv";
+import cookieParser from "cookie-parser";
 
 // configure the application
 env.config();
@@ -21,17 +22,23 @@ db.connect();
 // initialise middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cookieParser());
 
 // send all the tasks from the database as an array called tasks (Tommy)
 app.get("/", async (req,res) => {
 	try {
+        const viewPreference = req.cookies.view || "card";
+
+        // get the tasks from each column
 		const resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started'");
 		const notStartedTasks = resultNotStarted.rows;
+
 		const resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress'");
 		const inProgressTasks = resultInProgress.rows;
+
 		const resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed'");
 		const completedTasks = resultCompleted.rows;
-		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks});
+		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks,view:viewPreference});
 	} catch (err) {
 		console.log(err);
 	} 
@@ -41,6 +48,13 @@ app.get("/", async (req,res) => {
 // app.get("/sorted" async (req,res) => {
 //     // req.body.order = priority,title,story-points,status
 // });
+
+// change the view
+app.post("/changeView", async (req,res) => {
+    const viewPreference = req.body.view;
+    res.cookie('view', viewPreference);
+    res.redirect("/");
+});
 
 // move the task within the sprint backlog to either to do, in progress, done
 app.post("/moveProgress", async (req,res) => {
