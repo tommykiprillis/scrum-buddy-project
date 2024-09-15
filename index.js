@@ -25,7 +25,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // send all the tasks from the database as an array called tasks (Tommy)
-app.get("/", async (req,res) => {
+app.get("/viewSprint", async (req,res) => {
 	try {
 		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
@@ -93,7 +93,6 @@ app.get("/", async (req,res) => {
 	} 
 });
 
-
 // change the view
 app.post("/changeView", async (req,res) => {
     const viewPreference = req.body.view;
@@ -108,18 +107,18 @@ app.post("/changeSort", async (req,res) => {
     res.redirect("/");
 });
 
-// move the task within the sprint backlog to either to do, in progress, done
-app.post("/moveProgress", async (req,res) => {
-    // req.body.id, req.body.destination
-	try {
-    	const taskID = req.body.id;
-    	const newTaskProgress = req.body.destination
-        await db.query('UPDATE tasks SET status = $2 WHERE id = $1', [taskID, newTaskProgress])
-        res.redirect("/");
-    } catch (err) {
-        console.log(err);
-    } 
-});
+// // move the task within the sprint backlog to either to do, in progress, done
+// app.post("/moveProgress", async (req,res) => {
+//     // req.body.id, req.body.destination
+// 	try {
+//     	const taskID = req.body.id;
+//     	const newTaskProgress = req.body.destination
+//         await db.query('UPDATE tasks SET status = $2 WHERE id = $1', [taskID, newTaskProgress])
+//         res.redirect("/");
+//     } catch (err) {
+//         console.log(err);
+//     } 
+// });
 
 // add a new task (name, description) to the database (Lii)
 app.post("/add", async (req,res) => {
