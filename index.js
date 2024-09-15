@@ -114,7 +114,7 @@ app.post("/add", async (req,res) => {
 	try {
 		const taskName = req.body.taskName;
 		//const taskDescription = req.body.taskDescription;
-		const insertQuery = "INSERT INTO tasks(title,status) VALUES ($1,'Not Started')"
+		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
 		await db.query(insertQuery, [taskName]);
 		res.redirect("/");
 	} catch (err) {
