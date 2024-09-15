@@ -267,9 +267,30 @@ app.post("/deleteSprint", async (req,res) =>{
 });
 
 // view a burndown chart (sprint)
-app.post("/viewBurndownChart", async (req,res) =>{
+app.post("/viewBurndownChart", async (req, res) => {
+	try {
+	  	// get sprint ID from the cookies
+	  	const sprintId = req.cookies.currentSprintId;
 
+	  	// get the sprint details (start and end date)
+		const sprintResult = await db.query(
+			"SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]
+		);
+	 	const sprint = sprintResult.rows[0];
+		// start and end date of sprint
+		const { start_date: sprintStartDate, end_date: sprintEndDate } = sprint;
+	
+		// get the total story points for the sprint tasks
+		const totalStoryPointsResult = await db.query(
+			"SELECT SUM(story_points) AS total_story_points FROM tasks WHERE sprint_id = $1", [sprintId]
+		);
+		const totalStoryPoints = totalStoryPointsResult.rows[0].total_story_points || 0;
+	
+	} catch (err) {
+		console.error(err);
+	}
 });
+	
 
 
 // assign a task to a user 
