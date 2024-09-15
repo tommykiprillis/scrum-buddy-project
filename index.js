@@ -269,28 +269,68 @@ app.post("/deleteSprint", async (req,res) =>{
 // view a burndown chart (sprint)
 app.post("/viewBurndownChart", async (req, res) => {
 	try {
-	  	// get sprint ID from the cookies
-	  	const sprintId = req.cookies.currentSprintId;
+		// get sprint ID from the cookies
+		const sprintId = req.cookies.currentSprintId;
 
-	  	// get the sprint details (start and end date)
+		// get the sprint details (start and end date)
 		const sprintResult = await db.query(
 			"SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]
 		);
-	 	const sprint = sprintResult.rows[0];
-		// start and end date of sprint
+		const sprint = sprintResult.rows[0];
 		const { start_date: sprintStartDate, end_date: sprintEndDate } = sprint;
-	
+
 		// get the total story points for the sprint tasks
 		const totalStoryPointsResult = await db.query(
 			"SELECT SUM(story_points) AS total_story_points FROM tasks WHERE sprint_id = $1", [sprintId]
 		);
 		const totalStoryPoints = totalStoryPointsResult.rows[0].total_story_points || 0;
-	
+
+		// get task completion data
+		const taskCompletionResult = await db.query(
+			"SELECT date_completed, story_points FROM tasks WHERE sprint_id = $1 AND date_completed IS NOT NULL", [sprintId]
+		);
+		const tasksCompleted = taskCompletionResult.rows;
+
+		// Generate daily burndown data
+		const burndownData = [];
+		let remainingStoryPoints = totalStoryPoints;
+
+		let currentDate = new Date(sprintStartDate);
+		const endDate = new Date(sprintEndDate);
+
+		let dayNumber = 1;
+
+		while (currentDate <= endDate) {
+			// Calculate completed story points by current day
+			let completedPoints = 0;
+			for (const task of tasksCompleted) {
+				const completionDate = new Date(task.date_completed); 
+				if (completionDate <= currentDate) {
+					completedPoints += task.story_points;
+				}
+			}
+
+			// Update remaining story points
+			remainingStoryPoints = totalStoryPoints - completedPoints;
+
+			// Add to burndown data with day number
+			burndownData.push({
+				day: dayNumber,
+				storyPoints: remainingStoryPoints
+			});
+
+			// Move to the next day
+			currentDate.setDate(currentDate.getDate() + 1);
+			dayNumber++;
+		}
+
+		// Send the burndown data as a response
+		res.json(burndownData);
+
 	} catch (err) {
 		console.error(err);
 	}
 });
-	
 
 
 // assign a task to a user 
