@@ -292,13 +292,15 @@ app.post("/viewBurndownChart", async (req, res) => {
 		const tasksCompleted = taskCompletionResult.rows;
 
 		// Generate daily burndown data
-		const burndownData = [];
+		const actualBurndownData = [];
+		const idealBurndownData = [];
 		let remainingStoryPoints = totalStoryPoints;
 
 		let currentDate = new Date(sprintStartDate);
 		const endDate = new Date(sprintEndDate);
 
 		let dayNumber = 1;
+		const totalDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24)) + 1;
 
 		while (currentDate <= endDate) {
 			// Calculate completed story points by current day
@@ -314,9 +316,16 @@ app.post("/viewBurndownChart", async (req, res) => {
 			remainingStoryPoints = totalStoryPoints - completedPoints;
 
 			// Add to burndown data with day number
-			burndownData.push({
+			actualBurndownData.push({
 				day: dayNumber,
 				storyPoints: remainingStoryPoints
+			});
+
+			// Calculate ideal remaining story points
+			const idealRemainingPoints = totalStoryPoints * (1 - dayNumber / totalDays);
+			idealBurndownData.push({
+				day: dayNumber,
+				storyPoints: idealRemainingPoints
 			});
 
 			// Move to the next day
@@ -325,7 +334,7 @@ app.post("/viewBurndownChart", async (req, res) => {
 		}
 
 		// Send the burndown data as a response
-		res.json(burndownData);
+		res.json({ actual: actualBurndownData, ideal: idealBurndownData });
 
 	} catch (err) {
 		console.error(err);
