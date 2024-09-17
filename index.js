@@ -38,8 +38,8 @@ app.get("/",async (req,res) => {
 		let result;
 		let backlogTasks;
 
-		sprintsResult = await db.query("SELECT * from sprints");
-		backlogSprints = sprintsResult.rows;
+		const sprintsResult = await db.query("SELECT * from sprints");
+		const backlogSprints = sprintsResult.rows;
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
