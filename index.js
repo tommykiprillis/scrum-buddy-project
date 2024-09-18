@@ -333,8 +333,8 @@ app.post("/viewBurndownChart", async (req, res) => {
 			dayNumber++;
 		}
 
-		// Send the burndown data as a response
-		res.render("burndown.ejs", {actual: actualBurndownData, ideal: idealBurndownData, });
+		// Send the burndown data to burndown.ejs
+		res.render("burndown.ejs", {actualBurndownData: actualBurndownData, idealBurndownData: idealBurndownData, sprintId: sprintId});
 
 	} catch (err) {
 		console.error(err);
