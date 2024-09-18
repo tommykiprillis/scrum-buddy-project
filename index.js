@@ -334,7 +334,7 @@ app.post("/viewBurndownChart", async (req, res) => {
 		}
 
 		// Send the burndown data as a response
-		res.json({ actual: actualBurndownData, ideal: idealBurndownData });
+		res.render("burndown.ejs", {actual: actualBurndownData, ideal: idealBurndownData, });
 
 	} catch (err) {
 		console.error(err);
