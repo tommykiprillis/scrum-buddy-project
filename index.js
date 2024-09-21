@@ -150,9 +150,15 @@ app.get("/viewSprint", async (req,res) => {
 		const currentSprint = red.cookie.currentSprintId;
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+
+		const sprintsAll = await db.query("SELECT * from sprints");
+		const arraySprints = sprintsAll.rows;
+
+		const currentSprintDetailsResults = await db.query("SELECT * FROM tasks WHERE location = $1", [currentSprint]);
+		const currentSprintDetails = currentSprintDetailsResults.rows;
 		
 		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints where id = $1", [currentSprint]);
-		const sprint = sprintResults.rows[0];
+		const sprint = sprintResult.rows[0];
 
 		let sprintStatus = "Not Started";
 		const currentDate = new Date();
@@ -225,7 +231,9 @@ app.get("/viewSprint", async (req,res) => {
 			inProgress:inProgressTasks,
 			completed:completedTasks,
 			view:viewPreference,
-			sprintStatus: sprintStatus
+			sprintStatus: sprintStatus,
+			sprints: arraySprints,
+			sprintDetails: currentSprintDetails
 		});
 	} catch (err) {
 		console.log(err);
