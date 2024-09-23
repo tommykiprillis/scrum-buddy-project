@@ -253,7 +253,9 @@ app.post("/moveToSprint", async (req,res) =>{
 
 // update which sprint we are currently viewing (sprint)
 app.post("setSprintView", async (req,res) =>{
-
+	const sprintId = req.body.sprintId;
+	res.cookie("currentSprintId",sprintId);
+	res.redirect("/viewSprint");
 });
 
 // edit the details of a sprint (sprint)
