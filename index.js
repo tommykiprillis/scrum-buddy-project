@@ -243,6 +243,18 @@ app.post("/changeSprintSort", async (req,res) =>{
 
 // move a task from the sprint to the product backlog (sprint)
 app.post("/moveToBacklog", async (req,res) =>{
+	
+	const { sprintId, taskId } = req.body;
+
+    try {
+
+
+        const result = await db.query(
+            'UPDATE tasks SET sprint_id = NULL WHERE id = $1 AND sprint_id = $2 RETURNING *',
+            [taskId, sprintId]
+        );
+
+	
 
 });
 
