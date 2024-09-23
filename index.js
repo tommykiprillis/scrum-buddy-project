@@ -254,9 +254,17 @@ app.post("/moveToBacklog", async (req,res) =>{
             [taskId, sprintId]
         );
 
-	
-
+		if (result.rows.length > 0) {
+            res.redirect('/');
+        } else {
+            res.status(404).send("Task not found in the given sprint.");
+        }
+    } catch (err) {
+        console.log(err);
+        
+    }
 });
+
 
 // move a task from the product backlog to sprint (product backlog)
 app.post("/moveToSprint", async (req,res) =>{
