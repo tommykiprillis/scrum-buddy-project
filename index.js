@@ -242,24 +242,18 @@ app.post("/changeSprintSort", async (req,res) =>{
 });
 
 // move a task from the sprint to the product backlog (sprint)
+// move a task from the sprint to the product backlog (sprint)
 app.post("/moveToBacklog", async (req,res) =>{
 	
-	const { sprintId, taskId } = req.body;
+	const { taskId } = req.body; 
+	const location = sprintId ? sprintId : null;
 
     try {
+		const query = "UPDATE tasks SET location = NULL WHERE id = $1";
+		await db.query(query, [taskId]);
+		res.redirect('/backlogPage');
 
-
-        const result = await db.query(
-            'UPDATE tasks SET sprint_id = NULL WHERE id = $1 AND sprint_id = $2 RETURNING *',
-            [taskId, sprintId]
-        );
-
-		if (result.rows.length > 0) {
-            res.redirect('/');
-        } else {
-            res.status(404).send("Task not found in the given sprint.");
-        }
-    } catch (err) {
+	} catch (err) {
         console.log(err);
         
     }
@@ -268,6 +262,17 @@ app.post("/moveToBacklog", async (req,res) =>{
 
 // move a task from the product backlog to sprint (product backlog)
 app.post("/moveToSprint", async (req,res) =>{
+
+
+	const { taskId, sprintId } = req.body; 
+	try {
+        await db.query("UPDATE tasks SET location = $1 WHERE id = $2", [location, taskId]);
+		res.redirect('/sprintPage');
+   
+    } catch (error) {
+        console.log("Error moving task:", err);
+  }
+
 
 });
 
