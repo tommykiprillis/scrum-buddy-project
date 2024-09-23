@@ -1,7 +1,19 @@
 <%- include ("partials/header.ejs"); -%>
   <!-- header of the scrum board-->
   <div class="mt-5 px-5">
-    <h1 class="mb-4">Sprint Board</h1>
+	<span class="badge p-2 me-auto text-bg-dark rounded-pill mb-2"><%=sprintStatus%></span>
+	<div class="d-flex gap-3 align-items-center">
+	    <h1 class="mb-2"><%= sprintDetails.name %></h1>	
+		<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#sprintDetails" aria-expanded="false">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+				<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+			</svg>
+		</button> 
+	</div>
+
+	<p class="fs-5 text-secondary mb-4"><%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
+		<%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
+	</p>
 
     <div class="btn-group">
       <button type="button" class="btn bg-body-secondary dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
@@ -10,7 +22,7 @@
         </svg>
         View
       </button>
-			<form action="/changeView" method="POST">
+			<form action="/changeSprintView" method="POST">
 				<ul class="dropdown-menu">
 					<li><button class="dropdown-item" type="submit" name="view" value="card">Card View</button></li>
 					<li><button class="dropdown-item" type="submit" name="view" value="list">List View</button></li>
@@ -25,7 +37,7 @@
         </svg>
         Sort By
       </button>
-			<form action="/changeSort" method="POST">
+			<form action="/changeSprintSort" method="POST">
 				<ul class="dropdown-menu">
 					<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
 					<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
@@ -105,30 +117,6 @@
 						</div>
 					</div>
 				<% }) %>
-				
-
-				<!-- Add Task Form-->
-				<div class="collapse" id="createTask" style = "width:20rem;">
-					<div class="card border border-0 shadow-sm">
-						<div class="card-body">
-								<h5 class="card-title">Add Task</h5>
-
-								<form action="/add" method="POST">
-									<input type="text" class="form-control" name="taskName" autocomplete="off">
-								</form>
-
-						</div>
-					</div>
-				</div>
-
-				<!-- Add Task Button-->
-				<div class="d-flex justify-content-center" style = "width:20rem;">
-					<button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask" aria-expanded="false" aria-controls="createTask">
-						<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-							<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-							</svg>
-					</button>
-				</div>
 			</div>
 			<!-- To Do Column End-->
 
@@ -350,28 +338,6 @@
 					<% }) %>
 				</tbody>
 			</table>
-
-			<!-- Add Task Form-->
-			<div class="collapse" id="createTask2">
-				<div class="card border border-0 shadow-sm">
-					<div class="card-body">
-							<h5 class="card-title">Add Task</h5>
-
-							<form action="/add" method="POST">
-								<input type="text" class="form-control" name="taskName" autocomplete="off">
-							</form>
-					</div>
-				</div>
-			</div>
-
-			<!-- Add Task Button-->
-			<div class="d-flex justify-content-center">
-				<button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
-					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-						<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-						</svg>
-				</button>
-			</div>
 		</div>
 
 		<!--In Progress Column-->
@@ -816,5 +782,64 @@
       </div>
     </div>
   <% }) %>
+
+  <!--Modal for viewing the details of a sprint-->
+  <div class="modal fade" id="sprintDetails" tabindex="-1">
+	<div class="modal-dialog" style="max-width: 50rem;">
+	  <div class="modal-content">
+		<div class="modal-body">
+		  <form action="/edit" method="POST">
+			<!--Stores the id of the sprint as a hidden value-->
+			<input type="hidden" name="id" value="<%=sprintDetails.id%>">
+
+			<!--Sprint Name at top (prefill + save)-->
+			<label for="titleEditSprint" class="form-label">Sprint Name</label>
+			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off">
+			
+			<!--Start and end date for sprint-->
+			<div class="row mt-4">
+				<!--Start Date for the sprint-->
+				  <div class="col">
+					<label for="startDateEdit" class="form-label">Start Date</label>
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" value="<%= new Date(sprintDetails.start_date).toISOString().split('T')[0] %>">
+				  </div>
+  
+				<!--End Date for the sprint-->
+				  <div class="col">
+					<label for="endDateEdit" class="form-label">End Date</label>
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" value="<%= new Date(sprintDetails.end_date).toISOString().split('T')[0] %>">
+				  </div>
+			</div>
+			
+			<!-- Scrum Master and Product Owner for sprint-->
+			<div class="row mt-4">
+				<!--Scrum Master-->
+					<div class="col">
+					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
+					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrumMaster%>" name="scrumMaster" autocomplete="off">
+					</div>
+	
+				<!--Product Owner-->
+					<div class="col">
+					<label for="productOwnerEdit" class="form-label">Product Owner</label>
+					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.productOwner%>" name="productOwner" autocomplete="off">					</div>
+			</div>
+
+			<!--Description (prefill + save)-->
+			<label for="descriptionEdit" class="form-label mt-3">Description</label>
+			<textarea class="form-control" id="descriptionEdit" rows="3" name="taskDescription" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
+
+			<!--Saving Changes-->
+			<button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+		  </form>
+		  <form action="/deleteSprint" method="POST">
+			  <!--Delete Sprint-->
+			  <input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
+			  <button type="submit" class="btn btn-outline-danger mt-3">Delete Sprint</button>
+		  </form>
+		</div>
+	  </div>
+	</div>
+  </div>
   
   <%- include ("partials/footer.ejs"); -%>

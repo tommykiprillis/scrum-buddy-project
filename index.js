@@ -43,22 +43,22 @@ app.get("/",async (req,res) => {
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks ORDER BY title");
+			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY title");
 			backlogTasks = result.rows;
 		// // group the tags together
 		} else if (sortPreference === "tag"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks ORDER BY tag IS NULL, tag DESC");
+			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY tag IS NULL, tag DESC");
 			backlogTasks = result.rows;
 		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks ORDER BY story_points IS NULL, story_points DESC");
+			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points DESC");
 			backlogTasks = result.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks ORDER BY priority IS NULL, priority DESC");
+			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY priority IS NULL, priority DESC");
 			backlogTasks = result.rows;
 		}
 		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
@@ -127,7 +127,7 @@ app.post("/delete", async (req,res) => {
 app.post("/createSprint", async (req,res) =>{
 	try {
 		const sprintName = req.body.name;
-		const sprintStartDate = red.body.startDate;
+		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
 
 		const result = await db.query("INSERT INTO sprints (name, start_date, end_date) VALUES ($1, $2, $3) RETURNING id", [sprintName, sprintStartDate, sprintEndDate])
@@ -147,17 +147,17 @@ app.post("/createSprint", async (req,res) =>{
 app.get("/viewSprint", async (req,res) => {
 	try {
 		// get view and sort preference of the user
-		const currentSprint = red.cookie.currentSprintId;
+		const currentSprint = req.cookies.currentSprintId;
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
 
 		const sprintsAll = await db.query("SELECT * from sprints");
 		const arraySprints = sprintsAll.rows;
 
-		const currentSprintDetailsResults = await db.query("SELECT * FROM tasks WHERE location = $1", [currentSprint]);
-		const currentSprintDetails = currentSprintDetailsResults.rows;
+		const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [currentSprint]);
+		const currentSprintDetails = currentSprintDetailsResults.rows[0];
 		
-		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints where id = $1", [currentSprint]);
+		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints WHERE id = $1", [currentSprint]);
 		const sprint = sprintResult.rows[0];
 
 		let sprintStatus = "Not Started";
@@ -265,7 +265,7 @@ app.post("/moveToSprint", async (req,res) =>{
 });
 
 // update which sprint we are currently viewing (sprint)
-app.post("setSprintView", async (req,res) =>{
+app.post("/setSprintView", async (req,res) =>{
 	const sprintId = req.body.sprintId;
 	res.cookie("currentSprintId",sprintId);
 	res.redirect("/viewSprint");
