@@ -788,7 +788,7 @@
 	<div class="modal-dialog" style="max-width: 50rem;">
 	  <div class="modal-content">
 		<div class="modal-body">
-		  <form action="/edit" method="POST">
+		  <form action="/editSprint" method="POST">
 			<!--Stores the id of the sprint as a hidden value-->
 			<input type="hidden" name="id" value="<%=sprintDetails.id%>">
 
@@ -798,36 +798,39 @@
 			
 			<!--Start and end date for sprint-->
 			<div class="row mt-4">
-				<!--Start Date for the sprint-->
-				  <div class="col">
+				<!-- Start Date for the sprint -->
+				<div class="col">
 					<label for="startDateEdit" class="form-label">Start Date</label>
-					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" value="<%= new Date(sprintDetails.start_date).toISOString().split('T')[0] %>">
-				  </div>
-  
-				<!--End Date for the sprint-->
-				  <div class="col">
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
+						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+				</div>
+			
+				<!-- End Date for the sprint -->
+				<div class="col">
 					<label for="endDateEdit" class="form-label">End Date</label>
-					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" value="<%= new Date(sprintDetails.end_date).toISOString().split('T')[0] %>">
-				  </div>
+					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
+						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+				</div>
 			</div>
+			
 			
 			<!-- Scrum Master and Product Owner for sprint-->
 			<div class="row mt-4">
 				<!--Scrum Master-->
 					<div class="col">
 					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
-					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrumMaster%>" name="scrumMaster" autocomplete="off">
+					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off">
 					</div>
 	
 				<!--Product Owner-->
 					<div class="col">
 					<label for="productOwnerEdit" class="form-label">Product Owner</label>
-					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.productOwner%>" name="productOwner" autocomplete="off">					</div>
+					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off">					</div>
 			</div>
 
 			<!--Description (prefill + save)-->
 			<label for="descriptionEdit" class="form-label mt-3">Description</label>
-			<textarea class="form-control" id="descriptionEdit" rows="3" name="taskDescription" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
+			<textarea class="form-control" id="descriptionEdit" rows="3" name="description" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
 
 			<!--Saving Changes-->
 			<button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>

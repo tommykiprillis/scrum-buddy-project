@@ -275,12 +275,12 @@ app.post("/setSprintView", async (req,res) =>{
 app.post("/editSprint", async (req,res) =>{
 	try {
         const id = req.cookies.currentSprintId;
-	    const newName = (req.body.name == '') ? null : req.body.name;
+	    const newName = (req.body.name === '') ? null : req.body.name;
 	    const newDescription = (req.body.description === '') ? null : req.body.description;
 		const newProductOwner = (req.body.productOwner === '') ? null : req.body.productOwner;
 		const newScrumMaster = (req.body.scrumMaster === '') ? null : req.body.scrumMaster;
 		const newStartDate = (req.body.startDate === '') ? null : req.body.startDate;
-		const newEndDate = (req.body.endDate == '') ? null : req.body.endDate;
+		const newEndDate = (req.body.endDate === '') ? null : req.body.endDate;
 	    await db.query('UPDATE sprints SET name = $2, description = $3, start_date = $4, end_date = $5, scrum_master = $6, product_owner = $7 WHERE id = $1', [id, newName, newDescription, newStartDate, newEndDate, newScrumMaster, newProductOwner]);
         res.redirect("/viewSprint");
 	} catch (err) {
@@ -291,7 +291,7 @@ app.post("/editSprint", async (req,res) =>{
 // delete a sprint (sprint)
 app.post("/deleteSprint", async (req,res) =>{
 	try {
-		const sprintId = req.cookies.sprintId;
+		const sprintId = req.body.sprintId;
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
 		res.redirect("/");
