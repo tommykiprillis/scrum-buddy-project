@@ -35,61 +35,33 @@ app.get("/",async (req,res) => {
 		
 		
         // get the tasks from each column
-		let resultNotStarted;
-		let notStartedTasks;
+		let result;
+		let backlogTasks;
 
-		let resultInProgress;
-		let inProgressTasks;
-
-		let resultCompleted;
-		let completedTasks;
-		
+		const sprintsResult = await db.query("SELECT * from sprints");
+		const backlogSprints = sprintsResult.rows;
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY title");
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY title");
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY title");
-			completedTasks = resultCompleted.rows;
+			result = await db.query("SELECT * FROM tasks ORDER BY title");
+			backlogTasks = result.rows;
 		// // group the tags together
 		} else if (sortPreference === "tag"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY tag IS NULL, tag DESC");
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY tag IS NULL, tag DESC");
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY tag IS NULL, tag DESC");
-			completedTasks = resultCompleted.rows;
+			result = await db.query("SELECT * FROM tasks ORDER BY tag IS NULL, tag DESC");
+			backlogTasks = result.rows;
 		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY story_points IS NULL, story_points DESC");
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY story_points IS NULL, story_points DESC");
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY story_points IS NULL, story_points DESC");
-			completedTasks = resultCompleted.rows;
+			result = await db.query("SELECT * FROM tasks ORDER BY story_points IS NULL, story_points DESC");
+			backlogTasks = result.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY priority IS NULL, priority DESC");
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY priority IS NULL, priority DESC");
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY priority IS NULL, priority DESC");
-			completedTasks = resultCompleted.rows;
+			result = await db.query("SELECT * FROM tasks ORDER BY priority IS NULL, priority DESC");
+			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks,view:viewPreference});
+		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -153,7 +125,20 @@ app.post("/delete", async (req,res) => {
 
 // create a new sprint (product backlog)
 app.post("/createSprint", async (req,res) =>{
+	try {
+		const sprintName = req.body.name;
+		const sprintStartDate = red.body.startDate;
+		const sprintEndDate = req.body.endDate;
 
+		const result = await db.query("INSERT INTO sprints (name, start_date, end_date) VALUES ($1, $2, $3) RETURNING id", [sprintName, sprintStartDate, sprintEndDate])
+		
+		const newSprintId = result.rows[0].id;
+
+		res.cookie('currentSprintId', newSprintId);
+		res.redirect("/viewSprint");
+	} catch (err) {
+		console.log(err);
+	} 
 });
 
 // routes for the sprint view
@@ -162,10 +147,30 @@ app.post("/createSprint", async (req,res) =>{
 app.get("/viewSprint", async (req,res) => {
 	try {
 		// get view and sort preference of the user
+		const currentSprint = red.cookie.currentSprintId;
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+
+		const sprintsAll = await db.query("SELECT * from sprints");
+		const arraySprints = sprintsAll.rows;
+
+		const currentSprintDetailsResults = await db.query("SELECT * FROM tasks WHERE location = $1", [currentSprint]);
+		const currentSprintDetails = currentSprintDetailsResults.rows;
 		
-		
+		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints where id = $1", [currentSprint]);
+		const sprint = sprintResult.rows[0];
+
+		let sprintStatus = "Not Started";
+		const currentDate = new Date();
+
+		const startDate = new Date(sprint.start_date);
+		const endDate = new Date(sprint.end_date);
+
+		if (currentDate >= startDate && currentDate <= endDate) {
+			sprintStatus = "In Progress";
+		} else if (currentDate > endDate) { 
+			sprintStatus = "Completed";
+		}
         // get the tasks from each column
 		let resultNotStarted;
 		let notStartedTasks;
@@ -179,49 +184,57 @@ app.get("/viewSprint", async (req,res) => {
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY title");
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY title", [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY title");
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY title", [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY title");
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY title", [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // group the tags together
 		} else if (sortPreference === "tag"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY tag IS NULL, tag DESC");
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY tag IS NULL, tag DESC");
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY tag IS NULL, tag DESC");
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY story_points IS NULL, story_points DESC");
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY story_points IS NULL, story_points DESC");
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY story_points IS NULL, story_points DESC");
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' ORDER BY priority IS NULL, priority DESC");
+			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' ORDER BY priority IS NULL, priority DESC");
+			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' ORDER BY priority IS NULL, priority DESC");
+			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
-		res.render("index.ejs", {notStarted:notStartedTasks,inProgress:inProgressTasks,completed:completedTasks,view:viewPreference});
+		res.render("sprint.ejs", {
+			notStarted:notStartedTasks,
+			inProgress:inProgressTasks,
+			completed:completedTasks,
+			view:viewPreference,
+			sprintStatus: sprintStatus,
+			sprints: arraySprints,
+			sprintDetails: currentSprintDetails
+		});
 	} catch (err) {
 		console.log(err);
 	} 
