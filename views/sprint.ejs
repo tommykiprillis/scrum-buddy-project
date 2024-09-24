@@ -592,15 +592,18 @@
               <!--Description (prefill + save)-->
               <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
               <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
-
-              <!--Saving Changes-->
-              <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+			  
+			<!--Saving Changes-->
+			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+              
+			  <!-- Moving a task back to the backlog (IF sprint if not in progress)-->
             </form>
-            <form action="/delete" method="POST">
-                <!--Delete Task-->
-                <input type="hidden" name="id" value="<%=task.id%>">
-                <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
-            </form>
+			<% if (sprintStatus !== "In Progress") { %>
+				<form action="/moveToBacklog" method="POST">
+					<input type="hidden" name="taskId" value="<%=task.id%>">
+					<button type="submit" class="btn bg-body-secondary mt-3">Move to Backlog</button>
+				</form>
+			<% } %>
           </div>
         </div>
       </div>
@@ -657,7 +660,7 @@
 			<textarea class="form-control" id="descriptionEdit" rows="3" name="description" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
 
 			<!--Saving Changes-->
-			<button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
 		  </form>
 		  <form action="/deleteSprint" method="POST">
 			  <!--Delete Sprint-->

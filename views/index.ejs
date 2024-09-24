@@ -178,7 +178,7 @@
 					<textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
 	
 					<!--Saving Changes-->
-					<button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
+					<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
 				</form>
 				<form action="/delete" method="POST">
 					<!--Delete Task-->
