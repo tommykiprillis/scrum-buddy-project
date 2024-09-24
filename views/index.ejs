@@ -164,11 +164,14 @@
 					<div class="col">
 						<!--Story Points (prefill + save)-->
 						<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-						<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="text"
+						<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
 						<% if (task.story_points !== null) { %>
 						value="<%=task.story_points%>"
 						<% } %>
-						name="taskStoryPoint" autocomplete="off">
+						name="taskStoryPoint" autocomplete="off" min="1" max="10">
+						<div id="spHelpBlock" class="form-text">
+							Story Points must be between 1-10
+						  </div>
 					</div>
 					</div>
 	
