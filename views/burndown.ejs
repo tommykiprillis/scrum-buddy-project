@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burndown Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Burndown Chart</h2>
+        <canvas id="burndownChart"></canvas>
+    </div>
+
+    <script>
+        // get the data passed from the server
+        const actualData = JSON.parse('<%= actualBurndownData %>');
+        const idealData = JSON.parse('<%= idealBurndownData %>');
+
+        // generate labels based on the length of the data
+        const labels = actualData.map((_, index) => `Day ${index + 1}`);
+
+        // get the canvas context
+        const ctx = document.getElementById('burndownChart').getContext('2d');
+
+        // create a new line chart
+        const burndownChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Actual Burndown',
+                        data: actualData.map(data => data.storyPoints),
+                        borderColor: 'rgba(255, 52, 48, 0.8)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Ideal Burndown',
+                        data: idealData.map(data => data.storyPoints),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Story Points'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Days'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
