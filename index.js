@@ -333,8 +333,20 @@ app.post("/viewBurndownChart", async (req, res) => {
 			dayNumber++;
 		}
 
+		// Determine the current day number of the sprint
+		const today = new Date();
+		const currentDayNumber = Math.floor((today - new Date(sprintStartDate)) / (1000 * 60 * 60 * 24)) + 1;
+
+		// Filter the data based on the current day number
+		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
+		const filteredIdealData = idealBurndownData.filter(data => data.day <= currentDayNumber);
+
 		// Send the burndown data to burndown.ejs
-		res.render("burndown.ejs", {actualBurndownData: actualBurndownData, idealBurndownData: idealBurndownData, sprintId: sprintId});
+		res.render("burndown.ejs", {
+			actualBurndownData: JSON.stringify(filteredActualData),
+			idealBurndownData: JSON.stringify(filteredIdealData),
+			sprintId: sprintId
+		});
 
 	} catch (err) {
 		console.error(err);
