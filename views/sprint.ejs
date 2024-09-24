@@ -524,7 +524,7 @@
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
               <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" 
 			  <% if (sprintStatus === "In Progress") { %>
-				readonly
+				readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
 			  <% } %>
 			  >
               <!--Assignee (prefill + save)-->
@@ -582,7 +582,7 @@
                   <% } %>
                   name="taskStoryPoint" autocomplete="off"
 				  <% if (sprintStatus === "In Progress") { %>
-					readonly
+					readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
 				  <% } %>
 				  >
                 </div>
