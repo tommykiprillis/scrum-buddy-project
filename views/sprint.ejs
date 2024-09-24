@@ -507,7 +507,10 @@
 	<% } else { %>
 		<h1>ERROR LOADING VIEW</h1>
 	<% } %>
-  <% notStarted.forEach(task => { %>
+
+	<!-- Modals for editing the details of a task-->
+	<!-- Only descriptions, tags and assignees can be changed if a sprint has started-->
+  <% notStarted.concat(inProgress).concat(completed).forEach(task => { %>
     <!-- Edit/View More for each task (for both list and card views)-->
     <div class="modal fade" id="detailed<%= task.id %>" tabindex="-1">
       <div class="modal-dialog" style="max-width: 50rem;">
@@ -519,10 +522,11 @@
 
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
-              
-              <!--Delete Task Option (own form)-->
-
+              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" 
+			  <% if (sprintStatus === "In Progress") { %>
+				readonly
+			  <% } %>
+			  >
               <!--Assignee (prefill + save)-->
               <label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
               <input class="form-control form-control" id="assigneeInput<%= task.id %>" type="text"
@@ -576,191 +580,11 @@
                   <% if (task.story_points !== null) { %>
                     value="<%=task.story_points%>"
                   <% } %>
-                  name="taskStoryPoint" autocomplete="off">
-                </div>
-              </div>
-
-              
-              <!--Description (prefill + save)-->
-              <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
-
-              <!--Saving Changes-->
-              <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
-            </form>
-            <form action="/delete" method="POST">
-                <!--Delete Task-->
-                <input type="hidden" name="id" value="<%=task.id%>">
-                <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% }) %>
-
-  <% inProgress.forEach(task => { %>
-    <!-- Edit/View More for each task (for both list and card views)-->
-    <div class="modal fade" id="detailed<%= task.id %>" tabindex="-1">
-      <div class="modal-dialog" style="max-width: 50rem;">
-        <div class="modal-content">
-          <div class="modal-body">
-            <form action="/edit" method="POST">
-              <!--Stores the id of the task as a hidden value-->
-              <input type="hidden" name="id" value="<%=task.id%>">
-
-              <!--Task Name at top (prefill + save)-->
-              <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
-              
-              <!--Delete Task Option (own form)-->
-
-              <!--Assignee (prefill + save)-->
-              <label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
-              <input class="form-control form-control" id="assigneeInput<%= task.id %>" type="text"
-              <% if (task.assignee !== null) { %>
-                value="<%=task.assignee%>"
-              <% } %>
-              name="taskAssignee" autocomplete="off">
-              
-              
-              <div class="row mt-3">
-                <div class="col">
-                  <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
-                  <label for="tag<%= task.id %>" class="form-label">Tag</label>
-                  <select class="form-control form-control-sm" id="tag<%= task.id %>" name="taskTag">
-                    <% if (task.tag !== null) { %>
-                      <option value="<%=task.tag%>" selected><%=task.tag%></option>
-                    <% } else {%>
-                      <option value="" selected>None</option>
-                    <% } %>
-                    <option value="Back-End">Back-End</option>
-                    <option value="Front-End">Front-End</option>
-                    <option value="API">API</option>
-                    <option value="Databases">Databases</option>
-                    <option value="Testing">Testing</option>
-                    <option value="UIUX">UIUX</option>
-                  </select>
-
-                </div>
-
-                <div class="col">
-                  <!--Priority (dropdown prefill + save)-->
-                  <label for="priority<%= task.id %>" class="form-label">Priority</label>
-                  <select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
-                    <% if (task.priority !== null) { %>
-                      <option value="<%=task.priority%>" selected><%=task.priority%></option>
-                      <% } else {%>
-                        <option value="" selected>None</option>
-                      <% } %>
-                    <option value="Urgent">Urgent</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Important">Important</option>
-                  </select>
-
-                </div>
-
-                <div class="col">
-                  <!--Story Points (prefill + save)-->
-                  <label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-                  <input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="text"
-                  <% if (task.story_points !== null) { %>
-                    value="<%=task.story_points%>"
-                  <% } %>
-                  name="taskStoryPoint" autocomplete="off">
-                </div>
-              </div>
-
-              
-              <!--Description (prefill + save)-->
-              <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
-
-              <!--Saving Changes-->
-              <button type="submit" class="btn bg-body-secondary mt-3">Save Changes</button>
-            </form>
-            <form action="/delete" method="POST">
-                <!--Delete Task-->
-                <input type="hidden" name="id" value="<%=task.id%>">
-                <button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% }) %>
-
-  <% completed.forEach(task => { %>
-    <!-- Edit/View More for each task (for both list and card views)-->
-    <div class="modal fade" id="detailed<%= task.id %>" tabindex="-1">
-      <div class="modal-dialog" style="max-width: 50rem;">
-        <div class="modal-content">
-          <div class="modal-body">
-            <form action="/edit" method="POST">
-              <!--Stores the id of the task as a hidden value-->
-              <input type="hidden" name="id" value="<%=task.id%>">
-
-              <!--Task Name at top (prefill + save)-->
-              <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
-              
-              <!--Delete Task Option (own form)-->
-
-              <!--Assignee (prefill + save)-->
-              <label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
-              <input class="form-control form-control" id="assigneeInput<%= task.id %>" type="text"
-              <% if (task.assignee !== null) { %>
-                value="<%=task.assignee%>"
-              <% } %>
-              name="taskAssignee" autocomplete="off">
-              
-              
-              <div class="row mt-3">
-                <div class="col">
-                  <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
-                  <label for="tag<%= task.id %>" class="form-label">Tag</label>
-                  <select class="form-control form-control-sm" id="tag<%= task.id %>" name="taskTag">
-                    <% if (task.tag !== null) { %>
-                      <option value="<%=task.tag%>" selected><%=task.tag%></option>
-                    <% } else {%>
-                      <option value="" selected>None</option>
-                    <% } %>
-                    <option value="Back-End">Back-End</option>
-                    <option value="Front-End">Front-End</option>
-                    <option value="API">API</option>
-                    <option value="Databases">Databases</option>
-                    <option value="Testing">Testing</option>
-                    <option value="UIUX">UIUX</option>
-                  </select>
-
-                </div>
-
-                <div class="col">
-                  <!--Priority (dropdown prefill + save)-->
-                  <label for="priority<%= task.id %>" class="form-label">Priority</label>
-                  <select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
-                    <% if (task.priority !== null) { %>
-                      <option value="<%=task.priority%>" selected><%=task.priority%></option>
-                      <% } else {%>
-                        <option value="" selected>None</option>
-                      <% } %>
-                    <option value="Urgent">Urgent</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Important">Important</option>
-                  </select>
-
-                </div>
-
-                <div class="col">
-                  <!--Story Points (prefill + save)-->
-                  <label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-                  <input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="text"
-                  <% if (task.story_points !== null) { %>
-                    value="<%=task.story_points%>"
-                  <% } %>
-                  name="taskStoryPoint" autocomplete="off">
+                  name="taskStoryPoint" autocomplete="off"
+				  <% if (sprintStatus === "In Progress") { %>
+					readonly
+				  <% } %>
+				  >
                 </div>
               </div>
 
