@@ -322,6 +322,24 @@ app.post("/deleteSprint", async (req,res) =>{
 	} 
 });
 
+// edit a task (sprint)
+app.post("/editInSprint", async (req,res) => {
+	try {
+        const id = req.body.id;
+	    const newName = req.body.taskName
+	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
+		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
+		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+        res.redirect("/viewSprint");
+	} catch (err) {
+		console.log(err);
+	} 
+
+});
+
+
 // view a burndown chart (sprint)
 app.post("/viewBurndownChart", async (req,res) =>{
 
