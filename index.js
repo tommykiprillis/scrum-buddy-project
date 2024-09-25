@@ -32,6 +32,8 @@ app.get("/",async (req,res) => {
 		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+		const orderPreference = req.cookies.order || "DESC";
+		const filterPreference = req.cookies.filter || "";
 		
 		
         // get the tasks from each column
@@ -43,17 +45,17 @@ app.get("/",async (req,res) => {
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY title");
+			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY title ${orderPreference}`);
 			backlogTasks = result.rows;
 		// // group the tags together
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points DESC");
+			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points ${orderPreference}`);
 			backlogTasks = result.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY priority IS NULL, priority DESC");
+			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY priority IS NULL, priority ${orderPreference}`);
 			backlogTasks = result.rows;
 		}
 		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
@@ -73,6 +75,20 @@ app.post("/changeView", async (req,res) => {
 app.post("/changeSort", async (req,res) => {
     const sortPreference = req.body.sort;
     res.cookie('sort', sortPreference);
+    res.redirect("/");
+});
+
+// change the order (product backlog)
+app.post("/changeOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/");
+});
+
+// change the filter (product backlog)
+app.post("/changeFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
     res.redirect("/");
 });
 
