@@ -46,11 +46,6 @@ app.get("/",async (req,res) => {
 			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY title");
 			backlogTasks = result.rows;
 		// // group the tags together
-		} else if (sortPreference === "tag"){
-			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY tag IS NULL, tag DESC");
-			backlogTasks = result.rows;
-		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
 			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points DESC");
@@ -193,17 +188,6 @@ app.get("/viewSprint", async (req,res) => {
 			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY title", [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // group the tags together
-		} else if (sortPreference === "tag"){
-			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			completedTasks = resultCompleted.rows;
-		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
 			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
