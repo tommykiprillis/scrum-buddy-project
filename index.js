@@ -145,6 +145,8 @@ app.get("/viewSprint", async (req,res) => {
 		const currentSprint = req.cookies.currentSprintId;
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+		const orderPreference = req.cookies.order || "DESC";
+		const filterPreference = req.cookies.filter || "";
 
 		const sprintsAll = await db.query("SELECT * from sprints");
 		const arraySprints = sprintsAll.rows;
@@ -179,35 +181,35 @@ app.get("/viewSprint", async (req,res) => {
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY title", [currentSprint]);
+			resultNotStarted = await db.query(`SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY title", [currentSprint]);
+			resultInProgress = await db.query(`SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY title", [currentSprint]);
+			resultCompleted = await db.query(`SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // group the tags together
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultNotStarted = await db.query(`SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultInProgress = await db.query(`SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultCompleted = await db.query(`SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultNotStarted = await db.query(`SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultInProgress = await db.query(`SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultCompleted = await db.query(`SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
 		res.render("sprint.ejs", {
@@ -235,6 +237,20 @@ app.post("/changeSprintView", async (req,res) =>{
 app.post("/changeSprintSort", async (req,res) =>{
     const sortPreference = req.body.sort;
     res.cookie('sort', sortPreference);
+    res.redirect("/viewSprint");
+});
+
+// change the order (sprint)
+app.post("/changeSprintOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/viewSprint");
+});
+
+// change the filter (sprint)
+app.post("/changeSprintFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
     res.redirect("/viewSprint");
 });
 
