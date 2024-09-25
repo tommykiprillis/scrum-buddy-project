@@ -665,14 +665,29 @@
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
 		  </form>
-		  <form action="/deleteSprint" method="POST">
-			  <!--Delete Sprint-->
-			  <input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
-			  <button type="submit" class="btn btn-outline-danger mt-3">Delete Sprint</button>
-		  </form>
+			<!--Delete Sprint-->
+			<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
+			<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
 		</div>
 	  </div>
 	</div>
   </div>
   
+  <div class="modal fade" id="deleteConfirmationSprint" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered" style="max-width: 50rem;">
+	<div class="modal-content">
+		<div class="modal-body">
+			<p>Are you sure you want to delete this sprint? This action cannot be undone.</p>
+		</div>
+		<div class="modal-footer">
+			<form action="/deleteSprint" method="POST">
+				<!--Delete Sprint-->
+				<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
+				<button type="submit" class="btn btn-outline-danger">Delete Sprint</button>
+			</form>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		</div>
+	</div>
+	</div>
+</div>
   <%- include ("partials/footer.ejs"); -%>
