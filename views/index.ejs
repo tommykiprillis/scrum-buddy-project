@@ -51,7 +51,7 @@
 						<% if (task.tags !== null) { %>
 							<div class="d-flex flex-column gap-1 align-items-start">
 								<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
-									<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+									<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
 								<% }) %>
 							</div>
 						<% } %>
