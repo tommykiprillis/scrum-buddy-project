@@ -100,10 +100,10 @@ app.post("/edit", async (req,res) => {
         const id = req.body.id;
 	    const newName = req.body.taskName
 	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -328,10 +328,10 @@ app.post("/editInSprint", async (req,res) => {
         const id = req.body.id;
 	    const newName = req.body.taskName
 	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
         res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);

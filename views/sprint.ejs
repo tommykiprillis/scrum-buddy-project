@@ -82,8 +82,12 @@
 								<h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
 							<% } %>
 							<div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex gap-1 align-items-center flex-wrap">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 								<div class="btn-group dropend ms-auto">
 									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -151,8 +155,12 @@
 								<h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
 							<% } %>
 							<div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex gap-1 align-items-center flex-wrap">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 								<div class="btn-group dropend ms-auto">
 									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -217,8 +225,12 @@
 								<h6 class="card-subtitle mb-2 text-body-secondary"><%=task.assignee%></h6>
 							<% } %>
 							<div class="d-flex gap-2 justify-content-start w-100 align-items-center">
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1 d-flex align-items-center"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex gap-1 align-items-center flex-wrap">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 								<div class="btn-group dropend ms-auto">
 									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -270,7 +282,7 @@
 					<tr>
 						<th scope="col">Title</th>
 						<th scope="col">Priority</th>
-						<th scope="col">Tag</th>
+						<th scope="col">Tags</th>
 						<th scope="col">Assignee</th>
 						<th scope="col">Story Points</th>
 						<th scope="col">More</th>
@@ -287,8 +299,12 @@
 								<% } %>
 							</td>
 							<td>
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex flex-column gap-1 align-items-start">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 							</td>
 							<td>
@@ -352,7 +368,7 @@
 					<tr>
 						<th scope="col">Title</th>
 						<th scope="col">Priority</th>
-						<th scope="col">Tag</th>
+						<th scope="col">Tags</th>
 						<th scope="col">Assignee</th>
 						<th scope="col">Story Points</th>
 						<th scope="col">More</th>
@@ -369,8 +385,12 @@
 								<% } %>
 							</td>
 							<td>
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex flex-column gap-1 align-items-start">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 							</td>
 							<td>
@@ -433,7 +453,7 @@
 					<tr>
 						<th scope="col">Title</th>
 						<th scope="col">Priority</th>
-						<th scope="col">Tag</th>
+						<th scope="col">Tags</th>
 						<th scope="col">Assignee</th>
 						<th scope="col">Story Points</th>
 						<th scope="col">More</th>
@@ -450,8 +470,12 @@
 								<% } %>
 							</td>
 							<td>
-								<% if (task.tag !== null) { %>
-									<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex flex-column gap-1 align-items-start">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%=tag%></span>
+										<% }) %>
+									</div>
 								<% } %>
 							</td>
 							<td>
@@ -534,64 +558,64 @@
                 value="<%=task.assignee%>"
               <% } %>
               name="taskAssignee" autocomplete="off">
-              
-              
-              <div class="row mt-3">
-                <div class="col">
-                  <!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
-                  <label for="tag<%= task.id %>" class="form-label">Tag</label>
-                  <select class="form-control form-control-sm" id="tag<%= task.id %>" name="taskTag">
-                    <% if (task.tag !== null) { %>
-                      <option value="<%=task.tag%>" selected><%=task.tag%></option>
-                    <% } else {%>
-                      <option value="" selected>None</option>
-                    <% } %>
-                    <option value="Back-End">Back-End</option>
-                    <option value="Front-End">Front-End</option>
-                    <option value="API">API</option>
-                    <option value="Databases">Databases</option>
-                    <option value="Testing">Testing</option>
-                    <option value="UIUX">UIUX</option>
-                  </select>
 
-                </div>
+			  <div class="row mt-3">
+				<div class="col-3">
+					<!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
+					<label for="tagOptions<%= task.id %>" class="form-label">Tags</label>
+					<div id="tagOptions<%= task.id %>">
+						<label><input type="checkbox" name="taskTags[]" value="Back-End" 
+							<%= task.tags && task.tags.includes('Back-End') ? 'checked' : '' %>> Back-End</label><br>
+						
+						<label><input type="checkbox" name="taskTags[]" value="Front-End" 
+							<%= task.tags && task.tags.includes('Front-End') ? 'checked' : '' %>> Front-End</label><br>
+						
+						<label><input type="checkbox" name="taskTags[]" value="API" 
+							<%= task.tags && task.tags.includes('API') ? 'checked' : '' %>> API</label><br>
+						
+						<label><input type="checkbox" name="taskTags[]" value="Databases" 
+							<%= task.tags && task.tags.includes('Databases') ? 'checked' : '' %>> Databases</label><br>
+						
+						<label><input type="checkbox" name="taskTags[]" value="Testing" 
+							<%= task.tags && task.tags.includes('Testing') ? 'checked' : '' %>> Testing</label><br>
+						
+						<label><input type="checkbox" name="taskTags[]" value="UIUX" 
+							<%= task.tags && task.tags.includes('UIUX') ? 'checked' : '' %>> UI/UX</label><br>
+					</div>						
+				</div>
 
-                <div class="col">
-                  <!--Priority (dropdown prefill + save)-->
-                  <label for="priority<%= task.id %>" class="form-label">Priority</label>
-                  <select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
-                    <% if (task.priority !== null) { %>
-                      <option value="<%=task.priority%>" selected><%=task.priority%></option>
-                      <% } else {%>
-                        <option value="" selected>None</option>
-                      <% } %>
-                    <option value="Urgent">Urgent</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Important">Important</option>
-                  </select>
+				<div class="col-9">
+					<!--Priority (dropdown prefill + save)-->
+					<label for="priority<%= task.id %>" class="form-label">Priority</label>
+					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
+					<% if (task.priority !== null) { %>
+						<option value="<%=task.priority%>" selected><%=task.priority%></option>
+						<% } else {%>
+						<option value="" selected>None</option>
+						<% } %>
+					<option value="Urgent">Urgent</option>
+					<option value="Low">Low</option>
+					<option value="Medium">Medium</option>
+					<option value="Important">Important</option>
+					</select>
 
-                </div>
+					<!--Story Points (prefill + save)-->
+					<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
+					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
+					<% if (task.story_points !== null) { %>
+					value="<%=task.story_points%>"
+					<% } %>
+					name="taskStoryPoint" autocomplete="off" min="1" max="10"
+					<% if (sprintStatus === "In Progress") { %>
+						readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
+					  <% } %>>
+					<div id="spHelpBlock" class="form-text">
+						Story Points must be between 1-10
+					</div>
+				</div>
 
-                <div class="col">
-                  <!--Story Points (prefill + save)-->
-                  <label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-                  <input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" min="1" max="10" aria-describedby="spHelpBlock"
-                  <% if (task.story_points !== null) { %>
-                    value="<%=task.story_points%>"
-                  <% } %>
-                  name="taskStoryPoint" autocomplete="off"
-				  <% if (sprintStatus === "In Progress") { %>
-					readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
-				  <% } %>
-				  >
-				  <div id="spHelpBlock" class="form-text">
-					Story Points must be between 1-10
-				  </div>
-                </div>
-              </div>
+			</div>
 
-              
               <!--Description (prefill + save)-->
               <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
               <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
