@@ -32,6 +32,8 @@ app.get("/",async (req,res) => {
 		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+		const orderPreference = req.cookies.order || "DESC";
+		const filterPreference = req.cookies.filter || "";
 		
 		
         // get the tasks from each column
@@ -40,25 +42,27 @@ app.get("/",async (req,res) => {
 
 		const sprintsResult = await db.query("SELECT * from sprints");
 		const backlogSprints = sprintsResult.rows;
+
+        let query = "SELECT * FROM tasks WHERE location IS NULL"
+        query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
 		// sort by alphabetical order
 		if (sortPreference === "name"){
+            query += ` ORDER BY title ${orderPreference}`;
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY title");
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		// // group the tags together
-		} else if (sortPreference === "tag"){
-			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY tag IS NULL, tag DESC");
-			backlogTasks = result.rows;
-		// // sort in story point order
 		} else if (sortPreference === "story_points"){
+            query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points DESC");
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
+            query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
 			// get the tasks from each column
-			result = await db.query("SELECT * FROM tasks WHERE location IS NULL ORDER BY priority IS NULL, priority DESC");
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
 		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
@@ -81,6 +85,20 @@ app.post("/changeSort", async (req,res) => {
     res.redirect("/");
 });
 
+// change the order (product backlog)
+app.post("/changeOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/");
+});
+
+// change the filter (product backlog)
+app.post("/changeFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
+    res.redirect("/");
+});
+
 // add a new task (product backlog)
 app.post("/add", async (req,res) => {
 	try {
@@ -100,10 +118,10 @@ app.post("/edit", async (req,res) => {
         const id = req.body.id;
 	    const newName = req.body.taskName
 	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
         res.redirect("/");
 	} catch (err) {
 		console.log(err);
@@ -150,6 +168,8 @@ app.get("/viewSprint", async (req,res) => {
 		const currentSprint = req.cookies.currentSprintId;
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
+		const orderPreference = req.cookies.order || "DESC";
+		const filterPreference = req.cookies.filter || "";
 
 		const sprintsAll = await db.query("SELECT * from sprints");
 		const arraySprints = sprintsAll.rows;
@@ -181,49 +201,40 @@ app.get("/viewSprint", async (req,res) => {
 		let resultCompleted;
 		let completedTasks;
 		
+        let query = "SELECT * FROM tasks WHERE ";
+        query += (filterPreference !== "") ? `('${filterPreference}' = ANY(tags)) AND ` : "";
 		// sort by alphabetical order
 		if (sortPreference === "name"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY title", [currentSprint]);
+			resultNotStarted = await db.query(query + `status = 'Not Started' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY title", [currentSprint]);
+			resultInProgress = await db.query(query + `status = 'In Progress' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY title", [currentSprint]);
+			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY title ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // group the tags together
-		} else if (sortPreference === "tag"){
-			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			notStartedTasks = resultNotStarted.rows;
-
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			inProgressTasks = resultInProgress.rows;
-
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY tag IS NULL, tag DESC", [currentSprint]);
-			completedTasks = resultCompleted.rows;
-		// // sort in story point order
 		} else if (sortPreference === "story_points"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultNotStarted = await db.query(query + `status = 'Not Started' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultInProgress = await db.query(query + `status = 'In Progress' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY story_points IS NULL, story_points DESC", [currentSprint]);
+			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY story_points IS NULL, story_points ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
 			// get the tasks from each column
-			resultNotStarted = await db.query("SELECT * FROM tasks WHERE status = 'Not Started' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultNotStarted = await db.query(query + `status = 'Not Started' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			notStartedTasks = resultNotStarted.rows;
 
-			resultInProgress = await db.query("SELECT * FROM tasks WHERE status = 'In Progress' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultInProgress = await db.query(query + `status = 'In Progress' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			inProgressTasks = resultInProgress.rows;
 
-			resultCompleted = await db.query("SELECT * FROM tasks  WHERE status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority DESC", [currentSprint]);
+			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
 		res.render("sprint.ejs", {
@@ -251,6 +262,20 @@ app.post("/changeSprintView", async (req,res) =>{
 app.post("/changeSprintSort", async (req,res) =>{
     const sortPreference = req.body.sort;
     res.cookie('sort', sortPreference);
+    res.redirect("/viewSprint");
+});
+
+// change the order (sprint)
+app.post("/changeSprintOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/viewSprint");
+});
+
+// change the filter (sprint)
+app.post("/changeSprintFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
     res.redirect("/viewSprint");
 });
 
@@ -328,10 +353,10 @@ app.post("/editInSprint", async (req,res) => {
         const id = req.body.id;
 	    const newName = req.body.taskName
 	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTag = (req.body.taskTag === '') ? null : req.body.taskTag
+		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tag = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTag, newPriority, newStoryPoint])
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
         res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);

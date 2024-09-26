@@ -41,3 +41,7 @@ CREATE TABLE sprints (
     scrum_master text,
     product_owner text
 );
+
+-- change the tags column to allow for multiple tags
+ALTER TABLE tasks DROP COLUMN tag;
+ALTER TABLE tasks ADD tags tag[];

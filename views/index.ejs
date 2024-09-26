@@ -14,16 +14,50 @@
 				<ul class="dropdown-menu">
 					<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
 					<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
-			<li><button class="dropdown-item" type="submit" name="sort" value="tag">Tag</button></li>
-			<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+					<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
 				</ul>  
 			</form>     
 	</div>
+
+	<div class="btn-group">
+		<button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+				<path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+			</svg>
+		  Order
+		</button>
+			  <form action="/changeOrder" method="POST">
+				  <ul class="dropdown-menu">
+					  <li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending</button></li>
+					  <li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending</button></li>
+				  </ul>  
+			  </form>     
+	  </div>
+
+	  <div class="btn-group">
+		<button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+				<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+			</svg>
+		  Filter by Tag
+		</button>
+			  <form action="/changeFilter" method="POST">
+				  <ul class="dropdown-menu">
+            <li><button class="dropdown-item" type="submit" name="filter" value="">None</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="API">API</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX</button></li>
+				  </ul>  
+			  </form>     
+	  </div>
 	</div>
 
 	<div class="card d-flex p-3 bg-body-secondary flex-column gap-3 border border-0 m-5">
 	<div class="d-flex gap-2 justify-content-start" style="width:20rem">
-			<h4 class="text-start">Tasks</h4>
+			<h4 class="text-start">Tasks :</h4>
 			<h4 class="text-body-secondary"><%= tasks.length %></h4>
 	</div>
 
@@ -32,7 +66,7 @@
 			<tr>
 				<th scope="col">Title</th>
 				<th scope="col">Priority</th>
-				<th scope="col">Tag</th>
+				<th scope="col">Tags</th>
 				<th scope="col">Story Points</th>
 				<th scope="col">More</th>
 				<th scope="col">Move</th>
@@ -48,8 +82,12 @@
 						<% } %>
 					</td>
 					<td>
-						<% if (task.tag !== null) { %>
-							<span class="badge <%=task.tag%>-badge py-1"><%=task.tag%></span>
+						<% if (task.tags !== null) { %>
+							<div class="d-flex flex-column gap-1 align-items-start">
+								<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+									<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
+								<% }) %>
+							</div>
 						<% } %>
 					</td>
 					<td>
@@ -125,51 +163,57 @@
 					<input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
 					
 					<div class="row mt-3">
-					<div class="col">
-						<!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
-						<label for="tag<%= task.id %>" class="form-label">Tag</label>
-						<select class="form-control form-control-sm" id="tag<%= task.id %>" name="taskTag">
-						<% if (task.tag !== null) { %>
-							<option value="<%=task.tag%>" selected><%=task.tag%></option>
-						<% } else {%>
-							<option value="" selected>None</option>
-						<% } %>
-						<option value="Back-End">Back-End</option>
-						<option value="Front-End">Front-End</option>
-						<option value="API">API</option>
-						<option value="Databases">Databases</option>
-						<option value="Testing">Testing</option>
-						<option value="UIUX">UIUX</option>
-						</select>
-	
-					</div>
-	
-					<div class="col">
-						<!--Priority (dropdown prefill + save)-->
-						<label for="priority<%= task.id %>" class="form-label">Priority</label>
-						<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
-						<% if (task.priority !== null) { %>
-							<option value="<%=task.priority%>" selected><%=task.priority%></option>
-							<% } else {%>
-							<option value="" selected>None</option>
+						<div class="col-3">
+							<!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
+							<label for="tagOptions<%= task.id %>" class="form-label">Tags</label>
+							<div id="tagOptions<%= task.id %>">
+								<label><input type="checkbox" name="taskTags[]" value="Back-End" 
+									<%= task.tags && task.tags.includes('Back-End') ? 'checked' : '' %>> Back-End</label><br>
+								
+								<label><input type="checkbox" name="taskTags[]" value="Front-End" 
+									<%= task.tags && task.tags.includes('Front-End') ? 'checked' : '' %>> Front-End</label><br>
+								
+								<label><input type="checkbox" name="taskTags[]" value="API" 
+									<%= task.tags && task.tags.includes('API') ? 'checked' : '' %>> API</label><br>
+								
+								<label><input type="checkbox" name="taskTags[]" value="Databases" 
+									<%= task.tags && task.tags.includes('Databases') ? 'checked' : '' %>> Databases</label><br>
+								
+								<label><input type="checkbox" name="taskTags[]" value="Testing" 
+									<%= task.tags && task.tags.includes('Testing') ? 'checked' : '' %>> Testing</label><br>
+								
+								<label><input type="checkbox" name="taskTags[]" value="UIUX" 
+									<%= task.tags && task.tags.includes('UIUX') ? 'checked' : '' %>> UI/UX</label><br>
+							</div>						
+						</div>
+		
+						<div class="col-9">
+							<!--Priority (dropdown prefill + save)-->
+							<label for="priority<%= task.id %>" class="form-label">Priority</label>
+							<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
+							<% if (task.priority !== null) { %>
+								<option value="<%=task.priority%>" selected><%=task.priority%></option>
+								<% } else {%>
+								<option value="" selected>None</option>
+								<% } %>
+							<option value="Urgent">Urgent</option>
+							<option value="Low">Low</option>
+							<option value="Medium">Medium</option>
+							<option value="Important">Important</option>
+							</select>
+
+							<!--Story Points (prefill + save)-->
+							<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
+							<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
+							<% if (task.story_points !== null) { %>
+							value="<%=task.story_points%>"
 							<% } %>
-						<option value="Urgent">Urgent</option>
-						<option value="Low">Low</option>
-						<option value="Medium">Medium</option>
-						<option value="Important">Important</option>
-						</select>
+							name="taskStoryPoint" autocomplete="off" min="1" max="10">
+							<div id="spHelpBlock" class="form-text">
+								Story Points must be between 1-10
+							</div>
+						</div>
 	
-					</div>
-	
-					<div class="col">
-						<!--Story Points (prefill + save)-->
-						<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-						<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="text"
-						<% if (task.story_points !== null) { %>
-						value="<%=task.story_points%>"
-						<% } %>
-						name="taskStoryPoint" autocomplete="off">
-					</div>
 					</div>
 	
 					
@@ -180,14 +224,29 @@
 					<!--Saving Changes-->
 					<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
 				</form>
-				<form action="/delete" method="POST">
-					<!--Delete Task-->
-					<input type="hidden" name="id" value="<%=task.id%>">
-					<button type="submit" class="btn btn-outline-danger mt-3">Delete Task</button>
-				</form>
+					<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmation<%= task.id %>" data-bs-toggle="modal"">Delete Task</button>
 				</div>
 			</div>
 			</div>
 		</div>
+
+		<div class="modal fade" id="deleteConfirmation<%= task.id %>" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered" style="max-width: 50rem;">
+			<div class="modal-content">
+				<div class="modal-body">
+					<p>Are you sure you want to delete this task? This action cannot be undone.</p>
+				</div>
+				<div class="modal-footer">
+					<form action="/delete" method="POST">
+						<!--Delete Task-->
+						<input type="hidden" name="id" value="<%=task.id%>">
+						<button type="submit" class="btn btn-outline-danger">Delete Task</button>
+					</form>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+			</div>
+		</div>
+
 		<% }) %>
 <%- include ("partials/footer.ejs"); -%>
