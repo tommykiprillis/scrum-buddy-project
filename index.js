@@ -366,7 +366,7 @@ app.post("/editInSprint", async (req,res) => {
 
 
 // view a burndown chart (sprint)
-app.post("/viewBurndownChart", async (req, res) => {
+app.get("/viewBurndownChart", async (req, res) => {
 	try {
 		// get sprint ID from the cookies
 		const sprintId = req.cookies.currentSprintId;
@@ -380,13 +380,13 @@ app.post("/viewBurndownChart", async (req, res) => {
 
 		// get the total story points for the sprint tasks
 		const totalStoryPointsResult = await db.query(
-			"SELECT SUM(story_points) AS total_story_points FROM tasks WHERE sprint_id = $1", [sprintId]
+			"SELECT SUM(story_points) AS total_story_points FROM tasks WHERE location = $1", [sprintId]
 		);
 		const totalStoryPoints = totalStoryPointsResult.rows[0].total_story_points || 0;
 
 		// get task completion data
 		const taskCompletionResult = await db.query(
-			"SELECT date_completed, story_points FROM tasks WHERE sprint_id = $1 AND date_completed IS NOT NULL", [sprintId]
+			"SELECT date_completed, story_points FROM tasks WHERE location = $1 AND date_completed IS NOT NULL", [sprintId]
 		);
 		const tasksCompleted = taskCompletionResult.rows;
 
@@ -438,12 +438,11 @@ app.post("/viewBurndownChart", async (req, res) => {
 
 		// Filter the data based on the current day number
 		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
-		const filteredIdealData = idealBurndownData.filter(data => data.day <= currentDayNumber);
 
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
 			actualBurndownData: JSON.stringify(filteredActualData),
-			idealBurndownData: JSON.stringify(filteredIdealData),
+			idealBurndownData: JSON.stringify(idealBurndownData),
 			sprintId: sprintId
 		});
 

@@ -30,11 +30,11 @@
 
     <script>
         // get the data passed from the server
-        const actualData = JSON.parse('<%= actualBurndownData %>');
-        const idealData = JSON.parse('<%= idealBurndownData %>');
+        const actualData = JSON.parse('<%- actualBurndownData %>');
+        const idealData = JSON.parse('<%- idealBurndownData %>');
 
         // generate labels based on the length of the data
-        const labels = actualData.map((_, index) => `Day ${index + 1}`);
+        const labels = idealData.map((_, index) => `Day ${index + 1}`);
 
         // get the canvas context
         const ctx = document.getElementById('burndownChart').getContext('2d');
