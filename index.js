@@ -42,20 +42,27 @@ app.get("/",async (req,res) => {
 
 		const sprintsResult = await db.query("SELECT * from sprints");
 		const backlogSprints = sprintsResult.rows;
+
+        let query = "SELECT * FROM tasks WHERE location IS NULL"
+        query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
 		// sort by alphabetical order
 		if (sortPreference === "name"){
+            query += ` ORDER BY title ${orderPreference}`;
 			// get the tasks from each column
-			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY title ${orderPreference}`);
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		// // group the tags together
 		} else if (sortPreference === "story_points"){
+            query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
 			// get the tasks from each column
-			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY story_points IS NULL, story_points ${orderPreference}`);
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		// // sort by priority
 		} else if (sortPreference === "priority"){
+            query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
 			// get the tasks from each column
-			result = await db.query(`SELECT * FROM tasks WHERE location IS NULL ORDER BY priority IS NULL, priority ${orderPreference}`);
+			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
 		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
