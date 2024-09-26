@@ -368,8 +368,31 @@ app.post("/editInSprint", async (req,res) => {
 // view a burndown chart (sprint)
 app.get("/viewBurndownChart", async (req, res) => {
 	try {
-		// get sprint ID from the cookies
+        // get sprint ID from the cookies
 		const sprintId = req.cookies.currentSprintId;
+
+        // get the sprints (for the sidebar)
+        const sprintsResult = await db.query("SELECT * from sprints");
+		const backlogSprints = sprintsResult.rows;
+
+        // get the sprint details and status
+        const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [sprintId]);
+		const currentSprintDetails = currentSprintDetailsResults.rows[0];
+		
+		const sprintResult1 = await db.query("SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]);
+		const sprintDetails = sprintResult1.rows[0];
+
+		let sprintStatus = "Not Started";
+		const currentDate1 = new Date();
+
+		const startDate1 = new Date(sprintDetails.start_date);
+		const endDate1 = new Date(sprintDetails.end_date);
+
+		if (currentDate1 >= startDate1 && currentDate1 <= endDate1) {
+			sprintStatus = "In Progress";
+		} else if (currentDate1 > endDate1) { 
+			sprintStatus = "Completed";
+		}
 
 		// get the sprint details (start and end date)
 		const sprintResult = await db.query(
@@ -443,7 +466,10 @@ app.get("/viewBurndownChart", async (req, res) => {
 		res.render("burndown.ejs", {
 			actualBurndownData: JSON.stringify(filteredActualData),
 			idealBurndownData: JSON.stringify(idealBurndownData),
-			sprintId: sprintId
+			sprintId: sprintId,
+            sprints: backlogSprints,
+            sprintStatus:sprintStatus,
+            sprintDetails:currentSprintDetails
 		});
 
 	} catch (err) {
