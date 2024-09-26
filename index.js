@@ -366,8 +366,90 @@ app.post("/editInSprint", async (req,res) => {
 
 
 // view a burndown chart (sprint)
-app.post("/viewBurndownChart", async (req,res) =>{
+app.post("/viewBurndownChart", async (req, res) => {
+	try {
+		// get sprint ID from the cookies
+		const sprintId = req.cookies.currentSprintId;
 
+		// get the sprint details (start and end date)
+		const sprintResult = await db.query(
+			"SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]
+		);
+		const sprint = sprintResult.rows[0];
+		const { start_date: sprintStartDate, end_date: sprintEndDate } = sprint;
+
+		// get the total story points for the sprint tasks
+		const totalStoryPointsResult = await db.query(
+			"SELECT SUM(story_points) AS total_story_points FROM tasks WHERE sprint_id = $1", [sprintId]
+		);
+		const totalStoryPoints = totalStoryPointsResult.rows[0].total_story_points || 0;
+
+		// get task completion data
+		const taskCompletionResult = await db.query(
+			"SELECT date_completed, story_points FROM tasks WHERE sprint_id = $1 AND date_completed IS NOT NULL", [sprintId]
+		);
+		const tasksCompleted = taskCompletionResult.rows;
+
+		// Generate daily burndown data
+		const actualBurndownData = [];
+		const idealBurndownData = [];
+		let remainingStoryPoints = totalStoryPoints;
+
+		let currentDate = new Date(sprintStartDate);
+		const endDate = new Date(sprintEndDate);
+
+		let dayNumber = 1;
+		const totalDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24)) + 1;
+
+		while (currentDate <= endDate) {
+			// Calculate completed story points by current day
+			let completedPoints = 0;
+			for (const task of tasksCompleted) {
+				const completionDate = new Date(task.date_completed); 
+				if (completionDate <= currentDate) {
+					completedPoints += task.story_points;
+				}
+			}
+
+			// Update remaining story points
+			remainingStoryPoints = totalStoryPoints - completedPoints;
+
+			// Add to burndown data with day number
+			actualBurndownData.push({
+				day: dayNumber,
+				storyPoints: remainingStoryPoints
+			});
+
+			// Calculate ideal remaining story points
+			const idealRemainingPoints = totalStoryPoints * (1 - dayNumber / totalDays);
+			idealBurndownData.push({
+				day: dayNumber,
+				storyPoints: idealRemainingPoints
+			});
+
+			// Move to the next day
+			currentDate.setDate(currentDate.getDate() + 1);
+			dayNumber++;
+		}
+
+		// Determine the current day number of the sprint
+		const today = new Date();
+		const currentDayNumber = Math.floor((today - new Date(sprintStartDate)) / (1000 * 60 * 60 * 24)) + 1;
+
+		// Filter the data based on the current day number
+		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
+		const filteredIdealData = idealBurndownData.filter(data => data.day <= currentDayNumber);
+
+		// Send the burndown data to burndown.ejs
+		res.render("burndown.ejs", {
+			actualBurndownData: JSON.stringify(filteredActualData),
+			idealBurndownData: JSON.stringify(filteredIdealData),
+			sprintId: sprintId
+		});
+
+	} catch (err) {
+		console.error(err);
+	}
 });
 
 
