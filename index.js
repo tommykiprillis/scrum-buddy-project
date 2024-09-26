@@ -285,7 +285,7 @@ app.post("/moveToBacklog", async (req,res) =>{
 	const { taskId } = req.body; 
 
     try {
-		const query = "UPDATE tasks SET location = NULL WHERE id = $1";
+		const query = "UPDATE tasks SET location = NULL,date_completed = NULL WHERE id = $1";
 		await db.query(query, [taskId]);
 		res.redirect('/viewSprint');
 
@@ -389,7 +389,14 @@ app.post("/moveProgress", async (req,res) => {
 	try {
     	const taskID = req.body.id;
     	const newTaskProgress = req.body.destination
-        await db.query('UPDATE tasks SET status = $2 WHERE id = $1', [taskID, newTaskProgress])
+        if (newTaskProgress === "Completed"){
+            // if the task is moved to completed, save the day that it was completed
+            const currentDate = new Date();
+            await db.query('UPDATE tasks SET status = $2,date_completed = $3 WHERE id = $1', [taskID, newTaskProgress,currentDate])
+        } else {
+            await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
+        }
+        
         res.redirect("/viewSprint");
     } catch (err) {
         console.log(err);
