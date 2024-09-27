@@ -6,8 +6,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<title>Scrum Buddy</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<style>
-
+        .burndown-container {
+            height: 100vh;              /* Set height to 100% of the viewport */
+            box-sizing: border-box;     /* Include padding and border in the height calculation */
+        }
 		.Front-End-badge {
 			background-color:#70d6ff;
 			color: white;
@@ -38,53 +42,11 @@
 			color: white;
 		}
 
-    .merriweather-light {
-      font-family: "Merriweather", serif;
-      font-weight: 300;
-      font-style: normal;
-    }
-
-    .merriweather-regular {
-      font-family: "Merriweather", serif;
-      font-weight: 400;
-      font-style: normal;
-    }
-
-    .merriweather-bold {
-      font-family: "Merriweather", serif;
-      font-weight: 700;
-      font-style: normal;
-    }
-
-    .merriweather-black {
-      font-family: "Merriweather", serif;
-      font-weight: 900;
-      font-style: normal;
-    }
-
-    .merriweather-light-italic {
-      font-family: "Merriweather", serif;
-      font-weight: 300;
-      font-style: italic;
-    }
-
-    .merriweather-regular-italic {
-      font-family: "Merriweather", serif;
-      font-weight: 400;
-      font-style: italic;
-    }
-
-    .merriweather-bold-italic {
-      font-family: "Merriweather", serif;
-      font-weight: 700;
-      font-style: italic;
-    }
-
-    .merriweather-black-italic {
-      font-family: "Merriweather", serif;
-      font-weight: 900;
-      font-style: italic;
-    }
+        .merriweather-regular {
+        font-family: "Merriweather", serif;
+        font-weight: 400;
+        font-style: normal;
+        }
 
 	</style>
 
