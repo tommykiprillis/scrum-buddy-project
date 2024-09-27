@@ -1,27 +1,111 @@
 <%- include ("partials/header.ejs"); -%>
 
-    <div class="mt-5 px-5 burndown-container">
-            <span class="badge p-2 me-auto text-bg-dark rounded-pill mb-2"><%=sprintStatus%></span>
-            <div class="d-flex gap-3 align-items-center">
-                <h1 class="mb-2"><%= sprintDetails.name %></h1>	
-            </div>
-        
-            <p class="fs-5 text-secondary mb-4"><%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
-                <%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-            </p>
-            <div class="d-flex justify-content-end">
-                <a href="/viewSprint" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
-                        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
-                    </svg>
-                View Sprint Board
-                </a>
-            </div>
+    <div class="mt-5 px-5 container-fluid">
+        <span class="badge p-2 me-auto text-bg-dark rounded-pill mb-2"><%=sprintStatus%></span>
+        <div class="d-flex gap-3 align-items-center">
+            <h1 class="mb-2"><%= sprintDetails.name %></h1>    
+            <button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#sprintDetails" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                </svg>
+            </button> 
+        </div>
 
-        <canvas id="burndownChart"></canvas>
+        <p class="fs-5 text-secondary mb-4">
+            <%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
+            <%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
+        </p>
+        <div class="d-flex justify-content-end">
+            <a href="/viewSprint" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-kanban" viewBox="0 0 16 16">
+                    <path d="M13.5 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm-11-1a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                    <path d="M6.5 3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1zm-4 0a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1zm8 0a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1z"/>
+                </svg>
+            View Sprint Board
+            </a>
+        </div>
+
+        <!-- Ensure the canvas shrinks within the viewport height -->
+        <canvas id="burndownChart" class="mx-5 px-5" style="max-height: 70vh; width: auto; object-fit: contain;"></canvas>
     </div>
 
-    
+      <!--Modal for viewing the details of a sprint-->
+  <div class="modal fade" id="sprintDetails" tabindex="-1">
+	<div class="modal-dialog" style="max-width: 50rem;">
+	  <div class="modal-content">
+		<div class="modal-body">
+		  <form action="/editSprint" method="POST">
+			<!--Stores the id of the sprint as a hidden value-->
+			<input type="hidden" name="id" value="<%=sprintDetails.id%>">
+
+			<!--Sprint Name at top (prefill + save)-->
+			<label for="titleEditSprint" class="form-label">Sprint Name</label>
+			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off">
+			
+			<!--Start and end date for sprint-->
+			<div class="row mt-4">
+				<!-- Start Date for the sprint -->
+				<div class="col">
+					<label for="startDateEdit" class="form-label">Start Date</label>
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
+						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+				</div>
+			
+				<!-- End Date for the sprint -->
+				<div class="col">
+					<label for="endDateEdit" class="form-label">End Date</label>
+					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
+						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+				</div>
+			</div>
+			
+			
+			<!-- Scrum Master and Product Owner for sprint-->
+			<div class="row mt-4">
+				<!--Scrum Master-->
+					<div class="col">
+					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
+					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off">
+					</div>
+	
+				<!--Product Owner-->
+					<div class="col">
+					<label for="productOwnerEdit" class="form-label">Product Owner</label>
+					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off">					</div>
+			</div>
+
+			<!--Description (prefill + save)-->
+			<label for="descriptionEdit" class="form-label mt-3">Description</label>
+			<textarea class="form-control" id="descriptionEdit" rows="3" name="description" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
+
+			<!--Saving Changes-->
+			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+		  </form>
+			<!--Delete Sprint-->
+			<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
+			<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+  <div class="modal fade" id="deleteConfirmationSprint" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered" style="max-width: 50rem;">
+	<div class="modal-content">
+		<div class="modal-body">
+			<p>Are you sure you want to delete this sprint? This action cannot be undone.</p>
+		</div>
+		<div class="modal-footer">
+			<form action="/deleteSprint" method="POST">
+				<!--Delete Sprint-->
+				<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
+				<button type="submit" class="btn btn-outline-danger">Delete Sprint</button>
+			</form>
+			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		</div>
+	</div>
+	</div>
+	</div>
 
     <script>
         // get the data passed from the server
@@ -84,5 +168,4 @@
             }
         });
     </script>
-</body>
-</html>
+  <%- include ("partials/footer.ejs"); -%>
