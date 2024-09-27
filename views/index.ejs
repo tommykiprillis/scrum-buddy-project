@@ -61,69 +61,71 @@
 			<h4 class="text-body-secondary"><%= tasks.length %></h4>
 	</div>
 
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th scope="col">Title</th>
-				<th scope="col">Priority</th>
-				<th scope="col">Tags</th>
-				<th scope="col">Story Points</th>
-				<th scope="col">More</th>
-				<th scope="col">Move</th>
-			</tr>
-		</thead>
-		<tbody>
-			<% tasks.forEach(task => { %>
+	<div class="table-responsive">
+		<table class="table table-striped">
+			<thead>
 				<tr>
-					<td><%= task.title %></td>
-					<td>
-						<% if (task.priority !== null) { %>
-							<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
-						<% } %>
-					</td>
-					<td>
-						<% if (task.tags !== null) { %>
-							<div class="d-flex flex-column gap-1 align-items-start">
-								<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
-									<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
-								<% }) %>
-							</div>
-						<% } %>
-					</td>
-					<td>
-						<% if (task.story_points !== null) { %>
-							<%=task.story_points%>pts
-						<% } %>
-					</td>
-					<td>
-						<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
-								View/Edit
-						</a>  
-					</td>
-					<td>
-						<div class="btn-group dropstart">
-							<a href="#" data-bs-toggle="dropdown">
-								Move To
-							</a>
-							<form action="/moveToSprint" method="POST">
-								<input type="hidden" name="taskId" value="<%=task.id%>">
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<li><h6 class="dropdown-header">Sprints</h6></li>
-									<% sprints.forEach(sprint => { %>
-										<li>
-											<button class="dropdown-item" type="submit" name="sprintId" value="<%= sprint.id %>">
-												<%= sprint.name %>
-											</button>
-										</li>
+					<th scope="col">Title</th>
+					<th scope="col">Priority</th>
+					<th scope="col">Tags</th>
+					<th scope="col">Story Points</th>
+					<th scope="col">More</th>
+					<th scope="col">Move</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% tasks.forEach(task => { %>
+					<tr>
+						<td><%= task.title %></td>
+						<td>
+							<% if (task.priority !== null) { %>
+								<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.tags !== null) { %>
+								<div class="d-flex flex-column gap-1 align-items-start">
+									<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+										<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
 									<% }) %>
-								</ul>
-							</form>
-						</div>
-					</td>
-				</tr>					 
-			<% }) %>
-		</tbody>
-	</table>
+								</div>
+							<% } %>
+						</td>
+						<td>
+							<% if (task.story_points !== null) { %>
+								<%=task.story_points%>pts
+							<% } %>
+						</td>
+						<td>
+							<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+									View/Edit
+							</a>  
+						</td>
+						<td>
+							<div class="btn-group dropstart">
+								<a href="#" data-bs-toggle="dropdown">
+									Move To
+								</a>
+								<form action="/moveToSprint" method="POST">
+									<input type="hidden" name="taskId" value="<%=task.id%>">
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+										<li><h6 class="dropdown-header">Sprints</h6></li>
+										<% sprints.forEach(sprint => { %>
+											<li>
+												<button class="dropdown-item" type="submit" name="sprintId" value="<%= sprint.id %>">
+													<%= sprint.name %>
+												</button>
+											</li>
+										<% }) %>
+									</ul>
+								</form>
+							</div>
+						</td>
+					</tr>					 
+				<% }) %>
+			</tbody>
+		</table>	
+	</div>
 
 	<!-- Add Task Form-->
 	<div class="collapse" id="createTask2">
