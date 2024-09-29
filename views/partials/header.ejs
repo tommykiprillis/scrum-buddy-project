@@ -55,77 +55,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-white d-flex vh-100">
-  <div class="d-flex flex-column p-3 bg-body-tertiary" style="width: 220px;">
-    <div class="d-flex align-items-center mb-3 text-decoration-none">
-      <span class="fs-4 merriweather-regular">Scrum Buddy.</span>
+<body class="bg-white">
+
+  <nav class="navbar navbar-expand-sm bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="nav-brand fs-4 merriweather-regular nav-link" href="/">Scrum Buddy.</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample03">
+        <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">Product Backlog</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Sprints</a>
+            <ul class="dropdown-menu">
+              <% sprints.forEach(sprint => { %>
+                <li>
+                    <form action="/setSprintView" method="POST">
+                        <input type="hidden" name="sprintId" value="<%=sprint.id%>">
+                        <button type="submit" class="dropdown-item">
+                            <%= sprint.name %>
+                        </button>
+                    </form>
+                </li>
+              <% }) %>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-lg-flex col-lg-3 justify-content-lg-end">
+          <button class="btn btn-primary d-inline-flex align-items-center rounded-pill" type="button" data-bs-toggle="modal" data-bs-target="#createSprint">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+            </svg>&nbsp;Create Sprint
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <ul class="nav nav-pills flex-column mb-auto gap-2">
-      <li class="nav-item text-muted">
-        Main Menu
-      </li>
-      <li class="nav-item">
-        <a href="/" class="nav-link d-flex align-items-center link-dark" aria-current="page">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-          </svg>&nbsp;Product Backlog
-        </a>
-      </li>
-      <li class="nav-item text-muted">
-        Sprints
-      </li>
+  </nav>
 
-      <% sprints.forEach(sprint => { %>
-        <li class="nav-item">
-          <form action="/setSprintView" method="POST">
-            <input type="hidden" name="sprintId" value="<%=sprint.id%>">
-            <button type="submit" class="nav-link d-flex align-items-center link-dark">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-person-walking" viewBox="0 0 16 16">
-                <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z"/>
-                <path d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"/>
-              </svg>&nbsp;<%= sprint.name %>
-            </button>
-          </form>
-        </li>
-      <% }) %>
-      
-      <li class="nav-item mt-2 d-flex justify-content-center">
-        <button class="btn btn-primary d-inline-flex align-items-center rounded-pill" type="button" data-bs-toggle="modal" data-bs-target="#createSprint">
-          <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-          </svg>&nbsp;Create Sprint
-        </button>
-      </li>
-    </ul>
+  <!--Modal for creating a sprint-->
+  <div class="modal fade" id="createSprint" tabindex="-1">
+    <div class="modal-dialog" style="max-width: 50rem;">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/createSprint" method="POST">
+            <!--Name for the sprint-->
+            <label for="nameInput" class="form-label">Sprint Name</label>
+            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off">
 
-    <!--Modal for creating a sprint-->
-    <div class="modal fade" id="createSprint" tabindex="-1">
-      <div class="modal-dialog" style="max-width: 50rem;">
-        <div class="modal-content">
-          <div class="modal-body">
-            <form action="/createSprint" method="POST">
-              <!--Name for the sprint-->
-              <label for="nameInput" class="form-label">Sprint Name</label>
-              <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off">
-
-              <div class="row mt-4">
-              <!--Start Date for the sprint-->
-                <div class="col">
-                  <label for="startDateInput" class="form-label">Start Date</label>
-                  <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off">
-                </div>
-
-              <!--End Date for the sprint-->
-                <div class="col">
-                  <label for="endDateInput" class="form-label">End Date</label>
-                  <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off">
-                </div>
+            <div class="row mt-4">
+            <!--Start Date for the sprint-->
+              <div class="col">
+                <label for="startDateInput" class="form-label">Start Date</label>
+                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off">
               </div>
-              <!--Saving Changes-->
-              <button type="submit" class="btn btn-primary mt-3">Create</button>
-            </form>
-          </div>
+
+            <!--End Date for the sprint-->
+              <div class="col">
+                <label for="endDateInput" class="form-label">End Date</label>
+                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off">
+              </div>
+            </div>
+            <!--Saving Changes-->
+            <button type="submit" class="btn btn-primary mt-3">Create</button>
+          </form>
         </div>
       </div>
     </div>
