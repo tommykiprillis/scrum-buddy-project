@@ -26,3 +26,22 @@ ALTER TABLE tasks ADD description text;
 
 --NOTE: change UI/UX -> UIUX
 ALTER TYPE tag RENAME VALUE 'UI/UX' TO 'UIUX';
+
+-- add location and date complete columns
+ALTER TABLE tasks ADD location int;
+ALTER TABLE tasks ADD date_completed DATE;
+
+-- create sprint table
+CREATE TABLE sprints (
+    id SERIAL PRIMARY KEY,
+    name text NOT NULL,
+    description text,
+    start_date DATE,
+    end_date DATE,
+    scrum_master text,
+    product_owner text
+);
+
+-- change the tags column to allow for multiple tags
+ALTER TABLE tasks DROP COLUMN tag;
+ALTER TABLE tasks ADD tags tag[];
