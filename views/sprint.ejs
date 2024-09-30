@@ -1,6 +1,6 @@
 <%- include ("partials/header.ejs"); -%>
   <!-- header of the scrum board-->
-  <div class="mt-5 px-5">
+  <div class="mt-5 px-sm-5">
 	<span class="badge p-2 me-auto text-bg-dark rounded-pill mb-2"><%=sprintStatus%></span>
 	<div class="d-flex gap-3 align-items-center">
 	    <h1 class="mb-2"><%= sprintDetails.name %></h1>	
@@ -14,7 +14,7 @@
 	<p class="fs-5 text-secondary mb-4"><%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
 		<%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
 	</p>
-	<div class="d-flex justify-content-start gap-2">
+	<div class="d-flex justify-content-start gap-2 flex-wrap">
 		<div class="btn-group">
 			<button type="button" class="btn bg-body-secondary dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
@@ -81,7 +81,7 @@
 					</form>     
 			</div>
 		
-				<div class="ms-auto">
+				<div class="ms-lg-auto">
 					<a href="/viewBurndownChart" class="btn btn-primary">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
 							<path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07"/>
@@ -97,19 +97,19 @@
 
 	<% if (view === "card") { %>
 		<!-- Card View Start-->
-		<div class="d-flex justify-content-start gap-4 p-5 align-items-start" >
+		<div class="d-flex gap-3 P-3 mt-5 mx-sm-5 row" >
 			
 			<!-- Not Started Column-->
-			<div class="card d-flex align-items-center flex-column bg-primary-subtle gap-3 py-3 border border-0 px-3">
+			<div class="card d-flex flex-column bg-primary-subtle gap-3 py-3 border border-0 col-12 col-lg-3">
 				<!-- Title of Column-->
-				<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<div class="d-flex gap-2 justify-content-start">
 					<h4 class="text-start">Not Started :</h4>
 					<h4 class="text-body-secondary"><%= notStarted.length %></h4>
 				</div>
 				
 				<% notStarted.forEach(task => { %>
 					<!-- Task Entry-->
-					<div class="card border border-0 shadow-sm" style = "width:20rem;">
+					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
 							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
 								<% if (task.priority !== null) { %>
@@ -173,16 +173,16 @@
 
 
 			<!-- In Progress Column-->
-			<div class="card d-flex align-items-center flex-column bg-warning-subtle gap-3 py-3 border border-0 px-3">
+			<div class="card d-flex flex-column bg-warning-subtle gap-3 py-3 border border-0 col-12 col-lg-3">
 				<!-- Title of Column-->
-				<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<div class="d-flex gap-2 justify-content-start">
 					<h4 class="text-start">In Progress :</h4>
 					<h4 class="text-body-secondary"><%= inProgress.length %></h4>
 				</div>
 
 				<% inProgress.forEach(task => { %>
 					<!-- Task Entry-->
-					<div class="card border border-0 shadow-sm" style = "width:20rem;">
+					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
 							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
 								<% if (task.priority !== null) { %>
@@ -244,15 +244,15 @@
 			</div>
 
 			<!-- Completed Column-->
-			<div class="card d-flex align-items-center flex-column bg-success-subtle gap-3 py-3 border border-0 px-3">
+			<div class="card d-flex flex-column bg-success-subtle gap-3 py-3 border border-0 col-12 col-lg-3">
 				<!-- Title of Column-->
-				<div class="d-flex gap-2 justify-content-start" style="width:20rem">
+				<div class="d-flex gap-2 justify-content-start">
 					<h4 class="text-start">Completed :</h4>
 					<h4 class="text-body-secondary"><%= completed.length %></h4>
 				</div>
 				<% completed.forEach(task => { %>
 					<!-- Task Entry-->
-					<div class="card border border-0 shadow-sm" style = "width:20rem;">
+					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
 							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
 								<% if (task.priority !== null) { %>
@@ -318,260 +318,268 @@
 		<!--List View Start-->
 
 		<!--Not Started Column-->
-		<div class="card d-flex p-3 bg-primary-subtle flex-column gap-3 border border-0 m-5">
+		<div class="card d-flex p-3 bg-primary-subtle flex-column gap-3 border border-0 mt-5 mx-sm-5">
 			<div class="d-flex gap-2 justify-content-start" style="width:20rem">
 					<h4 class="text-start">Not Started :</h4>
 					<h4 class="text-body-secondary"><%= notStarted.length %></h4>
 			</div>
-			
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th scope="col">Title</th>
-						<th scope="col">Priority</th>
-						<th scope="col">Tags</th>
-						<th scope="col">Assignee</th>
-						<th scope="col">Story Points</th>
-						<th scope="col">More</th>
-						<th scope="col">Move</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% notStarted.forEach(task => { %>
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
 						<tr>
-							<td><%= task.title %></td>
-							<td>
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.tags !== null) { %>
-									<div class="d-flex flex-column gap-1 align-items-start">
-										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
-											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
-										<% }) %>
+							<th scope="col">Title</th>
+							<th scope="col">Priority</th>
+							<th scope="col">Tags</th>
+							<th scope="col">Assignee</th>
+							<th scope="col">Story Points</th>
+							<th scope="col">More</th>
+							<th scope="col">Move</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% notStarted.forEach(task => { %>
+							<tr>
+								<td><%= task.title %></td>
+								<td>
+									<% if (task.priority !== null) { %>
+										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.tags !== null) { %>
+										<div class="d-flex flex-column gap-1 align-items-start">
+											<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+												<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
+											<% }) %>
+										</div>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.assignee !== null) { %>
+										<%=task.assignee%>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.story_points !== null) { %>
+										<%=task.story_points%>pts
+									<% } %>
+								</td>
+								<td>
+									<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+											View/Edit
+									</a>  
+								</td>
+								<td>
+									<div class="btn-group dropstart">
+										<a href="#" data-bs-toggle="dropdown">
+											Move To
+										</a>
+										<form action="/moveProgress" method="POST">
+											<input type="hidden" name="id" value="<%=task.id%>">
+											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+												<li><h6 class="dropdown-header">Move to</h6></li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
+														Not Started
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+														In Progress
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Completed">
+														Completed
+													</button>
+												</li>
+											</ul>
+										</form>
 									</div>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.assignee !== null) { %>
-									<%=task.assignee%>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.story_points !== null) { %>
-									<%=task.story_points%>pts
-								<% } %>
-							</td>
-							<td>
-								<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
-										View/Edit
-								</a>  
-							</td>
-							<td>
-								<div class="btn-group dropstart">
-									<a href="#" data-bs-toggle="dropdown">
-										Move To
-									</a>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
-							</td>
-						</tr>					 
-					<% }) %>
-				</tbody>
-			</table>
+								</td>
+							</tr>					 
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+
 		</div>
 
 		<!--In Progress Column-->
-		<div class="card d-flex p-3 bg-warning-subtle flex-column gap-3 border border-0 m-5">
+		<div class="card d-flex p-3 bg-warning-subtle flex-column gap-3 border border-0 mt-5 mx-sm-5">
 			<div class="d-flex gap-2 justify-content-start" style="width:20rem">
 					<h4 class="text-start">In Progress :</h4>
 					<h4 class="text-body-secondary"><%= inProgress.length %></h4>
 			</div>
 
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th scope="col">Title</th>
-						<th scope="col">Priority</th>
-						<th scope="col">Tags</th>
-						<th scope="col">Assignee</th>
-						<th scope="col">Story Points</th>
-						<th scope="col">More</th>
-						<th scope="col">Move</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% inProgress.forEach(task => { %>
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
 						<tr>
-							<td><%= task.title %></td>
-							<td>
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.tags !== null) { %>
-									<div class="d-flex flex-column gap-1 align-items-start">
-										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
-											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
-										<% }) %>
+							<th scope="col">Title</th>
+							<th scope="col">Priority</th>
+							<th scope="col">Tags</th>
+							<th scope="col">Assignee</th>
+							<th scope="col">Story Points</th>
+							<th scope="col">More</th>
+							<th scope="col">Move</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% inProgress.forEach(task => { %>
+							<tr>
+								<td><%= task.title %></td>
+								<td>
+									<% if (task.priority !== null) { %>
+										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.tags !== null) { %>
+										<div class="d-flex flex-column gap-1 align-items-start">
+											<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+												<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
+											<% }) %>
+										</div>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.assignee !== null) { %>
+										<%=task.assignee%>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.story_points !== null) { %>
+										<%=task.story_points%>pts
+									<% } %>
+								</td>
+								<td>
+									<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+											View/Edit
+									</a>  
+								</td>
+								<td>
+									<div class="btn-group dropstart">
+										<a href="#" data-bs-toggle="dropdown">
+											Move To
+										</a>
+										<form action="/moveProgress" method="POST">
+											<input type="hidden" name="id" value="<%=task.id%>">
+											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+												<li><h6 class="dropdown-header">Move to</h6></li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
+														Not Started
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+														In Progress
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Completed">
+														Completed
+													</button>
+												</li>
+											</ul>
+										</form>
 									</div>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.assignee !== null) { %>
-									<%=task.assignee%>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.story_points !== null) { %>
-									<%=task.story_points%>pts
-								<% } %>
-							</td>
-							<td>
-								<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
-										View/Edit
-								</a>  
-							</td>
-							<td>
-								<div class="btn-group dropstart">
-									<a href="#" data-bs-toggle="dropdown">
-										Move To
-									</a>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
-							</td>
-						</tr>					 
-					<% }) %>
-				</tbody>
-			</table>
+								</td>
+							</tr>					 
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+
 		</div>
 		
 		<!--Completed Column-->
-		<div class="card d-flex p-3 bg-success-subtle flex-column gap-3 border border-0 m-5">
+		<div class="card d-flex p-3 bg-success-subtle flex-column gap-3 border border-0 mt-5 mx-sm-5">
 			<div class="d-flex gap-2 justify-content-start" style="width:20rem">
 					<h4 class="text-start">Completed :</h4>
 					<h4 class="text-body-secondary"><%= completed.length %></h4>
 			</div>
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th scope="col">Title</th>
-						<th scope="col">Priority</th>
-						<th scope="col">Tags</th>
-						<th scope="col">Assignee</th>
-						<th scope="col">Story Points</th>
-						<th scope="col">More</th>
-						<th scope="col">Move</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% completed.forEach(task => { %>
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
 						<tr>
-							<td><%= task.title %></td>
-							<td>
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.tags !== null) { %>
-									<div class="d-flex flex-column gap-1 align-items-start">
-										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
-											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
-										<% }) %>
+							<th scope="col">Title</th>
+							<th scope="col">Priority</th>
+							<th scope="col">Tags</th>
+							<th scope="col">Assignee</th>
+							<th scope="col">Story Points</th>
+							<th scope="col">More</th>
+							<th scope="col">Move</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% completed.forEach(task => { %>
+							<tr>
+								<td><%= task.title %></td>
+								<td>
+									<% if (task.priority !== null) { %>
+										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.tags !== null) { %>
+										<div class="d-flex flex-column gap-1 align-items-start">
+											<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+												<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
+											<% }) %>
+										</div>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.assignee !== null) { %>
+										<%=task.assignee%>
+									<% } %>
+								</td>
+								<td>
+									<% if (task.story_points !== null) { %>
+										<%=task.story_points%>pts
+									<% } %>
+								</td>
+								<td>
+									<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+											View/Edit
+									</a>  
+								</td>
+								<td>
+									<div class="btn-group dropstart">
+										<a href="#" data-bs-toggle="dropdown">
+											Move To
+										</a>
+										<form action="/moveProgress" method="POST">
+											<input type="hidden" name="id" value="<%=task.id%>">
+											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+												<li><h6 class="dropdown-header">Move to</h6></li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
+														Not Started
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+														In Progress
+													</button>
+												</li>
+												<li>
+													<button class="dropdown-item" type="submit" name="destination" value="Completed">
+														Completed
+													</button>
+												</li>
+											</ul>
+										</form>
 									</div>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.assignee !== null) { %>
-									<%=task.assignee%>
-								<% } %>
-							</td>
-							<td>
-								<% if (task.story_points !== null) { %>
-									<%=task.story_points%>pts
-								<% } %>
-							</td>
-							<td>
-								<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
-										View/Edit
-								</a>  
-							</td>
-							<td>
-								<div class="btn-group dropstart">
-									<a href="#" data-bs-toggle="dropdown">
-										Move To
-									</a>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
-							</td>
-						</tr>					 
-					<% }) %>
-				</tbody>
-			</table>
+								</td>
+							</tr>					 
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+
 		</div>
 		
 		<!--List View End-->
@@ -607,7 +615,7 @@
               name="taskAssignee" autocomplete="off">
 
 			  <div class="row mt-3">
-				<div class="col-3">
+				<div class="col">
 					<!--Tags (dropdown prefill + save, for now only 1 tag at a time)-->
 					<label for="tagOptions<%= task.id %>" class="form-label">Tags</label>
 					<div id="tagOptions<%= task.id %>">
@@ -631,7 +639,7 @@
 					</div>						
 				</div>
 
-				<div class="col-9">
+				<div class="col">
 					<!--Priority (dropdown prefill + save)-->
 					<label for="priority<%= task.id %>" class="form-label">Priority</label>
 					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
