@@ -45,3 +45,8 @@ CREATE TABLE sprints (
 -- change the tags column to allow for multiple tags
 ALTER TABLE tasks DROP COLUMN tag;
 ALTER TABLE tasks ADD tags tag[];
+
+-- add a sprintStatus column
+ALTER TABLE sprints ADD sprint_status status;
+-- add fromSprint column
+ALTER table tasks ADD from_sprint boolean;
