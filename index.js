@@ -301,6 +301,12 @@ app.post("/moveToSprint", async (req,res) =>{
 
 	const { taskId, sprintId } = req.body; 
 	try {
+
+		const taskResult = await db.query("SELECT story_points FROM tasks WHERE id = $1", [taskId]);
+		if (taskResult.rows.length === 0 || !taskResult.rows[0].story_points) {
+            throw new Error("Task must have story points.");
+        }
+
         await db.query("UPDATE tasks SET location = $1,status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
 		res.redirect('/');
    
@@ -508,44 +514,6 @@ app.post("/moveProgress", async (req,res) => {
     } catch (err) {
         console.log(err);
     } 
-});
-
-
-
-// start a sprint 
-// REMOVE LATER: (completed 4/10/2024, 7pm to 8pm)
-app.post("/startSprint", async (req, res) => {
-	try {
-		const sprintId = req.body.sprintId;
-
-		// get sprint details
-		const sprintDetailsResult = await db.query("SELECT * FROM sprints WHERE id = $1", [sprintId]);
-        const sprintDetails = sprintDetailsResult.rows[0];
-
-		// check for Scrum Master and Product Owner
-		if (!sprintDetails.scrum_master || !sprintDetails.product_owner) {
-			res.cookie("error", "Sprint must have a Scrum Master and a Product Owner.");
-			return res.redirect("/viewSprint");
-		}
-
-		// check for tasks
-		const tasksResult = await db.query("SELECT * FROM tasks WHERE location = $1", [sprintId]);
-		if (tasksResult.rows.length === 0) {
-			res.cookie("error", "Sprint must have tasks assigned.");
-			return res.redirect("/viewSprint");
-		}
-
-		// update sprint status to "In Progress"
-		await db.query("UPDATE sprints SET sprint_status = 'In Progress' WHERE id = $1", [sprintId]);
-
-		// redirect to the sprint page
-		res.redirect("/viewSprint");
-		
-	} catch (err) {
-		console.log(err);
-		res.cookie("error", "An error occurred while starting the sprint.");
-		res.redirect("/viewSprint");
-	}
 });
 
 
