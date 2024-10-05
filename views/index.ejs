@@ -115,7 +115,7 @@
 							<td><%= task.title %></td>
 							<td>
 								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+									<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 								<% } %>
 							</td>
 							<td>
