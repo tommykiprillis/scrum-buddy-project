@@ -65,7 +65,7 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
+		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference});
 	} catch (err) {
 		console.log(err);
 	} 	
