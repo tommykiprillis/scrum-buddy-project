@@ -307,6 +307,11 @@ app.post("/moveToSprint", async (req,res) =>{
             throw new Error("Task must have story points.");
         }
 
+		const sprintResult = await db.query("SELECT status FROM sprints WHERE id = $1", [sprintId]);
+        if (sprintResult.rows.length === 0 || sprintResult.rows[0].status !== "Not Started") {
+            throw new Error("Sprint must be 'Not Started'.");
+        }
+
         await db.query("UPDATE tasks SET location = $1,status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
 		res.redirect('/');
    
