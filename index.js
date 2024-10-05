@@ -356,8 +356,9 @@ app.post("/editInSprint", async (req,res) => {
 		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/viewSprint");
+		const newAssignee = (req.body.taskAssignee === '') ? null : req.body.taskAssignee;
+		await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, assignee = $7 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newAssignee])
+		res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -496,6 +497,16 @@ app.post("/moveProgress", async (req,res) => {
 	try {
     	const taskID = req.body.id;
     	const newTaskProgress = req.body.destination
+		if (newTaskProgress === "In Progress" || newTaskProgress === "Completed"){
+			const taskAssigneeResult = await db.query('SELECT assignee FROM tasks WHERE id = $1', [taskID]);
+			const taskAssignee = taskAssigneeResult.rows[0]?.assignee;
+			console.log(taskAssignee)
+			if (taskAssignee === null){
+				console.log("HI");
+				res.cookie("error", "Task must have an assignee assigned before moving to In progress or Completed.");
+				return res.redirect("/viewSprint");
+			}
+		}
         if (newTaskProgress === "Completed"){
             // if the task is moved to completed, save the day that it was completed
             const currentDate = new Date();
@@ -504,7 +515,7 @@ app.post("/moveProgress", async (req,res) => {
             await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
         }
         
-        res.redirect("/viewSprint");
+        return res.redirect("/viewSprint");
     } catch (err) {
         console.log(err);
     } 
