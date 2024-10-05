@@ -500,9 +500,7 @@ app.post("/moveProgress", async (req,res) => {
 		if (newTaskProgress === "In Progress" || newTaskProgress === "Completed"){
 			const taskAssigneeResult = await db.query('SELECT assignee FROM tasks WHERE id = $1', [taskID]);
 			const taskAssignee = taskAssigneeResult.rows[0]?.assignee;
-			console.log(taskAssignee)
 			if (taskAssignee === null){
-				console.log("HI");
 				res.cookie("error", "Task must have an assignee assigned before moving to In progress or Completed.");
 				return res.redirect("/viewSprint");
 			}
