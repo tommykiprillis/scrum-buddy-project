@@ -176,21 +176,29 @@ app.get("/viewSprint", async (req,res) => {
 
 		const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [currentSprint]);
 		const currentSprintDetails = currentSprintDetailsResults.rows[0];
+		const sprintStatus = currentSprintDetails.sprint_status;
 		
-		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints WHERE id = $1", [currentSprint]);
-		const sprint = sprintResult.rows[0];
-
-		let sprintStatus = "Not Started";
 		const currentDate = new Date();
+		const startDate = new Date(currentSprintDetails.start_date);
+    	const endDate = new Date(currentSprintDetails.end_date);
 
-		const startDate = new Date(sprint.start_date);
-		const endDate = new Date(sprint.end_date);
+		// Check for conditions to start/complete sprint
+		let displayStartButton = false;
+		let displayCompleteButton = false;
 
-		if (currentDate >= startDate && currentDate <= endDate) {
-			sprintStatus = "In Progress";
-		} else if (currentDate > endDate) { 
-			sprintStatus = "Completed";
+		// If the current date is the start date, display the start sprint button
+		if (currentDate.toDateString() === startDate.toDateString()) {
+			displayStartButton = true;
+		  }
+
+		// Check if all tasks are completed
+		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [currentSprint])).rows[0].count === '0';
+
+		// If all tasks are completed, show the complete sprint button before due date
+		if ((currentDate <= endDate && allTasksCompleted) || currentDate.toDateString() === endDate.toDateString()) {
+			displayCompleteButton = true;
 		}
+
         // get the tasks from each column
 		let resultNotStarted;
 		let notStartedTasks;
@@ -238,13 +246,15 @@ app.get("/viewSprint", async (req,res) => {
 			completedTasks = resultCompleted.rows;
 		}
 		res.render("sprint.ejs", {
-			notStarted:notStartedTasks,
-			inProgress:inProgressTasks,
-			completed:completedTasks,
-			view:viewPreference,
-			sprintStatus: sprintStatus,
-			sprints: arraySprints,
-			sprintDetails: currentSprintDetails
+			notStarted: notStartedTasks,
+      		inProgress: inProgressTasks,
+      		completed: completedTasks,
+      		view: viewPreference,
+      		sprintStatus: sprintStatus,
+      		sprints: arraySprints,
+      		sprintDetails: currentSprintDetails,
+      		displayStartButton: displayStartButton,
+      		displayCompleteButton: displayCompleteButton
 		});
 	} catch (err) {
 		console.log(err);
