@@ -24,8 +24,14 @@
 			</button>
 					<form action="/changeSprintView" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View</button></li>
-							<li><button class="dropdown-item" type="submit" name="view" value="list">List View</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View <% if (view === "card"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="list">List View <% if (view === "list"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>    
 			</div>
@@ -39,9 +45,18 @@
 			</button>
 					<form action="/changeSprintSort" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority <% if (sort === "priority"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name <% if (sort === "name"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points <% if (sort === "story_points"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>     
 			</div>
@@ -55,9 +70,15 @@
 				</button>
 					<form action="/changeSprintOrder" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending</button></li>
-							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending <% if (order === "ASC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending <% if (order === "DESC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+						</ul> 
 					</form>     
 			</div>
 		
@@ -70,14 +91,35 @@
 				</button>
 					<form action="/changeSprintFilter" method="POST">
 						<ul class="dropdown-menu">
-					<li><button class="dropdown-item" type="submit" name="filter" value="">None</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="API">API</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="filter" value="">None <% if (filter === ""){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+											<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+											</svg><%}%>
+										</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End <% if (filter === "Back-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End <% if (filter === "Front-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="API">API <% if (filter === "API"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases <% if (filter === "Databases"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing <% if (filter === "Testing"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX <% if (filter === "UIUX"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+								  </ul>   
 					</form>     
 			</div>
 		

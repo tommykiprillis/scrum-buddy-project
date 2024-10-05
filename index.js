@@ -65,7 +65,7 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference});
+		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, sort: sortPreference, filter: filterPreference, order: orderPreference});
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -244,7 +244,10 @@ app.get("/viewSprint", async (req,res) => {
 			view:viewPreference,
 			sprintStatus: sprintStatus,
 			sprints: arraySprints,
-			sprintDetails: currentSprintDetails
+			sprintDetails: currentSprintDetails,
+			sort: sortPreference,
+			filter: filterPreference,
+			order: orderPreference
 		});
 	} catch (err) {
 		console.log(err);
