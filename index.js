@@ -29,6 +29,9 @@ app.use(cookieParser());
 // homepage view (product backlog)
 app.get("/",async (req,res) => {
 	try {
+
+		const errorMessage = req.cookies.error;
+		res.clearCookie("error");
 		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
@@ -45,6 +48,9 @@ app.get("/",async (req,res) => {
 
         let query = "SELECT * FROM tasks WHERE location IS NULL"
         query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
+		const fromSprintTasksResult = await db.query(`${backlogTasksQuery} AND "fromSprint" = true`);
+    	const fromSprintTasksArr = resultBacklogTasks.rows;
 
 		// sort by alphabetical order
 		if (sortPreference === "name"){
@@ -65,7 +71,13 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
+
+		// render the page and pass error message if it exists
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference};
+		if (errorMessage) {
+			renderOptions.error = errorMessage;
+		}
+		res.render("index.ejs", renderOptions);
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -147,8 +159,11 @@ app.post("/createSprint", async (req,res) =>{
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
-
-		const result = await db.query("INSERT INTO sprints (name, start_date, end_date) VALUES ($1, $2, $3) RETURNING id", [sprintName, sprintStartDate, sprintEndDate])
+		// Set sprint status to "Not Started" initially
+		const result = await db.query(
+			"INSERT INTO sprints (name, start_date, end_date, status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
+			[sprintName, sprintStartDate, sprintEndDate]
+		  );
 		
 		const newSprintId = result.rows[0].id;
 
@@ -164,6 +179,9 @@ app.post("/createSprint", async (req,res) =>{
 // view a sprint (sprint)
 app.get("/viewSprint", async (req,res) => {
 	try {
+
+		const errorMessage = req.cookies.error;
+		res.clearCookie("error");
 		// get view and sort preference of the user
 		const currentSprint = req.cookies.currentSprintId;
         const viewPreference = req.cookies.view || "card";
@@ -198,6 +216,11 @@ app.get("/viewSprint", async (req,res) => {
 		if ((currentDate <= endDate && allTasksCompleted) || currentDate.toDateString() === endDate.toDateString()) {
 			displayCompleteButton = true;
 		}
+
+		// Automatically complete sprint if the current date is past the due date
+        if (currentDate > endDate) {
+            return res.redirect('/completeSprint');
+        }
 
         // get the tasks from each column
 		let resultNotStarted;
@@ -245,17 +268,21 @@ app.get("/viewSprint", async (req,res) => {
 			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
-		res.render("sprint.ejs", {
-			notStarted: notStartedTasks,
-      		inProgress: inProgressTasks,
-      		completed: completedTasks,
-      		view: viewPreference,
-      		sprintStatus: sprintStatus,
-      		sprints: arraySprints,
-      		sprintDetails: currentSprintDetails,
-      		displayStartButton: displayStartButton,
-      		displayCompleteButton: displayCompleteButton
-		});
+
+		const renderOptions = {
+			notStarted: resultNotStarted.rows,
+			inProgress: resultInProgress.rows,
+			completed: resultCompleted.rows,
+			view: viewPreference,
+			sprintStatus: sprintStatus,
+			sprints: arraySprints,
+			sprintDetails: currentSprintDetails
+		};
+
+		if (errorMessage) {
+			renderOptions.error = errorMessage;
+		}
+		res.render("sprint.ejs", renderOptions);
 	} catch (err) {
 		console.log(err);
 	} 
