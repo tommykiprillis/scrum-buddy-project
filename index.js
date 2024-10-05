@@ -339,6 +339,8 @@ app.post("/editSprint", async (req,res) =>{
 app.post("/deleteSprint", async (req,res) =>{
 	try {
 		const sprintId = req.body.sprintId;
+		const moveTaskToBacklog = "UPDATE tasks SET location = NULL,date_completed = NULL, assignee = NULL WHERE location = $1";
+		await db.query(moveTaskToBacklog, [sprintId]);
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
 		res.redirect("/");
