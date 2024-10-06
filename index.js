@@ -317,6 +317,7 @@ app.post("/moveToSprint", async (req,res) =>{
    
     } catch (error) {
         console.log("Error moving task:", err);
+		res.status(400).send(error.message);
   }
 
 
