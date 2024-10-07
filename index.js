@@ -548,6 +548,19 @@ app.post("/startSprint", async (req, res) => {
 	}
 });
 
+app.post("/changePassword", async (req,res) => {
+	try {
+		const newPassword = req.body.newPassword 
+		const userId = req.cookies.currentUserId;
+
+		await db.query("UPDATE user SET password = $2 WHERE id = $1", [userId, newPassword]);
+		res.redirect("/placeholder");
+		
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 
 
 // starts the application
