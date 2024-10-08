@@ -549,6 +549,31 @@ app.post("/startSprint", async (req, res) => {
 });
 
 
+// render login page route
+app.get("/login", (req, res) => {
+    res.render("login.ejs", { error: req.cookies.error || null });
+});
+
+// login route
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = userResult.rows[0];
+
+        if (user && user.password === password) {
+            req.session.userId = user.id;
+            res.redirect("/");
+        } else {
+            res.cookie("error", "Invalid email or password");
+            res.redirect("/login");
+        }
+    } catch (err) {
+        console.log(err);
+        res.cookie("error", "An error occurred during login, please try again.");
+        res.redirect("/login");
+    }
+});
 
 // starts the application
 app.listen(port, () => {
