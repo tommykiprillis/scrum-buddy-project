@@ -201,7 +201,7 @@
 				<div class="modal-body">
 				<form action="/edit" method="POST">
 					<!--Stores the id of the task as a hidden value-->
-					<input type="hidden" name="id" value="<%=task.id%>">
+					<input type="hidden" name="id" value="<%=task.id%>" required>
 	
 					<!--Task Name at top (prefill + save)-->
 					<label for="titleInput<%= task.id %>" class="form-label">Task Name</label>

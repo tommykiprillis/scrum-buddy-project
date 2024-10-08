@@ -629,7 +629,7 @@
 
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" 
+              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required
 			  <% if (sprintStatus === "In Progress") { %>
 				readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
 			  <% } %>
@@ -640,7 +640,11 @@
               <% if (task.assignee !== null) { %>
                 value="<%=task.assignee%>"
               <% } %>
-              name="taskAssignee" autocomplete="off">
+
+              name="taskAssignee" autocomplete="off"
+              <% if (task.status !== "Not Started") { %>
+                required
+                <% } %>>
 
 			  <div class="row mt-3">
 				<div class="col">
@@ -698,7 +702,7 @@
 
 					<!--Story Points (prefill + save)-->
 					<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
+					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock" required
 					<% if (task.story_points !== null) { %>
 					value="<%=task.story_points%>"
 					<% } %>
