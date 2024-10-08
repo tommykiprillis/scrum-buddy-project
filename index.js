@@ -65,7 +65,16 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate = "";
+        currentDate += currentDateObject.getFullYear();
+        currentDate += "-";
+        currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate += "-";
+        currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate});
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -237,6 +246,16 @@ app.get("/viewSprint", async (req,res) => {
 			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate1 = "";
+        currentDate1 += currentDateObject.getFullYear();
+        currentDate1 += "-";
+        currentDate1 += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate1 += "-";
+        currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
 		res.render("sprint.ejs", {
 			notStarted:notStartedTasks,
 			inProgress:inProgressTasks,
@@ -244,7 +263,11 @@ app.get("/viewSprint", async (req,res) => {
 			view:viewPreference,
 			sprintStatus: sprintStatus,
 			sprints: arraySprints,
-			sprintDetails: currentSprintDetails
+			sprintDetails: currentSprintDetails,
+			sort: sortPreference,
+			filter: filterPreference,
+			order: orderPreference,
+            date: currentDate1
 		});
 	} catch (err) {
 		console.log(err);
@@ -356,7 +379,8 @@ app.post("/editInSprint", async (req,res) => {
 		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
+        const newStage = (req.body.taskStage === '') ? null : req.body.taskStage
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, stage = $7 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newStage])
         res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
@@ -503,7 +527,9 @@ app.post("/moveProgress", async (req,res) => {
         } else {
             await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
         }
-        
+        if (newTaskProgress === "Completed" || newTaskProgress === "Not Started") {
+            await db.query('UPDATE tasks SET stage = null')
+        }
         res.redirect("/viewSprint");
     } catch (err) {
         console.log(err);
