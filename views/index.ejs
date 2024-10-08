@@ -1,4 +1,10 @@
 <%- include ("partials/header.ejs"); -%>
+	<% if (locals.error) { %>
+		<div class="alert alert-danger alert-dismissible fade show fixed-top mt-5" role="alert">
+			<strong>Error!</strong> <%= error %>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	<% } %>
 	<!-- header of the scrum board-->
 	<div class="mt-5 px-sm-5">
 	<h1 class="mb-4">Product Backlog</h1>
