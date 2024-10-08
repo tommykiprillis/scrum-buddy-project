@@ -672,7 +672,8 @@
 				</div>
 
 				<div class="col">
-                    <!--Stage (dropdown prefill + save)-->
+                    <% if (task.status === "In Progress") { %>
+                                         <!--Stage (dropdown prefill + save)-->
 					<label for="stage<%= task.id %>" class="form-label">Stage</label>
 					<select class="form-control form-control-sm" id="stage<%= task.id %>" name="taskStage">
 					<% if (task.stage !== null) { %>
@@ -685,7 +686,7 @@
 					<option value="Integration">Integration</option>
 					<option value="Testing">Testing</option>
 					</select>
-                    
+                    <% } %>
 					<!--Priority (dropdown prefill + save)-->
 					<label for="priority<%= task.id %>" class="form-label">Priority</label>
 					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
