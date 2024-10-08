@@ -50,3 +50,19 @@ ALTER TABLE tasks ADD tags tag[];
 ALTER TABLE sprints ADD sprint_status status;
 -- add fromSprint column
 ALTER table tasks ADD from_sprint boolean;
+
+
+
+
+-- create sprint table
+CREATE TABLE tasklog (
+    id SERIAL PRIMARY KEY,
+    task_id INT NOT NULL,  
+    date DATE NOT NULL DEFAULT CURRENT_DATE, 
+    hours DECIMAL(5,2) NOT NULL, 
+    user_id INT NOT NULL, 
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (task_id) REFERENCES tasks(id)  
+
+
+);
