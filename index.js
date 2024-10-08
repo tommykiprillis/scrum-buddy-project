@@ -576,15 +576,10 @@ app.post("/moveProgress", async (req,res) => {
         } else {
             await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
         }
-<<<<<<< index.js
-        
-        return res.redirect("/viewSprint");
-=======
         if (newTaskProgress === "Completed" || newTaskProgress === "Not Started") {
             await db.query('UPDATE tasks SET stage = null')
         }
         res.redirect("/viewSprint");
->>>>>>> index.js
     } catch (err) {
         console.log(err);
     } 
