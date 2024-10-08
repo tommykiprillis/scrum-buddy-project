@@ -297,31 +297,34 @@ app.post("/moveToBacklog", async (req,res) =>{
 
 
 // move a task from the product backlog to sprint (product backlog)
-app.post("/moveToSprint", async (req,res) =>{
-
-	const { taskId, sprintId } = req.body; 
-	try {
-
-		const taskResult = await db.query("SELECT story_points FROM tasks WHERE id = $1", [taskId]);
-		if (taskResult.rows.length === 0 || !taskResult.rows[0].story_points) {
+app.post("/moveToSprint", async (req, res) => {
+    const { taskId, sprintId } = req.body; 
+    try {
+        
+        const taskResult = await db.query("SELECT story_points FROM tasks WHERE id = $1", [taskId]);
+        if (taskResult.rows.length === 0 || taskResult.rows[0].story_points === null) {
             throw new Error("Task must have story points.");
         }
-
-		const sprintResult = await db.query("SELECT status FROM sprints WHERE id = $1", [sprintId]);
-        if (sprintResult.rows.length === 0 || sprintResult.rows[0].status !== "Not Started") {
-            throw new Error("Sprint must be 'Not Started'.");
+        const sprintResult = await db.query("SELECT sprint_status FROM sprints WHERE id = $1", [sprintId]);
+        if (sprintResult.rows.length === 0 || sprintResult.rows[0].sprint_status !== "Not Started") {
+            throw new Error("Sprint has not 'Not Started'.");
         }
+		
+        
 
-        await db.query("UPDATE tasks SET location = $1,status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
-		res.redirect('/');
-   
+        await db.query("UPDATE tasks SET location = $1, status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
+        res.redirect('/');
+
     } catch (error) {
-        console.log("Error moving task:", err);
-		res.status(400).send(error.message);
-  }
-
-
+        console.log("Error moving task:", error);
+        res.status(400).send(error.message); 
+    }
 });
+
+  
+
+
+
 
 // update which sprint we are currently viewing (sprint)
 app.post("/setSprintView", async (req,res) =>{
