@@ -490,6 +490,32 @@ app.post("/assign", async (req,res) => {
     }
 });
 
+app.post('/logTime', async (req, res) => {
+    const { task_id, timeSpent } = req.body;
+    const currentUserId = req.cookies.currentUserId;
+
+	try {
+        await db.query('INSERT INTO tasklog (task_id, hours, user_id) VALUES ($1, $2, $3)',
+		[task_id, timeSpent, currentUserId]
+        );
+
+		await db.query('UPDATE tasks SET accumulated_time = accumulated_time + $1 WHERE id = $2',
+		[timeSpent, task_id]
+        );
+
+
+		//Get the time of history of the task
+		const historyResult = await db.query('SELECT task_id, date, hours, user_id FROM tasklog WHERE task_id = $1',
+		[task_id]
+        );
+		res.redirect('/viewSprint');
+	} catch (err) {
+        console.error(err);
+        
+    }
+});
+
+
 // move the task within the sprint backlog to either to do, in progress, done
 app.post("/moveProgress", async (req,res) => {
     // req.body.id, req.body.destination
