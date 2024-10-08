@@ -65,7 +65,16 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, sort: sortPreference, filter: filterPreference, order: orderPreference});
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate = "";
+        currentDate += currentDateObject.getFullYear();
+        currentDate += "-";
+        currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate += "-";
+        currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate});
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -237,6 +246,16 @@ app.get("/viewSprint", async (req,res) => {
 			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate1 = "";
+        currentDate1 += currentDateObject.getFullYear();
+        currentDate1 += "-";
+        currentDate1 += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate1 += "-";
+        currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
 		res.render("sprint.ejs", {
 			notStarted:notStartedTasks,
 			inProgress:inProgressTasks,
@@ -247,7 +266,8 @@ app.get("/viewSprint", async (req,res) => {
 			sprintDetails: currentSprintDetails,
 			sort: sortPreference,
 			filter: filterPreference,
-			order: orderPreference
+			order: orderPreference,
+            date: currentDate1
 		});
 	} catch (err) {
 		console.log(err);

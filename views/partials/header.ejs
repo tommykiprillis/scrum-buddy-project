@@ -125,19 +125,19 @@
           <form action="/createSprint" method="POST">
             <!--Name for the sprint-->
             <label for="nameInput" class="form-label">Sprint Name</label>
-            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off">
+            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off" required>
 
             <div class="row mt-4">
             <!--Start Date for the sprint-->
               <div class="col">
                 <label for="startDateInput" class="form-label">Start Date</label>
-                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off">
+                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off" min="<%= date %>" required>
               </div>
 
             <!--End Date for the sprint-->
               <div class="col">
                 <label for="endDateInput" class="form-label">End Date</label>
-                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off">
+                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off" min="<%= date %>" required>
               </div>
             </div>
             <!--Saving Changes-->
