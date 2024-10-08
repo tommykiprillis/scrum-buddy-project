@@ -574,6 +574,25 @@ app.post("/moveProgress", async (req,res) => {
 });
 
 
+// complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
+app.get("/completeSprint", async (req,res) =>{
+	const sprintId = req.body.sprintId;
+	
+	try {
+		// set the status of the sprint to 'Completed'
+		await db.query("UPDATE sprints SET sprint_status = 'Completed' WHERE id = $1", [sprintId]);
+		// move tasks 'Not Started' back to the backlog
+		await db.query("UPDATE tasks SET location = NULL WHERE location = $1 AND status = 'Not Started'", [sprintId]);
+		// move tasks 'In Progress' back to the backlog, tagging 'from_sprint'
+		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE WHERE location = $1 AND status = 'In Progress'", [sprintId]);
+
+		res.redirect('/viewSprint')
+	} catch (err) {
+		console.log("Error completing the sprint: ", err);
+	}
+
+})
+
 
 // start a sprint 
 // REMOVE LATER: (completed 4/10/2024, 7pm to 8pm)
