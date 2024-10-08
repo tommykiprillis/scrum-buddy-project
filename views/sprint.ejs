@@ -153,14 +153,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge <%=task.priority%>-badge rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -216,14 +222,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge <%=task.priority%>-badge rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -281,14 +293,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge <%=task.priority%>-badge rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -346,6 +364,7 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
+                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -360,6 +379,11 @@
 								<td>
 									<% if (task.priority !== null) { %>
 										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+                                <td>
+									<% if (task.stage !== null) { %>
+										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -425,6 +449,7 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
+                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -439,6 +464,11 @@
 								<td>
 									<% if (task.priority !== null) { %>
 										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+                                <td>
+									<% if (task.stage !== null) { %>
+										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -508,6 +538,7 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
+                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -522,6 +553,11 @@
 								<td>
 									<% if (task.priority !== null) { %>
 										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+                                <td>
+									<% if (task.stage !== null) { %>
+										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -632,6 +668,20 @@
 				</div>
 
 				<div class="col">
+                    <!--Stage (dropdown prefill + save)-->
+					<label for="stage<%= task.id %>" class="form-label">Stage</label>
+					<select class="form-control form-control-sm" id="stage<%= task.id %>" name="taskStage">
+					<% if (task.stage !== null) { %>
+						<option value="<%=task.stage%>" selected><%=task.stage%></option>
+						<% } else {%>
+						<option value="" selected>None</option>
+						<% } %>
+                    <option value="Planning">Planning</option>
+                    <option value="Development">Development</option>
+					<option value="Integration">Integration</option>
+					<option value="Testing">Testing</option>
+					</select>
+                    
 					<!--Priority (dropdown prefill + save)-->
 					<label for="priority<%= task.id %>" class="form-label">Priority</label>
 					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
@@ -659,6 +709,8 @@
 					<div id="spHelpBlock" class="form-text">
 						Story Points must be between 1-10
 					</div>
+
+
 				</div>
 
 			</div>

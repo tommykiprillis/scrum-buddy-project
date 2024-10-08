@@ -379,7 +379,8 @@ app.post("/editInSprint", async (req,res) => {
 		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
+        const newStage = (req.body.taskStage === '') ? null : req.body.taskStage
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, stage = $7 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newStage])
         res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
