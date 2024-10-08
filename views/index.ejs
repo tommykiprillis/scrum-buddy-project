@@ -170,7 +170,14 @@
 						<h5 class="card-title">Add Task</h5>
 
 						<form action="/add" method="POST">
-							<input type="text" class="form-control" name="taskName" autocomplete="off">
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-2">
+                                    <input type="text" class="form-control" name="taskName" autocomplete="off" id="taskNameInput" required>
+                                </div>
+                                <div class="col-12 col-sm-6 mb-2">
+                                    <button type="submit" class="btn btn-dark">Create Task</button>
+                                </div>
+                            </div>
 						</form>
 				</div>
 			</div>
@@ -178,8 +185,8 @@
 
 		<!-- Add Task Button-->
 		<div class="d-flex justify-content-center">
-			<button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
-				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+			<button id="addTaskBtn" class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
+				<svg id="addTaskIcon" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
 					</svg>
 			</button>

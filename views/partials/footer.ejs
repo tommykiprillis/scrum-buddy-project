@@ -21,6 +21,12 @@
                 });
             }
         });
+
+        // move the cursor of the user once the "+" task is pressed, and rotate the icon to an x
+        $("#addTaskBtn").click(() => {
+            $("#addTaskIcon").toggleClass("rotate");
+            $("#taskNameInput").focus();
+        })
     </script>
 </body>
 
