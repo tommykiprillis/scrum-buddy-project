@@ -364,7 +364,6 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
-                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -379,11 +378,6 @@
 								<td>
 									<% if (task.priority !== null) { %>
 										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
-									<% } %>
-								</td>
-                                <td>
-									<% if (task.stage !== null) { %>
-										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -538,7 +532,6 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
-                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -553,11 +546,6 @@
 								<td>
 									<% if (task.priority !== null) { %>
 										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
-									<% } %>
-								</td>
-                                <td>
-									<% if (task.stage !== null) { %>
-										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
