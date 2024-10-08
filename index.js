@@ -418,9 +418,11 @@ app.post("/editInSprint", async (req,res) => {
 		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-        const newStage = (req.body.taskStage === '') ? null : req.body.taskStage
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, stage = $7 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newStage])
-        res.redirect("/viewSprint");
+		const newStage = (req.body.taskStage === '') ? null : req.body.taskStage
+		const newAssignee = (req.body.taskAssignee === '') ? null : req.body.taskAssignee;
+		await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, assignee = $7, stage = $8 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newAssignee,newStage])
+		res.redirect("/viewSprint");
+        
 	} catch (err) {
 		console.log(err);
 	} 
@@ -559,6 +561,14 @@ app.post("/moveProgress", async (req,res) => {
 	try {
     	const taskID = req.body.id;
     	const newTaskProgress = req.body.destination
+		if (newTaskProgress === "In Progress" || newTaskProgress === "Completed"){
+			const taskAssigneeResult = await db.query('SELECT assignee FROM tasks WHERE id = $1', [taskID]);
+			const taskAssignee = taskAssigneeResult.rows[0]?.assignee;
+			if (taskAssignee === null){
+				res.cookie("error", "Task must have an assignee assigned before moving to In progress or Completed.");
+				return res.redirect("/viewSprint");
+			}
+		}
         if (newTaskProgress === "Completed"){
             // if the task is moved to completed, save the day that it was completed
             const currentDate = new Date();
@@ -566,10 +576,15 @@ app.post("/moveProgress", async (req,res) => {
         } else {
             await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
         }
+<<<<<<< index.js
+        
+        return res.redirect("/viewSprint");
+=======
         if (newTaskProgress === "Completed" || newTaskProgress === "Not Started") {
             await db.query('UPDATE tasks SET stage = null')
         }
         res.redirect("/viewSprint");
+>>>>>>> index.js
     } catch (err) {
         console.log(err);
     } 
