@@ -24,8 +24,14 @@
 			</button>
 					<form action="/changeSprintView" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View</button></li>
-							<li><button class="dropdown-item" type="submit" name="view" value="list">List View</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View <% if (view === "card"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="list">List View <% if (view === "list"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>    
 			</div>
@@ -39,9 +45,18 @@
 			</button>
 					<form action="/changeSprintSort" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority <% if (sort === "priority"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name <% if (sort === "name"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points <% if (sort === "story_points"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>     
 			</div>
@@ -55,9 +70,15 @@
 				</button>
 					<form action="/changeSprintOrder" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending</button></li>
-							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending <% if (order === "ASC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending <% if (order === "DESC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+						</ul> 
 					</form>     
 			</div>
 		
@@ -70,14 +91,35 @@
 				</button>
 					<form action="/changeSprintFilter" method="POST">
 						<ul class="dropdown-menu">
-					<li><button class="dropdown-item" type="submit" name="filter" value="">None</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="API">API</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="filter" value="">None <% if (filter === ""){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+											<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+											</svg><%}%>
+										</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End <% if (filter === "Back-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End <% if (filter === "Front-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="API">API <% if (filter === "API"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases <% if (filter === "Databases"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing <% if (filter === "Testing"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX <% if (filter === "UIUX"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+								  </ul>   
 					</form>     
 			</div>
 		
@@ -111,14 +153,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -147,18 +195,8 @@
 										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 											<li><h6 class="dropdown-header">Move to</h6></li>
 											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
 												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
 													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
 												</button>
 											</li>
 										</ul>
@@ -184,14 +222,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -222,11 +266,6 @@
 											<li>
 												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
 													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
 												</button>
 											</li>
 											<li>
@@ -254,14 +293,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -290,18 +335,8 @@
 										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 											<li><h6 class="dropdown-header">Move to</h6></li>
 											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
 												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
 													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
 												</button>
 											</li>
 										</ul>
@@ -342,7 +377,7 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 									<% } %>
 								</td>
 								<td>
@@ -379,18 +414,8 @@
 											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 												<li><h6 class="dropdown-header">Move to</h6></li>
 												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-														Not Started
-													</button>
-												</li>
-												<li>
 													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
 														In Progress
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Completed">
-														Completed
 													</button>
 												</li>
 											</ul>
@@ -418,6 +443,7 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
+                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -431,7 +457,12 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+                                <td>
+									<% if (task.stage !== null) { %>
+										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -470,11 +501,6 @@
 												<li>
 													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
 														Not Started
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
 													</button>
 												</li>
 												<li>
@@ -519,7 +545,7 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 									<% } %>
 								</td>
 								<td>
@@ -556,18 +582,8 @@
 											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 												<li><h6 class="dropdown-header">Move to</h6></li>
 												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-														Not Started
-													</button>
-												</li>
-												<li>
 													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
 														In Progress
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Completed">
-														Completed
 													</button>
 												</li>
 											</ul>
@@ -601,7 +617,7 @@
 
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" 
+              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required
 			  <% if (sprintStatus === "In Progress") { %>
 				readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
 			  <% } %>
@@ -612,7 +628,11 @@
               <% if (task.assignee !== null) { %>
                 value="<%=task.assignee%>"
               <% } %>
-              name="taskAssignee" autocomplete="off">
+
+              name="taskAssignee" autocomplete="off"
+              <% if (task.status !== "Not Started") { %>
+                required
+                <% } %>>
 
 			  <div class="row mt-3">
 				<div class="col">
@@ -640,6 +660,21 @@
 				</div>
 
 				<div class="col">
+                    <% if (task.status === "In Progress") { %>
+                                         <!--Stage (dropdown prefill + save)-->
+					<label for="stage<%= task.id %>" class="form-label">Stage</label>
+					<select class="form-control form-control-sm" id="stage<%= task.id %>" name="taskStage">
+					<% if (task.stage !== null) { %>
+						<option value="<%=task.stage%>" selected><%=task.stage%></option>
+						<% } else {%>
+						<option value="" selected>None</option>
+						<% } %>
+                    <option value="Planning">Planning</option>
+                    <option value="Development">Development</option>
+					<option value="Integration">Integration</option>
+					<option value="Testing">Testing</option>
+					</select>
+                    <% } %>
 					<!--Priority (dropdown prefill + save)-->
 					<label for="priority<%= task.id %>" class="form-label">Priority</label>
 					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
@@ -656,7 +691,7 @@
 
 					<!--Story Points (prefill + save)-->
 					<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
+					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock" required
 					<% if (task.story_points !== null) { %>
 					value="<%=task.story_points%>"
 					<% } %>
@@ -667,6 +702,8 @@
 					<div id="spHelpBlock" class="form-text">
 						Story Points must be between 1-10
 					</div>
+
+
 				</div>
 
 			</div>
@@ -746,7 +783,9 @@
 		  </form>
 			<!--Delete Sprint-->
 			<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
-			<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
+			<% if (sprintStatus === "Not Started") { %>
+				<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
+			<% } %>
 		</div>
 	  </div>
 	</div>
