@@ -548,7 +548,109 @@ app.post("/startSprint", async (req, res) => {
 	}
 });
 
+// report stuff (Tommy done on 9/10)
+// I commented out the validating stuff bc i wasn't  sure
+// if they are done in this route or in other ones
 
+app.post("/viewReport", async (req, res) => {
+    try {
+
+		const userId = req.body.userId;
+		const startDate = req.body.startDate;
+		const endDate = req.body.endDate;
+		const reportViewPreference = req.cookies.reportView || "list";
+
+		// // Validate inputs
+        // if (!userId) {
+        //     //error thing;
+        // }
+		// if (startDate && endDate) {
+		// 	if (startDate > endDate) {
+		// 		//error thing
+		// 	}
+		// }
+		
+		// //check to see if given user is a team member, and not an admin
+		// const userResult = await db.query("SELECT is_admin FROM users WHERE id = $1", [userId]);
+		// if (userResult.rows.length === 0 || !userResult.rows[0].is_admin){
+		// 	//error thing
+		// }
+
+
+        // Build the query based on whether date range is provided
+        let query = `
+            SELECT date, SUM(hours) as total_hours
+            FROM tasklog
+            WHERE user_id = $1
+        `;
+        const params = [userId];
+        if (startDate && endDate) {
+            query += ` AND date BETWEEN $2 AND $3`;
+            params.push(startDate, endDate);
+        }
+        query += ` GROUP BY date ORDER BY date ASC`;
+
+        const logsResult = await db.query(query, params);
+        const logs = logsResult.rows;
+
+        if (logs.length === 0) {
+            return res.render("reportResult.ejs", {
+                average: 0,
+                logs: [],
+                user: await getUserName(userId),
+                startDate: startDate,
+                endDate: endDate,
+				reportView: reportViewPreference
+            });
+        }
+		
+		// Calculate the number of days between startDate and endDate 
+ 
+		const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+        // Calculate total hours and number of days worked
+        const totalHours = logs.reduce((acc, log) => acc + parseInt(log.total_hours), 0);
+
+		// ###
+        //use this instead of totalDays (when calculating average) if only days that tasks are done on are considered
+		//const uniqueDays = logs.length; 
+		// ###
+
+        const average = (totalHours / totalDays).toFixed(2);
+
+        // Prepare data for graph
+        const graphData = logs.map(log => ({
+            date: log.date.toISOString().split('T')[0],
+            hours: parseInt(log.total_hours),
+        }));
+
+        res.render("reportResult.ejs", {
+            average: average,
+            logs: logs,
+            graphData: graphData,
+            user: await getUserName(userId),
+            startDate: startDate,
+            endDate: endDate,
+			reportView: reportViewPreference
+        });
+
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+// Helper function to get user name
+const getUserName = async (userId) => {
+    const userResult = await db.query("SELECT name FROM users WHERE id = $1", [userId]);
+    return userResult.rows.length > 0 ? userResult.rows[0].name : "Unknown User";
+};
+
+// change the view (of a REPORT)
+app.post("/changeReportView", async (req,res) =>{
+    const reportViewPreference = req.body.reportView;
+    res.cookie('reportView', reportViewPreference);
+    res.redirect("/viewReport");
+});
 
 // starts the application
 app.listen(port, () => {
