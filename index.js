@@ -469,7 +469,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 		let displayCompleteButton = false;
 
 		// If the current date is the start date, display the start sprint button
-		if (currentDate1.toDateString() === startDate.toDateString()) {
+		if (currentDate1.toDateString() === startDate.toDateString() && sprintStatus === "Not Started") {
 			displayStartButton = true;
 		  }
 
@@ -482,7 +482,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 		}
 
 		// Automatically complete sprint if the current date is past the due date
-        if (currentDate1 > endDate1) {
+        if (currentDate1 > endDate1 && sprintStatus === "In Progress") {
             return res.redirect('/completeSprint');
         }
 
@@ -619,8 +619,8 @@ app.post("/moveProgress", async (req,res) => {
 
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
-app.get("/completeSprint", async (req,res) =>{
-	const sprintId = req.body.sprintId;
+app.post("/completeSprint", async (req,res) =>{
+	const sprintId = req.cookies.currentSprintId;
 	
 	try {
 		// set the status of the sprint to 'Completed'

@@ -776,7 +776,10 @@
 
 			<!--Sprint Name at top (prefill + save)-->
 			<label for="titleEditSprint" class="form-label">Sprint Name</label>
-			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off">
+			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off"
+            <% if (sprintStatus !== "Not Started") { %>
+             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+            <% } %>>
 			
 			<!--Start and end date for sprint-->
 			<div class="row mt-4">
@@ -784,14 +787,20 @@
 				<div class="col">
 					<label for="startDateEdit" class="form-label">Start Date</label>
 					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
-						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
+                        <% if (sprintStatus !== "Not Started") { %>
+                            readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                           <% } %>>
 				</div>
 			
 				<!-- End Date for the sprint -->
 				<div class="col">
 					<label for="endDateEdit" class="form-label">End Date</label>
 					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
-						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
+                        <% if (sprintStatus !== "Not Started") { %>
+                            readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                           <% } %>>
 				</div>
 			</div>
 			
@@ -801,13 +810,20 @@
 				<!--Scrum Master-->
 					<div class="col">
 					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
-					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off">
+					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off" required
+                    <% if (sprintStatus !== "Not Started") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                       <% } %>>
 					</div>
 	
 				<!--Product Owner-->
 					<div class="col">
 					<label for="productOwnerEdit" class="form-label">Product Owner</label>
-					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off">					</div>
+					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off" required
+                    <% if (sprintStatus !== "Not Started") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                       <% } %>>				
+                    </div>
 			</div>
 
 			<!--Description (prefill + save)-->
