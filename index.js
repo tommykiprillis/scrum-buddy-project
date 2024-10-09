@@ -629,6 +629,9 @@ app.post("/completeSprint", async (req,res) =>{
 		await db.query("UPDATE tasks SET location = NULL WHERE location = $1 AND status = 'Not Started'", [sprintId]);
 		// move tasks 'In Progress' back to the backlog, tagging 'from_sprint'
 		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE WHERE location = $1 AND status = 'In Progress'", [sprintId]);
+        // update the end date to the current date
+        const currentDate = new Date();
+        await db.query("UPDATE sprints SET end_date = $1 WHERE id = $2", [currentDate,sprintId]);
 
 		res.redirect('/viewSprint')
 	} catch (err) {
