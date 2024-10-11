@@ -163,7 +163,7 @@ app.post("/delete", async (req,res) => {
 });
 
 // create a new sprint (product backlog)
-app.get("/createSprint", async (req,res) =>{
+app.post("/createSprint", async (req,res) =>{
 	try {
 		
 		console.log(req.body);
