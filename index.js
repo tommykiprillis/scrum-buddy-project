@@ -163,16 +163,17 @@ app.post("/delete", async (req,res) => {
 });
 
 // create a new sprint (product backlog)
-app.post("/createSprint", async (req,res) =>{
+app.get("/createSprint", async (req,res) =>{
 	try {
 		
-
+		console.log(req.body);
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
 		const usersArray = req.body.users;
 		const scrumMasterId = req.body.scrumMasterId;
 		const productOwnerId = req.body.productOwnerId;
 		const sprintEndDate = req.body.endDate;
+		console.log('Users Array:', usersArray); 
 
 		
 		// Set sprint status to "Not Started" initially
