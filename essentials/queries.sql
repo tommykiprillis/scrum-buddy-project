@@ -55,3 +55,14 @@ ALTER table tasks ADD from_sprint boolean;
 ALTER TYPE stage RENAME VALUE 'In Planning' TO 'Planning';
 ALTER TYPE stage RENAME VALUE 'In Development' TO 'Development';
 ALTER TYPE stage RENAME VALUE 'In Testing' TO 'Testing';
+
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    is_admin BOOLEAN DEFAULT FALSE,
+    is_available BOOLEAN DEFAULT TRUE,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    sprint_id INTEGER REFERENCES sprints(id) ON DELETE SET NULL
+);
