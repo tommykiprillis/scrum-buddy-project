@@ -165,15 +165,21 @@ app.post("/delete", async (req,res) => {
 // create a new sprint (product backlog)
 app.post("/createSprint", async (req,res) =>{
 	try {
+		
+
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
 		const usersArray = req.body.users;
+		const scrumMasterId = req.body.scrumMasterId;
+		const productOwnerId = req.body.productOwnerId;
 		const sprintEndDate = req.body.endDate;
+
+		
 		// Set sprint status to "Not Started" initially
 		const result = await db.query(
-			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
-			[sprintName, sprintStartDate, sprintEndDate]
-		  );
+            "INSERT INTO sprints (name, start_date, end_date, scrum_master, product_owner, sprint_status) VALUES ($1, $2, $3, $4, $5, 'Not Started') RETURNING id",
+            [sprintName, sprintStartDate, sprintEndDate, scrumMasterId, productOwnerId]
+        );
 		  
 		
 		const newSprintId = result.rows[0].id;
@@ -191,6 +197,7 @@ app.post("/createSprint", async (req,res) =>{
 		res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
+		res.status(500).send("Server Error");
 	} 
 });
 
