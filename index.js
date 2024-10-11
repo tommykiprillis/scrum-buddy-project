@@ -167,6 +167,7 @@ app.post("/createSprint", async (req,res) =>{
 	try {
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
+		const usersArray = req.body.users;
 		const sprintEndDate = req.body.endDate;
 		// Set sprint status to "Not Started" initially
 		const result = await db.query(
