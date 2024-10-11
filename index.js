@@ -174,8 +174,18 @@ app.post("/createSprint", async (req,res) =>{
 			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
 			[sprintName, sprintStartDate, sprintEndDate]
 		  );
+		  
 		
 		const newSprintId = result.rows[0].id;
+
+		if (usersArray && usersArray.length > 0){
+			for (const userId of usersArray) {
+                await db.query(
+                    "UPDATE users SET sprint_id = $1 WHERE id = $2",
+                    [newSprintId, userId]
+                );
+			}
+		  }
 
 		res.cookie('currentSprintId', newSprintId);
 		res.redirect("/viewSprint");
