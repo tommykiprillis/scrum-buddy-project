@@ -27,7 +27,7 @@ app.use(cookieParser());
 // routes for the homepage (product backlog)
 
 // homepage view (product backlog)
-app.get("/",async (req,res) => {
+app.get("/productBacklog",async (req,res) => {
 	try {
 
 		const errorMessage = req.cookies.error;
@@ -96,28 +96,28 @@ app.get("/",async (req,res) => {
 app.post("/changeView", async (req,res) => {
     const viewPreference = req.body.view;
     res.cookie('view', viewPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the sort (product backlog)
 app.post("/changeSort", async (req,res) => {
     const sortPreference = req.body.sort;
     res.cookie('sort', sortPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the order (product backlog)
 app.post("/changeOrder", async (req,res) =>{
     const orderPreference = req.body.order;
     res.cookie('order', orderPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the filter (product backlog)
 app.post("/changeFilter", async (req,res) =>{
     const filterPreference = req.body.filter;
     res.cookie('filter', filterPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // add a new task (product backlog)
@@ -127,7 +127,7 @@ app.post("/add", async (req,res) => {
 		//const taskDescription = req.body.taskDescription;
 		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
 		await db.query(insertQuery, [taskName]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -143,7 +143,7 @@ app.post("/edit", async (req,res) => {
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
 	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/");
+        res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -156,7 +156,7 @@ app.post("/delete", async (req,res) => {
 		const taskId = req.body.id;
 		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
 		await db.query(deleteQuery, [taskId]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -421,7 +421,7 @@ app.post("/deleteSprint", async (req,res) =>{
 		await db.query(moveTaskToBacklog, [sprintId]);
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -672,6 +672,35 @@ app.post("/startSprint", async (req, res) => {
 		res.cookie("error", "An error occurred while starting the sprint.");
 		res.redirect("/viewSprint");
 	}
+});
+
+app.get("/defaultView",async (req,res) => {
+	try {
+
+		const userId = req.cookies.userId;
+		if (!userId) {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+
+		const userResult = await db.query("SELECT sprint_id FROM users WHERE id = $1", [userId]);
+
+		if (userResult.rows.length > 0) {
+			const sprintId = userResult.rows[0].sprint_id;
+			if (sprintId) {
+				res.cookie('currentSprintId', sprintId);
+				return res.redirect("/viewSprint");
+			} else {
+				return res.redirect("/productBacklog");
+			}
+		} else {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+	} catch (err) {
+		console.log(err);
+		
+	} 
 });
 
 
