@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Log Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .canvas-container {
+            width: 80%;
+            margin: auto;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1>Time Spent on Project</h1>
+    <div class="canvas-container">
+        <canvas id="timeLogChart" style="min-width: 300px; height: 250px; width: 100%;"></canvas>
+    </div>
+</div>
+
+<script>
+    // Sample time log data with user names
+    const timeLogData = [
+        { date: '2024-04-01', user_id: 1, name: 'Alice', hours: 5 },
+        { date: '2024-04-01', user_id: 2, name: 'Bob', hours: 3 },
+        { date: '2024-04-02', user_id: 1, name: 'Alice', hours: 4 },
+        { date: '2024-04-02', user_id: 2, name: 'Bob', hours: 6 },
+        { date: '2024-04-03', user_id: 1, name: 'Alice', hours: 2 },
+        { date: '2024-04-03', user_id: 2, name: 'Bob', hours: 7 },
+        { date: '2024-04-04', user_id: 1, name: 'Alice', hours: 5 },
+        { date: '2024-04-04', user_id: 2, name: 'Bob', hours: 4 }
+    ];
+
+    const userTimeData = {};
+    const totalTimeData = {};
+
+    // Process data to separate it by user and calculate totals
+    timeLogData.forEach(entry => {
+        const date = new Date(entry.date).toLocaleDateString();
+        const userName = entry.name; // Use the user's name
+
+        if (!userTimeData[userName]) {
+            userTimeData[userName] = {};
+        }
+        if (!userTimeData[userName][date]) {
+            userTimeData[userName][date] = 0;
+        }
+        if (!totalTimeData[date]) {
+            totalTimeData[date] = 0;
+        }
+        userTimeData[userName][date] += entry.hours;
+        totalTimeData[date] += entry.hours;
+    });
+
+    // Create labels (dates) for the x-axis
+    const labels = Object.keys(totalTimeData).sort((a, b) => new Date(a) - new Date(b));
+
+    // Prepare datasets for each user and the total
+    const datasets = Object.keys(userTimeData).map(userName => {
+        const data = labels.map(date => userTimeData[userName][date] || 0);
+        return {
+            label: userName, // Use the user's name for the label
+            data: data,
+            borderColor: getRandomColor(),
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+            fill: false,
+            tension: 0.1
+        };
+    });
+
+    // Add a dataset for the total time spent
+    datasets.push({
+        label: 'Total',
+        data: labels.map(date => totalTimeData[date]),
+        borderColor: 'rgba(0, 0, 0, 1)',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        fill: false,
+        tension: 0.1
+    });
+
+    // Function to generate random colors for each user line
+    function getRandomColor() {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgba(${r}, ${g}, ${b}, 1)`;
+    }
+
+    const ctx = document.getElementById('timeLogChart').getContext('2d');
+
+    // Create line chart
+    const timeLogChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Hours'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Days'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
