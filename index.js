@@ -477,7 +477,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [sprintId])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate1 <= endDate1 && allTasksCompleted && sprintStatus === "In Progress") || currentDate1.toDateString() === endDate1.toDateString()) {
+		if (((currentDate1 <= endDate1 && allTasksCompleted) || (currentDate1.toDateString() === endDate1.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
