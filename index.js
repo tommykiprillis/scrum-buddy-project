@@ -221,7 +221,7 @@ app.get("/viewSprint", async (req,res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [currentSprint])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate <= endDate && allTasksCompleted && sprintStatus === "In Progress") || currentDate.toDateString() === endDate.toDateString()) {
+		if (((currentDate <= endDate && allTasksCompleted) || (currentDate.toDateString() === endDate.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
