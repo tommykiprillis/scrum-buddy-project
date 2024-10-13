@@ -812,8 +812,7 @@
               <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
                 <% if (sprintStatus === "Completed") { %>
                     readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-                  <% } %>>
-                  <% if (task.description !== null) { %><%=task.description%><% } %></textarea>
+                  <% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
 			  
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
