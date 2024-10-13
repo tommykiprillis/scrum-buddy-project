@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<title>Scrum Buddy</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		.burndown-container {
+			height: 100vh;
+			/* Set height to 100% of the viewport */
+			box-sizing: border-box;
+			/* Include padding and border in the height calculation */
+		}
+
+		.Front-End-badge {
+			background-color: #70d6ff;
+			color: white;
+		}
+
+		.Back-End-badge {
+			background-color: #ff70a6;
+			color: white;
+		}
+
+		.API-badge {
+			background-color: #ff9770;
+			color: white;
+		}
+
+		.Databases-badge {
+			background-color: #ffd670;
+			color: white;
+		}
+
+		.Testing-badge {
+			background-color: #7bf1a8;
+			color: white;
+		}
+
+		.UIUX-badge {
+			background-color: #7161ef;
+			color: white;
+		}
+
+		.rotate {
+			transform: rotate(45deg);
+		}
+
+		#addTaskIcon {
+			transition: transform 0.5s ease;
+		}
+
+		.merriweather-regular {
+			font-family: "Merriweather", serif;
+			font-weight: 400;
+			font-style: normal;
+		}
+
+		.Low-badge {
+			background-color: #2ECC71;
+			color: white;
+		}
+
+		.Medium-badge {
+			background-color: #F4D03F;
+			color: white;
+		}
+
+		.Important-badge {
+			background-color: #F39C12;
+			color: white;
+		}
+
+		.Urgent-badge {
+			background-color: #E74C3C;
+			color: white;
+		}
+	</style>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+		rel="stylesheet">
+</head>
+
+<body class="bg-white">
+
+	<nav class="navbar navbar-expand-sm bg-body-tertiary">
+		<div class="container-fluid">
+			<a class="nav-brand fs-4 merriweather-regular nav-link" href="/">Scrum Buddy.</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03"
+				aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+		</div>
+	</nav>
+	<div class="row d-flex justify-content-center align-items-center mt-5">
+		<div class="col-12 col-lg-8 col-xl-6 mt-5">
+			<div class="d-flex flex-column m-5">
+				<div class="d-flex align-items-start flex-column mt-5">
+					<h1>Login</h1>
+					<p>Hi! Welcome back 👋</p>
+				</div>
+				<form action="/login" method="POST">
+					<div class="mb-3">
+						<label for="exampleInputEmail1" class="form-label">Email address</label>
+						<input type="email" name="email" class="form-control <%= locals.invalid?"is-invalid":"" %>" id="exampleInputEmail1" required autocomplete="off">
+					</div>
+					<div class="mb-4">
+						<label for="exampleInputPassword1" class="form-label">Password</label>
+						<input type="password" name="password" class="form-control <%= locals.invalid?"is-invalid":"" %>" id="exampleInputPassword1" required autocomplete="off">
+					</div>
+
+					<% if (locals.invalid) { %>
+					<div class="text-danger mb-4">
+						Oops! That email and password combination doesn't seem to match. Please try again
+					</div>
+					<% } %>
+
+					<button type="submit" class="btn btn-primary w-100">Login</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
+</body>
+
+</html>
