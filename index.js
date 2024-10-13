@@ -24,9 +24,72 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// render login page route (default route)
-app.get("/", (req, res) => {
-    res.render("login.ejs");
+// routes for the homepage (product backlog)
+
+// homepage view (product backlog)
+app.get("/productBacklog",async (req,res) => {
+	try {
+
+		const errorMessage = req.cookies.error;
+		res.clearCookie("error");
+		// get view and sort preference of the user
+        const viewPreference = req.cookies.view || "card";
+		const sortPreference = req.cookies.sort || "priority";
+		const orderPreference = req.cookies.order || "DESC";
+		const filterPreference = req.cookies.filter || "";
+		
+		
+        // get the tasks from each column
+		let result;
+		let backlogTasks;
+
+		const sprintsResult = await db.query("SELECT * from sprints");
+		const backlogSprints = sprintsResult.rows;
+
+        let query = "SELECT * FROM tasks WHERE location	 IS NULL"
+        query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
+		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
+    	const fromSprintTasksArr = fromSprintTasksResult.rows;
+
+		// sort by alphabetical order
+		if (sortPreference === "name"){
+            query += ` ORDER BY title ${orderPreference}`;
+			// get the tasks from each column
+			result = await db.query(query);
+			backlogTasks = result.rows;
+		// // group the tags together
+		} else if (sortPreference === "story_points"){
+            query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
+			// get the tasks from each column
+			result = await db.query(query);
+			backlogTasks = result.rows;
+		// // sort by priority
+		} else if (sortPreference === "priority"){
+            query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
+			// get the tasks from each column
+			result = await db.query(query);
+			backlogTasks = result.rows;
+		}
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate = "";
+        currentDate += currentDateObject.getFullYear();
+        currentDate += "-";
+        currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate += "-";
+        currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
+		// render the page and pass error message if it exists
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
+		if (errorMessage) {
+			renderOptions.error = errorMessage;
+		}
+		res.render("index.ejs", renderOptions);
+	} catch (err) {
+		console.log(err);
+	} 	
 });
 
 // login route
@@ -117,28 +180,28 @@ app.post("/login", async (req, res) => {
 app.post("/changeView", async (req,res) => {
     const viewPreference = req.body.view;
     res.cookie('view', viewPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the sort (product backlog)
 app.post("/changeSort", async (req,res) => {
     const sortPreference = req.body.sort;
     res.cookie('sort', sortPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the order (product backlog)
 app.post("/changeOrder", async (req,res) =>{
     const orderPreference = req.body.order;
     res.cookie('order', orderPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // change the filter (product backlog)
 app.post("/changeFilter", async (req,res) =>{
     const filterPreference = req.body.filter;
     res.cookie('filter', filterPreference);
-    res.redirect("/");
+    res.redirect("/productBacklog");
 });
 
 // add a new task (product backlog)
@@ -148,7 +211,7 @@ app.post("/add", async (req,res) => {
 		//const taskDescription = req.body.taskDescription;
 		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
 		await db.query(insertQuery, [taskName]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -164,7 +227,7 @@ app.post("/edit", async (req,res) => {
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
 	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/");
+        res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -177,7 +240,7 @@ app.post("/delete", async (req,res) => {
 		const taskId = req.body.id;
 		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
 		await db.query(deleteQuery, [taskId]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -450,7 +513,7 @@ app.post("/deleteSprint", async (req,res) =>{
 		await db.query(moveTaskToBacklog, [sprintId]);
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -701,6 +764,36 @@ app.post("/startSprint", async (req, res) => {
 		res.redirect("/viewSprint");
 	}
 });
+
+app.get("/defaultView",async (req,res) => {
+	try {
+
+		const userId = req.cookies.userId;
+		if (!userId) {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+
+		const userResult = await db.query("SELECT sprint_id FROM users WHERE id = $1", [userId]);
+
+		if (userResult.rows.length > 0) {
+			const sprintId = userResult.rows[0].sprint_id;
+			if (sprintId) {
+				res.cookie('currentSprintId', sprintId);
+				return res.redirect("/viewSprint");
+			} else {
+				return res.redirect("/productBacklog");
+			}
+		} else {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+	} catch (err) {
+		console.log(err);
+		
+	} 
+});
+
 
 // starts the application
 app.listen(port, () => {
