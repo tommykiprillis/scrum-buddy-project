@@ -24,73 +24,94 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// routes for the homepage (product backlog)
-
-// homepage view (product backlog)
-app.get("/",async (req,res) => {
-	try {
-
-		const errorMessage = req.cookies.error;
-		res.clearCookie("error");
-		// get view and sort preference of the user
-        const viewPreference = req.cookies.view || "card";
-		const sortPreference = req.cookies.sort || "priority";
-		const orderPreference = req.cookies.order || "DESC";
-		const filterPreference = req.cookies.filter || "";
-		
-		
-        // get the tasks from each column
-		let result;
-		let backlogTasks;
-
-		const sprintsResult = await db.query("SELECT * from sprints");
-		const backlogSprints = sprintsResult.rows;
-
-        let query = "SELECT * FROM tasks WHERE location	 IS NULL"
-        query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
-
-		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
-    	const fromSprintTasksArr = fromSprintTasksResult.rows;
-
-		// sort by alphabetical order
-		if (sortPreference === "name"){
-            query += ` ORDER BY title ${orderPreference}`;
-			// get the tasks from each column
-			result = await db.query(query);
-			backlogTasks = result.rows;
-		// // group the tags together
-		} else if (sortPreference === "story_points"){
-            query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
-			// get the tasks from each column
-			result = await db.query(query);
-			backlogTasks = result.rows;
-		// // sort by priority
-		} else if (sortPreference === "priority"){
-            query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
-			// get the tasks from each column
-			result = await db.query(query);
-			backlogTasks = result.rows;
-		}
-
-        // get the current date
-        const currentDateObject = new Date();
-        let currentDate = "";
-        currentDate += currentDateObject.getFullYear();
-        currentDate += "-";
-        currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
-        currentDate += "-";
-        currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
-
-		// render the page and pass error message if it exists
-		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
-		if (errorMessage) {
-			renderOptions.error = errorMessage;
-		}
-		res.render("index.ejs", renderOptions);
-	} catch (err) {
-		console.log(err);
-	} 	
+// render login page route (default route)
+app.get("/", (req, res) => {
+    res.render("login.ejs");
 });
+
+// login route
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = userResult.rows[0];
+
+        if (user && user.password === password) {
+            res.cookie("currentUserId",user.id);
+            res.send("Login Success!");
+        } else {
+            res.render("login.ejs",{invalid:"invalidCombination"})
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+// // homepage view (product backlog)
+// app.get("/",async (req,res) => {
+// 	try {
+
+// 		const errorMessage = req.cookies.error;
+// 		res.clearCookie("error");
+// 		// get view and sort preference of the user
+//         const viewPreference = req.cookies.view || "card";
+// 		const sortPreference = req.cookies.sort || "priority";
+// 		const orderPreference = req.cookies.order || "DESC";
+// 		const filterPreference = req.cookies.filter || "";
+		
+		
+//         // get the tasks from each column
+// 		let result;
+// 		let backlogTasks;
+
+// 		const sprintsResult = await db.query("SELECT * from sprints");
+// 		const backlogSprints = sprintsResult.rows;
+
+//         let query = "SELECT * FROM tasks WHERE location	 IS NULL"
+//         query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
+// 		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
+//     	const fromSprintTasksArr = fromSprintTasksResult.rows;
+
+// 		// sort by alphabetical order
+// 		if (sortPreference === "name"){
+//             query += ` ORDER BY title ${orderPreference}`;
+// 			// get the tasks from each column
+// 			result = await db.query(query);
+// 			backlogTasks = result.rows;
+// 		// // group the tags together
+// 		} else if (sortPreference === "story_points"){
+//             query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
+// 			// get the tasks from each column
+// 			result = await db.query(query);
+// 			backlogTasks = result.rows;
+// 		// // sort by priority
+// 		} else if (sortPreference === "priority"){
+//             query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
+// 			// get the tasks from each column
+// 			result = await db.query(query);
+// 			backlogTasks = result.rows;
+// 		}
+
+//         // get the current date
+//         const currentDateObject = new Date();
+//         let currentDate = "";
+//         currentDate += currentDateObject.getFullYear();
+//         currentDate += "-";
+//         currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+//         currentDate += "-";
+//         currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
+// 		// render the page and pass error message if it exists
+// 		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
+// 		if (errorMessage) {
+// 			renderOptions.error = errorMessage;
+// 		}
+// 		res.render("index.ejs", renderOptions);
+// 	} catch (err) {
+// 		console.log(err);
+// 	} 	
+// });
 
 // change the view (product backlog)
 app.post("/changeView", async (req,res) => {
@@ -679,33 +700,6 @@ app.post("/startSprint", async (req, res) => {
 		res.cookie("error", "An error occurred while starting the sprint.");
 		res.redirect("/viewSprint");
 	}
-});
-
-
-// render login page route
-app.get("/login", (req, res) => {
-    res.render("login.ejs", { error: req.cookies.error || null });
-});
-
-// login route
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-        const user = userResult.rows[0];
-
-        if (user && user.password === password) {
-            req.session.userId = user.id;
-            res.redirect("/");
-        } else {
-            res.cookie("error", "Invalid email or password");
-            res.redirect("/login");
-        }
-    } catch (err) {
-        console.log(err);
-        res.cookie("error", "An error occurred during login, please try again.");
-        res.redirect("/login");
-    }
 });
 
 // starts the application
