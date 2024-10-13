@@ -169,6 +169,14 @@ app.post("/createSprint", async (req,res) =>{
 		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
 		// Set sprint status to "Not Started" initially
+
+		// check that a sprint with the same name doesn't exist first
+		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
+		if (nameCheckResult.rows.length !== 0) {
+			res.cookie("error", "Sprint with the same name already exists");
+			return res.redirect("/");
+		}
+
 		const result = await db.query(
 			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
 			[sprintName, sprintStartDate, sprintEndDate]
