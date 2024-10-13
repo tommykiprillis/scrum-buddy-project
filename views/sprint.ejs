@@ -220,24 +220,27 @@
 										<% }) %>
 									</div>
 								<% } %>
-								<div class="btn-group dropend ms-auto">
-									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-											<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-										</svg>
-									</button>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
+                                <% if (sprintStatus !== "Not Started") { %>
+									<div class="btn-group dropend ms-auto">
+										<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+												<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+											</svg>
+										</button>
+	
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>   
+									</div>
+								<% } %>
 							</div>
 						</div>
 					</div>
@@ -407,7 +410,9 @@
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
 							<th scope="col">More</th>
-							<th scope="col">Move</th>
+                            <% if (sprintStatus !== "Not Started") { %>
+							    <th scope="col">Move</th>   
+                            <% } %>
 						</tr>
 					</thead>
 					<tbody>
@@ -443,24 +448,26 @@
 											View/Edit
 									</a>  
 								</td>
-								<td>
-									<div class="btn-group dropstart">
-										<a href="#" data-bs-toggle="dropdown">
-											Move To
-										</a>
-										<form action="/moveProgress" method="POST">
-											<input type="hidden" name="id" value="<%=task.id%>">
-											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-												<li><h6 class="dropdown-header">Move to</h6></li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
-													</button>
-												</li>
-											</ul>
-										</form>
-									</div>
-								</td>
+								<% if (sprintStatus !== "Not Started") { %>
+									<td>
+										<div class="btn-group dropstart">
+											<a href="#" data-bs-toggle="dropdown">
+												Move To
+											</a>
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>
+										</div>
+									</td>   
+								<% } %>
 							</tr>					 
 						<% }) %>
 					</tbody>
