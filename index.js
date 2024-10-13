@@ -29,6 +29,9 @@ app.use(cookieParser());
 // homepage view (product backlog)
 app.get("/",async (req,res) => {
 	try {
+
+		const errorMessage = req.cookies.error;
+		res.clearCookie("error");
 		// get view and sort preference of the user
         const viewPreference = req.cookies.view || "card";
 		const sortPreference = req.cookies.sort || "priority";
@@ -43,8 +46,11 @@ app.get("/",async (req,res) => {
 		const sprintsResult = await db.query("SELECT * from sprints");
 		const backlogSprints = sprintsResult.rows;
 
-        let query = "SELECT * FROM tasks WHERE location IS NULL"
+        let query = "SELECT * FROM tasks WHERE location	 IS NULL"
         query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
+
+		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
+    	const fromSprintTasksArr = fromSprintTasksResult.rows;
 
 		// sort by alphabetical order
 		if (sortPreference === "name"){
@@ -65,7 +71,22 @@ app.get("/",async (req,res) => {
 			result = await db.query(query);
 			backlogTasks = result.rows;
 		}
-		res.render("index.ejs", {tasks: backlogTasks, sprints: backlogSprints, view:viewPreference});
+
+        // get the current date
+        const currentDateObject = new Date();
+        let currentDate = "";
+        currentDate += currentDateObject.getFullYear();
+        currentDate += "-";
+        currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+        currentDate += "-";
+        currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
+		// render the page and pass error message if it exists
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
+		if (errorMessage) {
+			renderOptions.error = errorMessage;
+		}
+		res.render("index.ejs", renderOptions);
 	} catch (err) {
 		console.log(err);
 	} 	
@@ -147,8 +168,19 @@ app.post("/createSprint", async (req,res) =>{
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
+		// Set sprint status to "Not Started" initially
 
-		const result = await db.query("INSERT INTO sprints (name, start_date, end_date) VALUES ($1, $2, $3) RETURNING id", [sprintName, sprintStartDate, sprintEndDate])
+		// check that a sprint with the same name doesn't exist first
+		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
+		if (nameCheckResult.rows.length !== 0) {
+			res.cookie("error", "Sprint with the same name already exists");
+			return res.redirect("/");
+		}
+
+		const result = await db.query(
+			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
+			[sprintName, sprintStartDate, sprintEndDate]
+		  );
 		
 		const newSprintId = result.rows[0].id;
 
@@ -164,6 +196,9 @@ app.post("/createSprint", async (req,res) =>{
 // view a sprint (sprint)
 app.get("/viewSprint", async (req,res) => {
 	try {
+
+		const errorMessage = req.cookies.error;
+		res.clearCookie("error");
 		// get view and sort preference of the user
 		const currentSprint = req.cookies.currentSprintId;
         const viewPreference = req.cookies.view || "card";
@@ -176,21 +211,33 @@ app.get("/viewSprint", async (req,res) => {
 
 		const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [currentSprint]);
 		const currentSprintDetails = currentSprintDetailsResults.rows[0];
-		
-		const sprintResult = await db.query("SELECT start_date, end_date FROM sprints WHERE id = $1", [currentSprint]);
-		const sprint = sprintResult.rows[0];
-
-		let sprintStatus = "Not Started";
+		const sprintStatus = currentSprintDetails.sprint_status;
 		const currentDate = new Date();
+		const startDate = new Date(currentSprintDetails.start_date);
+    	const endDate = new Date(currentSprintDetails.end_date);
 
-		const startDate = new Date(sprint.start_date);
-		const endDate = new Date(sprint.end_date);
+		// Check for conditions to start/complete sprint
+		let displayStartButton = false;
+		let displayCompleteButton = false;
 
-		if (currentDate >= startDate && currentDate <= endDate) {
-			sprintStatus = "In Progress";
-		} else if (currentDate > endDate) { 
-			sprintStatus = "Completed";
+		// If the current date is the start date, display the start sprint button
+		if (currentDate.toDateString() === startDate.toDateString() && sprintStatus === "Not Started") {
+			displayStartButton = true;
+		  }
+
+		// Check if all tasks are completed
+		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [currentSprint])).rows[0].count === '0';
+
+		// If all tasks are completed, show the complete sprint button before due date
+		if (((currentDate <= endDate && allTasksCompleted) || (currentDate.toDateString() === endDate.toDateString())) && sprintStatus === "In Progress") {
+			displayCompleteButton = true;
 		}
+
+		// Automatically complete sprint if the current date is past the due date
+        if (currentDate > endDate && sprintStatus === "In Progress") {
+            return res.redirect('/completeSprint');
+        }
+
         // get the tasks from each column
 		let resultNotStarted;
 		let notStartedTasks;
@@ -237,15 +284,41 @@ app.get("/viewSprint", async (req,res) => {
 			resultCompleted = await db.query(query + `status = 'Completed' AND location = $1 ORDER BY priority IS NULL, priority ${orderPreference}`, [currentSprint]);
 			completedTasks = resultCompleted.rows;
 		}
-		res.render("sprint.ejs", {
-			notStarted:notStartedTasks,
-			inProgress:inProgressTasks,
-			completed:completedTasks,
-			view:viewPreference,
+
+		// get the current date
+		const currentDateObject = new Date();
+		let currentDate1 = "";
+		currentDate1 += currentDateObject.getFullYear();
+		currentDate1 += "-";
+		currentDate1 += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+		currentDate1 += "-";
+		currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
+
+
+		const renderOptions = {
+			notStarted: resultNotStarted.rows,
+			inProgress: resultInProgress.rows,
+			completed: resultCompleted.rows,
+			view: viewPreference,
 			sprintStatus: sprintStatus,
 			sprints: arraySprints,
-			sprintDetails: currentSprintDetails
-		});
+			sprintDetails: currentSprintDetails,
+			sort: sortPreference,
+			filter: filterPreference,
+			order: orderPreference,
+			date: currentDate1
+		};
+
+		if (errorMessage) {
+			renderOptions.error = errorMessage;
+		}
+		if (displayStartButton){
+			renderOptions.displayStartButton = true;
+		}
+		if (displayCompleteButton){
+			renderOptions.displayCompleteButton = true;
+		}
+		res.render("sprint.ejs", renderOptions);
 	} catch (err) {
 		console.log(err);
 	} 
@@ -297,19 +370,32 @@ app.post("/moveToBacklog", async (req,res) =>{
 
 
 // move a task from the product backlog to sprint (product backlog)
-app.post("/moveToSprint", async (req,res) =>{
+app.post("/moveToSprint", async (req, res) => {
+    const { taskId, sprintId } = req.body; 
+    try {
+        
+        const taskResult = await db.query("SELECT story_points FROM tasks WHERE id = $1", [taskId]);
+		const sprintResult = await db.query("SELECT sprint_status FROM sprints WHERE id = $1", [sprintId]);
 
-	const { taskId, sprintId } = req.body; 
-	try {
-        await db.query("UPDATE tasks SET location = $1,status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
-		res.redirect('/');
-   
+        if (taskResult.rows.length === 0 || taskResult.rows[0].story_points === null) {
+			res.cookie("error", "Task must have story points.");
+        } else if (sprintResult.rows.length === 0 || sprintResult.rows[0].sprint_status !== "Not Started") {
+			res.cookie("error", "Sprint in progress or completed. Can't add task");
+        } else {
+			await db.query("UPDATE tasks SET location = $1, status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
+		}
+        res.redirect('/');
+
     } catch (error) {
-        console.log("Error moving task:", err);
-  }
-
-
+        console.log("Error moving task:", error);
+        res.status(400).send(error.message); 
+    }
 });
+
+  
+
+
+
 
 // update which sprint we are currently viewing (sprint)
 app.post("/setSprintView", async (req,res) =>{
@@ -339,6 +425,8 @@ app.post("/editSprint", async (req,res) =>{
 app.post("/deleteSprint", async (req,res) =>{
 	try {
 		const sprintId = req.body.sprintId;
+		const moveTaskToBacklog = "UPDATE tasks SET location = NULL,date_completed = NULL, assignee = NULL WHERE location = $1";
+		await db.query(moveTaskToBacklog, [sprintId]);
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
 		res.redirect("/");
@@ -356,8 +444,11 @@ app.post("/editInSprint", async (req,res) => {
 		const newTags = (req.body.taskTag === '') ? null : req.body.taskTags
 		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
 		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/viewSprint");
+		const newStage = (req.body.taskStage === '') ? null : req.body.taskStage
+		const newAssignee = (req.body.taskAssignee === '') ? null : req.body.taskAssignee;
+		await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6, assignee = $7, stage = $8 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint, newAssignee,newStage])
+		res.redirect("/viewSprint");
+        
 	} catch (err) {
 		console.log(err);
 	} 
@@ -371,29 +462,39 @@ app.get("/viewBurndownChart", async (req, res) => {
         // get sprint ID from the cookies
 		const sprintId = req.cookies.currentSprintId;
 
-        // get the sprints (for the sidebar)
-        const sprintsResult = await db.query("SELECT * from sprints");
-		const backlogSprints = sprintsResult.rows;
+		const sprintsAll = await db.query("SELECT * from sprints");
+		const arraySprints = sprintsAll.rows;
 
-        // get the sprint details and status
-        const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [sprintId]);
+		const currentSprintDetailsResults = await db.query("SELECT * FROM sprints WHERE id = $1", [sprintId]);
 		const currentSprintDetails = currentSprintDetailsResults.rows[0];
-		
-		const sprintResult1 = await db.query("SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]);
-		const sprintDetails = sprintResult1.rows[0];
-
-		let sprintStatus = "Not Started";
+		const sprintStatus = currentSprintDetails.sprint_status;
 		const currentDate1 = new Date();
+		const startDate = new Date(currentSprintDetails.start_date);
+    	const endDate1 = new Date(currentSprintDetails.end_date);
 
-		const startDate1 = new Date(sprintDetails.start_date);
-		const endDate1 = new Date(sprintDetails.end_date);
+		// Check for conditions to start/complete sprint
+		let displayStartButton = false;
+		let displayCompleteButton = false;
 
-		if (currentDate1 >= startDate1 && currentDate1 <= endDate1) {
-			sprintStatus = "In Progress";
-		} else if (currentDate1 > endDate1) { 
-			sprintStatus = "Completed";
+		// If the current date is the start date, display the start sprint button
+		if (currentDate1.toDateString() === startDate.toDateString() && sprintStatus === "Not Started") {
+			displayStartButton = true;
+		  }
+
+		// Check if all tasks are completed
+		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [sprintId])).rows[0].count === '0';
+
+		// If all tasks are completed, show the complete sprint button before due date
+		if (((currentDate1 <= endDate1 && allTasksCompleted) || (currentDate1.toDateString() === endDate1.toDateString())) && sprintStatus === "In Progress") {
+			displayCompleteButton = true;
 		}
 
+		// Automatically complete sprint if the current date is past the due date
+        if (currentDate1 > endDate1 && sprintStatus === "In Progress") {
+            return res.redirect('/completeSprint');
+        }
+
+		// HEREHREHRHERH
 		// get the sprint details (start and end date)
 		const sprintResult = await db.query(
 			"SELECT start_date, end_date FROM sprints WHERE id = $1", [sprintId]
@@ -444,7 +545,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 			});
 
 			// Calculate ideal remaining story points
-			const idealRemainingPoints = totalStoryPoints * (1 - dayNumber / totalDays);
+			const idealRemainingPoints = totalStoryPoints * (1 - (dayNumber-1) / (totalDays-1));
 			idealBurndownData.push({
 				day: dayNumber,
 				storyPoints: idealRemainingPoints
@@ -467,9 +568,12 @@ app.get("/viewBurndownChart", async (req, res) => {
 			actualBurndownData: JSON.stringify(filteredActualData),
 			idealBurndownData: JSON.stringify(idealBurndownData),
 			sprintId: sprintId,
-            sprints: backlogSprints,
+            sprints: arraySprints,
             sprintStatus:sprintStatus,
-            sprintDetails:currentSprintDetails
+            sprintDetails:currentSprintDetails,
+			date: currentDate1,
+			displayStartButton: (displayStartButton === true)?true:null,
+			displayCompleteButton: (displayCompleteButton === true)?true:null,
 		});
 
 	} catch (err) {
@@ -496,6 +600,14 @@ app.post("/moveProgress", async (req,res) => {
 	try {
     	const taskID = req.body.id;
     	const newTaskProgress = req.body.destination
+		if (newTaskProgress === "In Progress" || newTaskProgress === "Completed"){
+			const taskAssigneeResult = await db.query('SELECT assignee FROM tasks WHERE id = $1', [taskID]);
+			const taskAssignee = taskAssigneeResult.rows[0]?.assignee;
+			if (taskAssignee === null){
+				res.cookie("error", "Task must have an assignee before moving.");
+				return res.redirect("/viewSprint");
+			}
+		}
         if (newTaskProgress === "Completed"){
             // if the task is moved to completed, save the day that it was completed
             const currentDate = new Date();
@@ -503,7 +615,9 @@ app.post("/moveProgress", async (req,res) => {
         } else {
             await db.query('UPDATE tasks SET status = $2,date_completed = NULL WHERE id = $1', [taskID, newTaskProgress])
         }
-        
+        if (newTaskProgress === "Completed" || newTaskProgress === "Not Started") {
+            await db.query('UPDATE tasks SET stage = null')
+        }
         res.redirect("/viewSprint");
     } catch (err) {
         console.log(err);
@@ -511,19 +625,38 @@ app.post("/moveProgress", async (req,res) => {
 });
 
 
+// complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
+app.get("/completeSprint", async (req,res) =>{
+	const sprintId = req.cookies.currentSprintId;
+	
+	try {
+		// set the status of the sprint to 'Completed'
+		await db.query("UPDATE sprints SET sprint_status = 'Completed' WHERE id = $1", [sprintId]);
+		// move tasks 'Not Started' back to the backlog
+		await db.query("UPDATE tasks SET location = NULL WHERE location = $1 AND status = 'Not Started'", [sprintId]);
+		// move tasks 'In Progress' back to the backlog, tagging 'from_sprint'
+		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE, assignee = NULL WHERE location = $1 AND status = 'In Progress'", [sprintId]);
+        // update the end date to the current date
+        const currentDate = new Date();
+        await db.query("UPDATE sprints SET end_date = $1 WHERE id = $2", [currentDate,sprintId]);
 
-// start a sprint 
-// REMOVE LATER: (completed 4/10/2024, 7pm to 8pm)
+		res.redirect('/viewSprint')
+	} catch (err) {
+		console.log("Error completing the sprint: ", err);
+	}
+
+})
+
 app.post("/startSprint", async (req, res) => {
 	try {
-		const sprintId = req.body.sprintId;
+		const sprintId = req.cookies.currentSprintId;
 
 		// get sprint details
 		const sprintDetailsResult = await db.query("SELECT * FROM sprints WHERE id = $1", [sprintId]);
         const sprintDetails = sprintDetailsResult.rows[0];
 
 		// check for Scrum Master and Product Owner
-		if (!sprintDetails.scrum_master || !sprintDetails.product_owner) {
+		if (!sprintDetails.scrum_master|| !sprintDetails.product_owner) {
 			res.cookie("error", "Sprint must have a Scrum Master and a Product Owner.");
 			return res.redirect("/viewSprint");
 		}
@@ -537,7 +670,7 @@ app.post("/startSprint", async (req, res) => {
 
 		// update sprint status to "In Progress"
 		await db.query("UPDATE sprints SET sprint_status = 'In Progress' WHERE id = $1", [sprintId]);
-
+		
 		// redirect to the sprint page
 		res.redirect("/viewSprint");
 		

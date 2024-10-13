@@ -40,13 +40,42 @@
 		.UIUX-badge {
 			background-color:#7161ef;
 			color: white;
-		}
-
-        .merriweather-regular {
-        font-family: "Merriweather", serif;
-        font-weight: 400;
-        font-style: normal;
+		}        
+        
+        .rotate {
+            transform: rotate(45deg);
         }
+
+        #addTaskIcon {
+            transition: transform 0.5s ease;
+        }
+
+    .merriweather-regular {
+    font-family: "Merriweather", serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+
+    .Low-badge {
+			background-color:#2ECC71;
+			color: white;
+    }
+
+    .Medium-badge {
+			background-color:#F4D03F;
+			color: white;
+    }
+
+    .Important-badge {
+			background-color:#F39C12;
+			color: white;
+    }
+
+    .Urgent-badge {
+			background-color:#E74C3C;
+			color: white;
+    }
+
 
 	</style>
 
@@ -104,19 +133,22 @@
           <form action="/createSprint" method="POST">
             <!--Name for the sprint-->
             <label for="nameInput" class="form-label">Sprint Name</label>
-            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off">
+            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off" required>
 
             <div class="row mt-4">
             <!--Start Date for the sprint-->
               <div class="col">
                 <label for="startDateInput" class="form-label">Start Date</label>
-                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off">
+                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off" min="<%= date %>" required aria-describedby="sdHelpBlock">
+                <div id="sdHelpBlock" class="form-text">
+                  Sprint must be at least 1-3 weeks long
+                </div>
               </div>
 
             <!--End Date for the sprint-->
               <div class="col">
                 <label for="endDateInput" class="form-label">End Date</label>
-                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off">
+                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off" min="<%=new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]%>" max="<%=new Date(new Date().setDate(new Date().getDate() + 21)).toISOString().split('T')[0]%>" required>
               </div>
             </div>
             <!--Saving Changes-->

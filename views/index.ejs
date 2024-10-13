@@ -1,4 +1,10 @@
 <%- include ("partials/header.ejs"); -%>
+	<% if (locals.error) { %>
+		<div class="alert alert-danger alert-dismissible fade show fixed-top mt-5" role="alert">
+			<strong>Error!</strong> <%= error %>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	<% } %>
 	<!-- header of the scrum board-->
 	<div class="mt-5 px-sm-5">
 	<h1 class="mb-4">Product Backlog</h1>
@@ -8,13 +14,22 @@
 		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
 			<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
 		</svg>
-		Sort By
+		Sort by
 		</button>
 			<form action="/changeSort" method="POST">
 				<ul class="dropdown-menu">
-					<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
-					<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
-					<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+					<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority <% if (sort === "priority"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					<li><button class="dropdown-item" type="submit" name="sort" value="name">Name <% if (sort === "name"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points <% if (sort === "story_points"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
 				</ul>  
 			</form>     
 	</div>
@@ -24,32 +39,59 @@
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
 				<path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
 			</svg>
-		  Order
+			Order
 		</button>
 			  <form action="/changeOrder" method="POST">
 				  <ul class="dropdown-menu">
-					  <li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending</button></li>
-					  <li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending</button></li>
+					  <li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending <% if (order === "ASC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending <% if (order === "DESC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
 				  </ul>  
 			  </form>     
 	  </div>
 
 	  <div class="btn-group mt-1 mt-sm-0">
-		<button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+		<button type="button" class="btn bg-body-secondary dropdown-toggle <%=filter?"border border-primary border-2 border-opacity-50":"" %>" data-bs-toggle="dropdown" aria-expanded="false">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
 				<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
 			</svg>
-		  Filter by Tag
+		  Filter By Tag
 		</button>
 			  <form action="/changeFilter" method="POST">
 				  <ul class="dropdown-menu">
-            <li><button class="dropdown-item" type="submit" name="filter" value="">None</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="API">API</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing</button></li>
-					  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX</button></li>
+            <li><button class="dropdown-item" type="submit" name="filter" value="">None <% if (filter === ""){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End <% if (filter === "Back-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End <% if (filter === "Front-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="API">API <% if (filter === "API"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases <% if (filter === "Databases"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing <% if (filter === "Testing"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
+					  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX <% if (filter === "UIUX"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+						<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+					  </svg><%}%>
+					</button></li>
 				  </ul>  
 			  </form>     
 	  </div>
@@ -74,12 +116,62 @@
 					</tr>
 				</thead>
 				<tbody>
+					<% fromSprintTasks.forEach(task => { %>
+						<tr class="table-primary" data-bs-toggle="tooltip" data-bs-title="In progress from previous sprint">
+							<td><%= task.title %></td>
+							<td>
+								<% if (task.priority !== null) { %>
+									<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+								<% } %>
+							</td>
+							<td>
+								<% if (task.tags !== null) { %>
+									<div class="d-flex flex-column gap-1 align-items-start">
+										<% task.tags.replace(/{|}/g, '').split(',').forEach(tag => { %>
+											<span class="badge <%=tag%>-badge py-1 d-flex align-items-center"><%= tag === "UIUX"?"UI/UX":tag %></span>
+										<% }) %>
+									</div>
+								<% } %>
+							</td>
+							<td>
+								<% if (task.story_points !== null) { %>
+									<%=task.story_points%>pts
+								<% } %>
+							</td>
+							<td>
+								<a href="#" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>">
+										View/Edit
+								</a>  
+							</td>
+							<td>
+								<div class="btn-group dropstart">
+									<a href="#" data-bs-toggle="dropdown">
+										Move To
+									</a>
+									<form action="/moveToSprint" method="POST">
+										<input type="hidden" name="taskId" value="<%=task.id%>">
+										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											<li><h6 class="dropdown-header">Sprints</h6></li>
+											<% sprints.forEach(sprint => { %>
+												<li>
+													<button class="dropdown-item" type="submit" name="sprintId" value="<%= sprint.id %>">
+														<%= sprint.name %>
+													</button>
+												</li>
+											<% }) %>
+										</ul>
+									</form>
+								</div>
+							</td>
+						</tr>					 
+					<% }) %>
+
 					<% tasks.forEach(task => { %>
 						<tr>
 							<td><%= task.title %></td>
 							<td>
 								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+									<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 								<% } %>
 							</td>
 							<td>
@@ -134,7 +226,14 @@
 						<h5 class="card-title">Add Task</h5>
 
 						<form action="/add" method="POST">
-							<input type="text" class="form-control" name="taskName" autocomplete="off">
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-2">
+                                    <input type="text" class="form-control" name="taskName" autocomplete="off" id="taskNameInput" required>
+                                </div>
+                                <div class="col-12 col-sm-6 mb-2">
+                                    <button type="submit" class="btn btn-dark">Create Task</button>
+                                </div>
+                            </div>
 						</form>
 				</div>
 			</div>
@@ -142,8 +241,8 @@
 
 		<!-- Add Task Button-->
 		<div class="d-flex justify-content-center">
-			<button class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
-				<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+			<button id="addTaskBtn" class="btn btn-dark rounded-circle p-1 lh-1" type="button" data-bs-toggle="collapse" data-bs-target="#createTask2" aria-expanded="false" aria-controls="createTask2">
+				<svg id="addTaskIcon" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
 					<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
 					</svg>
 			</button>
@@ -162,7 +261,7 @@
 	
 					<!--Task Name at top (prefill + save)-->
 					<label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-					<input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off">
+					<input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required>
 					
 					<div class="row mt-3">
 						<div class="col">
