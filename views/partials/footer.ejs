@@ -22,6 +22,20 @@
             }
         });
 
+        // updating the min of the second date once the first date has been set (within a sprint)
+        $("#startDateEdit").on("change",() => {
+            const newMin = $("#startDateEdit").val();
+            if (newMin !== ""){
+                $("#endDateEdit").attr({
+                    "min": newMin
+            });
+            } else {
+                $("#endDateEdit").attr({
+                    "min": $("#startDateEdit").attr("min")
+                });
+            }
+        });
+
         // move the cursor of the user once the "+" task is pressed, and rotate the icon to an x
         $("#addTaskBtn").click(() => {
             $("#addTaskIcon").toggleClass("rotate");

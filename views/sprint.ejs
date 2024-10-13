@@ -853,7 +853,7 @@
 				<!-- Start Date for the sprint -->
 				<div class="col">
 					<label for="startDateEdit" class="form-label">Start Date</label>
-					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" min="<%= date %>" required
 						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
                         <% if (sprintStatus !== "Not Started") { %>
                             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
@@ -863,7 +863,7 @@
 				<!-- End Date for the sprint -->
 				<div class="col">
 					<label for="endDateEdit" class="form-label">End Date</label>
-					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
+					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" min="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" required
 						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
                         <% if (sprintStatus !== "Not Started") { %>
                             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
