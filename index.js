@@ -626,7 +626,7 @@ app.post("/moveProgress", async (req,res) => {
 
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
-app.post("/completeSprint", async (req,res) =>{
+app.get("/completeSprint", async (req,res) =>{
 	const sprintId = req.cookies.currentSprintId;
 	
 	try {
@@ -635,7 +635,7 @@ app.post("/completeSprint", async (req,res) =>{
 		// move tasks 'Not Started' back to the backlog
 		await db.query("UPDATE tasks SET location = NULL WHERE location = $1 AND status = 'Not Started'", [sprintId]);
 		// move tasks 'In Progress' back to the backlog, tagging 'from_sprint'
-		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE WHERE location = $1 AND status = 'In Progress'", [sprintId]);
+		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE, assignee = NULL WHERE location = $1 AND status = 'In Progress'", [sprintId]);
         // update the end date to the current date
         const currentDate = new Date();
         await db.query("UPDATE sprints SET end_date = $1 WHERE id = $2", [currentDate,sprintId]);
