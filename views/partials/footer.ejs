@@ -12,12 +12,24 @@
         $("#startDateInput").on("change",() => {
             const newMin = $("#startDateInput").val();
             if (newMin !== ""){
+                let date = new Date(newMin);
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
                 $("#endDateInput").attr({
-                    "min": newMin
+                    "min": minDate,
+                    "max": maxDate
             });
             } else {
+                let date = new Date();
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
                 $("#endDateInput").attr({
-                    "min": $("#startDateInput").attr("min")
+                    "min": minDate,
+                    "max": maxDate
                 });
             }
         });
@@ -26,12 +38,24 @@
         $("#startDateEdit").on("change",() => {
             const newMin = $("#startDateEdit").val();
             if (newMin !== ""){
+                let date = new Date(newMin);
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
                 $("#endDateEdit").attr({
-                    "min": newMin
+                    "min": minDate,
+                    "max": maxDate
             });
             } else {
+                let date = new Date();
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
                 $("#endDateEdit").attr({
-                    "min": $("#startDateEdit").attr("min")
+                    "min": minDate,
+                    "max": maxDate
                 });
             }
         });
