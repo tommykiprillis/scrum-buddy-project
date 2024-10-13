@@ -169,6 +169,14 @@ app.post("/createSprint", async (req,res) =>{
 		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
 		// Set sprint status to "Not Started" initially
+
+		// check that a sprint with the same name doesn't exist first
+		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
+		if (nameCheckResult.rows.length !== 0) {
+			res.cookie("error", "Sprint with the same name already exists");
+			return res.redirect("/");
+		}
+
 		const result = await db.query(
 			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
 			[sprintName, sprintStartDate, sprintEndDate]
@@ -221,7 +229,7 @@ app.get("/viewSprint", async (req,res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [currentSprint])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate <= endDate && allTasksCompleted && sprintStatus === "In Progress") || currentDate.toDateString() === endDate.toDateString()) {
+		if (((currentDate <= endDate && allTasksCompleted) || (currentDate.toDateString() === endDate.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
@@ -477,7 +485,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [sprintId])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate1 <= endDate1 && allTasksCompleted && sprintStatus === "In Progress") || currentDate1.toDateString() === endDate1.toDateString()) {
+		if (((currentDate1 <= endDate1 && allTasksCompleted) || (currentDate1.toDateString() === endDate1.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
@@ -537,7 +545,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 			});
 
 			// Calculate ideal remaining story points
-			const idealRemainingPoints = totalStoryPoints * (1 - dayNumber / totalDays);
+			const idealRemainingPoints = totalStoryPoints * (1 - (dayNumber-1) / (totalDays-1));
 			idealBurndownData.push({
 				day: dayNumber,
 				storyPoints: idealRemainingPoints
@@ -554,7 +562,6 @@ app.get("/viewBurndownChart", async (req, res) => {
 
 		// Filter the data based on the current day number
 		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
-
 
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
@@ -619,7 +626,7 @@ app.post("/moveProgress", async (req,res) => {
 
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
-app.post("/completeSprint", async (req,res) =>{
+app.get("/completeSprint", async (req,res) =>{
 	const sprintId = req.cookies.currentSprintId;
 	
 	try {
@@ -628,7 +635,7 @@ app.post("/completeSprint", async (req,res) =>{
 		// move tasks 'Not Started' back to the backlog
 		await db.query("UPDATE tasks SET location = NULL WHERE location = $1 AND status = 'Not Started'", [sprintId]);
 		// move tasks 'In Progress' back to the backlog, tagging 'from_sprint'
-		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE WHERE location = $1 AND status = 'In Progress'", [sprintId]);
+		await db.query("UPDATE tasks SET location = NULL, from_sprint = TRUE, assignee = NULL WHERE location = $1 AND status = 'In Progress'", [sprintId]);
         // update the end date to the current date
         const currentDate = new Date();
         await db.query("UPDATE sprints SET end_date = $1 WHERE id = $2", [currentDate,sprintId]);
