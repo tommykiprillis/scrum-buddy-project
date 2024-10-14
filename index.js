@@ -24,7 +24,52 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// routes for the homepage (product backlog)
+// default route -> login page if no one logged in
+app.get("/",async (req,res) => {
+	try {
+		const userId = req.cookies.currentUserId;
+		if (!userId) {
+			res.clearCookie("userId");
+			return res.render("login.ejs");
+		}
+
+		const userResult = await db.query("SELECT sprint_id FROM users WHERE id = $1", [userId]);
+
+		if (userResult.rows.length > 0) {
+			const sprintId = userResult.rows[0].sprint_id;
+			if (sprintId) {
+				res.cookie('currentSprintId', sprintId);
+				return res.redirect("/viewSprint");
+			} else {
+				return res.redirect("/productBacklog");
+			}
+		} else {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+	} catch (err) {
+		console.log(err);
+		
+	} 
+});
+
+// login route
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = userResult.rows[0];
+
+        if (user && user.password === password) {
+            res.cookie("currentUserId",user.id);
+            res.redirect("/");
+        } else {
+            res.render("login.ejs",{invalid:"invalidCombination"})
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 // homepage view (product backlog)
 app.get("/productBacklog",async (req,res) => {
@@ -91,191 +136,6 @@ app.get("/productBacklog",async (req,res) => {
 		console.log(err);
 	} 	
 });
-
-// login route
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-        const user = userResult.rows[0];
-
-        if (user && user.password === password) {
-            res.cookie("currentUserId",user.id);
-            res.send("Login Success!");
-        } else {
-            res.render("login.ejs",{invalid:"invalidCombination"})
-        }
-    } catch (err) {
-        console.log(err);
-    }
-});
-
-// // homepage view (product backlog)
-// app.get("/",async (req,res) => {
-// 	try {
-
-// 		const errorMessage = req.cookies.error;
-// 		res.clearCookie("error");
-// 		// get view and sort preference of the user
-//         const viewPreference = req.cookies.view || "card";
-// 		const sortPreference = req.cookies.sort || "priority";
-// 		const orderPreference = req.cookies.order || "DESC";
-// 		const filterPreference = req.cookies.filter || "";
-		
-		
-//         // get the tasks from each column
-// 		let result;
-// 		let backlogTasks;
-
-// 		const sprintsResult = await db.query("SELECT * from sprints");
-// 		const backlogSprints = sprintsResult.rows;
-
-//         let query = "SELECT * FROM tasks WHERE location	 IS NULL"
-//         query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
-
-// 		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
-//     	const fromSprintTasksArr = fromSprintTasksResult.rows;
-
-// 		// sort by alphabetical order
-// 		if (sortPreference === "name"){
-//             query += ` ORDER BY title ${orderPreference}`;
-// 			// get the tasks from each column
-// 			result = await db.query(query);
-// 			backlogTasks = result.rows;
-// 		// // group the tags together
-// 		} else if (sortPreference === "story_points"){
-//             query += ` ORDER BY story_points IS NULL, story_points ${orderPreference}`;
-// 			// get the tasks from each column
-// 			result = await db.query(query);
-// 			backlogTasks = result.rows;
-// 		// // sort by priority
-// 		} else if (sortPreference === "priority"){
-//             query += ` ORDER BY priority IS NULL, priority ${orderPreference}`
-// 			// get the tasks from each column
-// 			result = await db.query(query);
-// 			backlogTasks = result.rows;
-// 		}
-
-//         // get the current date
-//         const currentDateObject = new Date();
-//         let currentDate = "";
-//         currentDate += currentDateObject.getFullYear();
-//         currentDate += "-";
-//         currentDate += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
-//         currentDate += "-";
-//         currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
-
-// 		// render the page and pass error message if it exists
-// 		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
-// 		if (errorMessage) {
-// 			renderOptions.error = errorMessage;
-// 		}
-// 		res.render("index.ejs", renderOptions);
-// 	} catch (err) {
-// 		console.log(err);
-// 	} 	
-// });
-
-// change the view (product backlog)
-app.post("/changeView", async (req,res) => {
-    const viewPreference = req.body.view;
-    res.cookie('view', viewPreference);
-    res.redirect("/productBacklog");
-});
-
-// change the sort (product backlog)
-app.post("/changeSort", async (req,res) => {
-    const sortPreference = req.body.sort;
-    res.cookie('sort', sortPreference);
-    res.redirect("/productBacklog");
-});
-
-// change the order (product backlog)
-app.post("/changeOrder", async (req,res) =>{
-    const orderPreference = req.body.order;
-    res.cookie('order', orderPreference);
-    res.redirect("/productBacklog");
-});
-
-// change the filter (product backlog)
-app.post("/changeFilter", async (req,res) =>{
-    const filterPreference = req.body.filter;
-    res.cookie('filter', filterPreference);
-    res.redirect("/productBacklog");
-});
-
-// add a new task (product backlog)
-app.post("/add", async (req,res) => {
-	try {
-		const taskName = req.body.taskName;
-		//const taskDescription = req.body.taskDescription;
-		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
-		await db.query(insertQuery, [taskName]);
-		res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
-// edit a task (product backlog)
-app.post("/edit", async (req,res) => {
-	try {
-        const id = req.body.id;
-	    const newName = req.body.taskName
-	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
-		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
-		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-
-});
-
-// delete a task (product backlog)
-app.post("/delete", async (req,res) => {
-	try {
-		const taskId = req.body.id;
-		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
-		await db.query(deleteQuery, [taskId]);
-		res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
-// create a new sprint (product backlog)
-app.post("/createSprint", async (req,res) =>{
-	try {
-		const sprintName = req.body.name;
-		const sprintStartDate = req.body.startDate;
-		const sprintEndDate = req.body.endDate;
-		// Set sprint status to "Not Started" initially
-
-		// check that a sprint with the same name doesn't exist first
-		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
-		if (nameCheckResult.rows.length !== 0) {
-			res.cookie("error", "Sprint with the same name already exists");
-			return res.redirect("/");
-		}
-
-		const result = await db.query(
-			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
-			[sprintName, sprintStartDate, sprintEndDate]
-		  );
-		
-		const newSprintId = result.rows[0].id;
-
-		res.cookie('currentSprintId', newSprintId);
-		res.redirect("/viewSprint");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
-// routes for the sprint view
 
 // view a sprint (sprint)
 app.get("/viewSprint", async (req,res) => {
@@ -407,6 +267,108 @@ app.get("/viewSprint", async (req,res) => {
 		console.log(err);
 	} 
 });
+
+
+// change the view (product backlog)
+app.post("/changeView", async (req,res) => {
+    const viewPreference = req.body.view;
+    res.cookie('view', viewPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the sort (product backlog)
+app.post("/changeSort", async (req,res) => {
+    const sortPreference = req.body.sort;
+    res.cookie('sort', sortPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the order (product backlog)
+app.post("/changeOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the filter (product backlog)
+app.post("/changeFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
+    res.redirect("/productBacklog");
+});
+
+// add a new task (product backlog)
+app.post("/add", async (req,res) => {
+	try {
+		const taskName = req.body.taskName;
+		//const taskDescription = req.body.taskDescription;
+		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
+		await db.query(insertQuery, [taskName]);
+		res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+});
+
+// edit a task (product backlog)
+app.post("/edit", async (req,res) => {
+	try {
+        const id = req.body.id;
+	    const newName = req.body.taskName
+	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
+		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
+		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
+		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
+        res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+
+});
+
+// delete a task (product backlog)
+app.post("/delete", async (req,res) => {
+	try {
+		const taskId = req.body.id;
+		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
+		await db.query(deleteQuery, [taskId]);
+		res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+});
+
+// create a new sprint (product backlog)
+app.post("/createSprint", async (req,res) =>{
+	try {
+		const sprintName = req.body.name;
+		const sprintStartDate = req.body.startDate;
+		const sprintEndDate = req.body.endDate;
+		// Set sprint status to "Not Started" initially
+
+		// check that a sprint with the same name doesn't exist first
+		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
+		if (nameCheckResult.rows.length !== 0) {
+			res.cookie("error", "Sprint with the same name already exists");
+			return res.redirect("/");
+		}
+
+		const result = await db.query(
+			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
+			[sprintName, sprintStartDate, sprintEndDate]
+		  );
+		
+		const newSprintId = result.rows[0].id;
+
+		res.cookie('currentSprintId', newSprintId);
+		res.redirect("/viewSprint");
+	} catch (err) {
+		console.log(err);
+	} 
+});
+
+// routes for the sprint view
 
 // change the view (sprint)
 app.post("/changeSprintView", async (req,res) =>{
@@ -763,35 +725,6 @@ app.post("/startSprint", async (req, res) => {
 		res.cookie("error", "An error occurred while starting the sprint.");
 		res.redirect("/viewSprint");
 	}
-});
-
-app.get("/defaultView",async (req,res) => {
-	try {
-
-		const userId = req.cookies.userId;
-		if (!userId) {
-			res.clearCookie("userId");
-			return res.redirect("/login");
-		}
-
-		const userResult = await db.query("SELECT sprint_id FROM users WHERE id = $1", [userId]);
-
-		if (userResult.rows.length > 0) {
-			const sprintId = userResult.rows[0].sprint_id;
-			if (sprintId) {
-				res.cookie('currentSprintId', sprintId);
-				return res.redirect("/viewSprint");
-			} else {
-				return res.redirect("/productBacklog");
-			}
-		} else {
-			res.clearCookie("userId");
-			return res.redirect("/login");
-		}
-	} catch (err) {
-		console.log(err);
-		
-	} 
 });
 
 
