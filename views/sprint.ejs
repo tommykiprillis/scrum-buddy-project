@@ -1,4 +1,13 @@
 <%- include ("partials/header.ejs"); -%>
+
+	<!-- error message-->
+	<% if (locals.error) { %>
+		<div class="alert alert-danger alert-dismissible fade show fixed-top mt-5" role="alert">
+			<strong>Error!</strong> <%= error %>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	<% } %>
+
   <!-- header of the scrum board-->
   <div class="mt-5 px-sm-5">
 	<span class="badge p-2 me-auto text-bg-dark rounded-pill mb-2"><%=sprintStatus%></span>
@@ -11,9 +20,36 @@
 		</button> 
 	</div>
 
-	<p class="fs-5 text-secondary mb-4"><%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
-		<%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-	</p>
+	<div class="d-flex justify-content-start mb-4 fs-5 gap-3 align-items-center">
+		<div class="text-secondary py-1"><%= new Date(sprintDetails.start_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
+			<%= new Date(sprintDetails.end_date).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
+		</div>
+		<% if (locals.displayStartButton) { %>
+			<!-- Start Sprint button-->
+			 <form action="/startSprint" method="POST">
+				<button class="btn btn-outline-primary d-inline-flex align-items-center rounded-pill py-1" type="submit">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rocket-takeoff" viewBox="0 0 16 16">
+						<path d="M9.752 6.193c.599.6 1.73.437 2.528-.362s.96-1.932.362-2.531c-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532"/>
+						<path d="M15.811 3.312c-.363 1.534-1.334 3.626-3.64 6.218l-.24 2.408a2.56 2.56 0 0 1-.732 1.526L8.817 15.85a.51.51 0 0 1-.867-.434l.27-1.899c.04-.28-.013-.593-.131-.956a9 9 0 0 0-.249-.657l-.082-.202c-.815-.197-1.578-.662-2.191-1.277-.614-.615-1.079-1.379-1.275-2.195l-.203-.083a10 10 0 0 0-.655-.248c-.363-.119-.675-.172-.955-.132l-1.896.27A.51.51 0 0 1 .15 7.17l2.382-2.386c.41-.41.947-.67 1.524-.734h.006l2.4-.238C9.005 1.55 11.087.582 12.623.208c.89-.217 1.59-.232 2.08-.188.244.023.435.06.57.093q.1.026.16.045c.184.06.279.13.351.295l.029.073a3.5 3.5 0 0 1 .157.721c.055.485.051 1.178-.159 2.065m-4.828 7.475.04-.04-.107 1.081a1.54 1.54 0 0 1-.44.913l-1.298 1.3.054-.38c.072-.506-.034-.993-.172-1.418a9 9 0 0 0-.164-.45c.738-.065 1.462-.38 2.087-1.006M5.205 5c-.625.626-.94 1.351-1.004 2.09a9 9 0 0 0-.45-.164c-.424-.138-.91-.244-1.416-.172l-.38.054 1.3-1.3c.245-.246.566-.401.91-.44l1.08-.107zm9.406-3.961c-.38-.034-.967-.027-1.746.163-1.558.38-3.917 1.496-6.937 4.521-.62.62-.799 1.34-.687 2.051.107.676.483 1.362 1.048 1.928.564.565 1.25.941 1.924 1.049.71.112 1.429-.067 2.048-.688 3.079-3.083 4.192-5.444 4.556-6.987.183-.771.18-1.345.138-1.713a3 3 0 0 0-.045-.283 3 3 0 0 0-.3-.041Z"/>
+						<path d="M7.009 12.139a7.6 7.6 0 0 1-1.804-1.352A7.6 7.6 0 0 1 3.794 8.86c-1.102.992-1.965 5.054-1.839 5.18.125.126 3.936-.896 5.054-1.902Z"/>
+						</svg>&nbsp;Start Sprint
+					</button>
+			 </form>
+		<% } %>
+
+		<% if (locals.displayCompleteButton) { %>
+			<!-- Complete Sprint button-->
+			 <form action="/completeSprint" method="POST">
+					<button class="btn btn-outline-success d-inline-flex align-items-center rounded-pill py-1" type="submit">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+							<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+						</svg>&nbsp;Complete Sprint
+					</button>
+			 </form>
+
+		<% } %>
+	</div>
+
 	<div class="d-flex justify-content-start gap-2 flex-wrap">
 		<div class="btn-group">
 			<button type="button" class="btn bg-body-secondary dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,8 +60,14 @@
 			</button>
 					<form action="/changeSprintView" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View</button></li>
-							<li><button class="dropdown-item" type="submit" name="view" value="list">List View</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="card">Card View <% if (view === "card"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="view" value="list">List View <% if (view === "list"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>    
 			</div>
@@ -39,9 +81,18 @@
 			</button>
 					<form action="/changeSprintSort" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name</button></li>
-							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="priority">Priority <% if (sort === "priority"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="name">Name <% if (sort === "name"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
+							<li><button class="dropdown-item" type="submit" name="sort" value="story_points">Story Points <% if (sort === "story_points"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+								<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+								</svg><%}%>
+							</button></li>
 						</ul>  
 					</form>     
 			</div>
@@ -55,14 +106,20 @@
 				</button>
 					<form action="/changeSprintOrder" method="POST">
 						<ul class="dropdown-menu">
-							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending</button></li>
-							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="order" value="ASC">Ascending <% if (order === "ASC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+							<li><button class="dropdown-item" type="submit" name="order" value="DESC">Descending <% if (order === "DESC"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+							  <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+							</svg><%}%>
+						  </button></li>
+						</ul> 
 					</form>     
 			</div>
 		
 			<div class="btn-group">
-				<button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn bg-body-secondary dropdown-toggle <%=filter?"border border-primary border-2 border-opacity-50":"" %>" data-bs-toggle="dropdown" aria-expanded="false">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
 						<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
 					</svg>
@@ -70,31 +127,52 @@
 				</button>
 					<form action="/changeSprintFilter" method="POST">
 						<ul class="dropdown-menu">
-					<li><button class="dropdown-item" type="submit" name="filter" value="">None</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="API">API</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing</button></li>
-							<li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX</button></li>
-						</ul>  
+							<li><button class="dropdown-item" type="submit" name="filter" value="">None <% if (filter === ""){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+											<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+											</svg><%}%>
+										</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Back-End">Back-End <% if (filter === "Back-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Front-End">Front-End <% if (filter === "Front-End"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="API">API <% if (filter === "API"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Databases">Databases <% if (filter === "Databases"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="Testing">Testing <% if (filter === "Testing"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+									  <li><button class="dropdown-item" type="submit" name="filter" value="UIUX">UI/UX <% if (filter === "UIUX"){ %><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-lg" viewBox="0 0 16 16">
+										<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+									  </svg><%}%>
+									</button></li>
+								  </ul>   
 					</form>     
 			</div>
-		
-				<div class="ms-lg-auto">
-					<a href="/viewBurndownChart" class="btn btn-primary">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
-							<path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07"/>
-						</svg>
-					View Burndown Chart
-					</a>
-				</div>
-	  
+
+				<% if (sprintStatus !== "Not Started") { %>
+					<div class="ms-lg-auto">
+						<a href="/viewBurndownChart" class="btn btn-primary">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
+								<path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07"/>
+							</svg>
+						View Burndown Chart
+						</a>
+					</div>
+				<% } %>
 	</div>
     
 
   </div>
-
 	<% if (view === "card") { %>
 		<!-- Card View Start-->
 		<div class="d-flex gap-3 P-3 mt-5 mx-sm-5 row" >
@@ -111,14 +189,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -136,34 +220,27 @@
 										<% }) %>
 									</div>
 								<% } %>
-								<div class="btn-group dropend ms-auto">
-									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-											<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-										</svg>
-									</button>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
+                                <% if (sprintStatus !== "Not Started") { %>
+									<div class="btn-group dropend ms-auto">
+										<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+												<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+											</svg>
+										</button>
+	
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>   
+									</div>
+								<% } %>
 							</div>
 						</div>
 					</div>
@@ -184,14 +261,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -222,11 +305,6 @@
 											<li>
 												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
 													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
 												</button>
 											</li>
 											<li>
@@ -254,14 +332,20 @@
 					<!-- Task Entry-->
 					<div class="card border border-0 shadow-sm">
 						<div class="card-body">
-							<div class="d-flex justify-content-end align-items-center gap-3 mb-2">
-								<% if (task.priority !== null) { %>
-									<span class="badge text-bg-dark rounded-pill p-2 me-auto"><%=task.priority%></span>
-								<% } %>
+							<div class="d-flex justify-content-start align-items-center gap-3 mb-2">
+                                <div class="d-flex gap-1 align-items-center flex-wrap">
+                                    <% if (task.priority !== null) { %>
+                                        <span class="badge <%=task.priority%>-badge rounded-pill p-2"><%=task.priority%></span>
+                                    <% } %>
+                                    <% if (task.stage !== null) { %>
+                                        <span class="badge rounded-pill p-2 text-bg-dark"><%=task.stage%></span>
+                                    <% } %>
+                                </div>
+
 								<% if (task.story_points !== null) { %>
 									<div class="text-body-secondary"><%=task.story_points%>pts</div>
 								<% } %>
-								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
+								<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center ms-auto" type="button" data-bs-toggle="modal" data-bs-target="#detailed<%= task.id %>" aria-expanded="false">
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 										<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 									</svg>
@@ -279,34 +363,27 @@
 										<% }) %>
 									</div>
 								<% } %>
+                                <% if (sprintStatus !== "Completed") { %>
 								<div class="btn-group dropend ms-auto">
 									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
 											<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
 										</svg>
 									</button>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-													Not Started
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="Completed">
-													Completed
-												</button>
-											</li>
-										</ul>
-									</form>
+
+                                        <form action="/moveProgress" method="POST">
+                                            <input type="hidden" name="id" value="<%=task.id%>">
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <li><h6 class="dropdown-header">Move to</h6></li>
+                                                <li>
+                                                    <button class="dropdown-item" type="submit" name="destination" value="In Progress">
+                                                        In Progress
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </form>   
 								</div>
+                                <% } %>
 							</div>
 						</div>
 					</div>
@@ -333,7 +410,9 @@
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
 							<th scope="col">More</th>
-							<th scope="col">Move</th>
+                            <% if (sprintStatus !== "Not Started") { %>
+							    <th scope="col">Move</th>   
+                            <% } %>
 						</tr>
 					</thead>
 					<tbody>
@@ -342,7 +421,7 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 									<% } %>
 								</td>
 								<td>
@@ -369,34 +448,26 @@
 											View/Edit
 									</a>  
 								</td>
-								<td>
-									<div class="btn-group dropstart">
-										<a href="#" data-bs-toggle="dropdown">
-											Move To
-										</a>
-										<form action="/moveProgress" method="POST">
-											<input type="hidden" name="id" value="<%=task.id%>">
-											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-												<li><h6 class="dropdown-header">Move to</h6></li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-														Not Started
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Completed">
-														Completed
-													</button>
-												</li>
-											</ul>
-										</form>
-									</div>
-								</td>
+								<% if (sprintStatus !== "Not Started") { %>
+									<td>
+										<div class="btn-group dropstart">
+											<a href="#" data-bs-toggle="dropdown">
+												Move To
+											</a>
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>
+										</div>
+									</td>   
+								<% } %>
 							</tr>					 
 						<% }) %>
 					</tbody>
@@ -418,6 +489,7 @@
 						<tr>
 							<th scope="col">Title</th>
 							<th scope="col">Priority</th>
+                            <th scope="col">Stage</th>
 							<th scope="col">Tags</th>
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
@@ -431,7 +503,12 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
+									<% } %>
+								</td>
+                                <td>
+									<% if (task.stage !== null) { %>
+										<span class="badge  rounded-pill p-2 text-bg-dark"><%= task.stage %></span>
 									<% } %>
 								</td>
 								<td>
@@ -470,11 +547,6 @@
 												<li>
 													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
 														Not Started
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
 													</button>
 												</li>
 												<li>
@@ -510,7 +582,9 @@
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
 							<th scope="col">More</th>
-							<th scope="col">Move</th>
+                            <% if (sprintStatus !== "Completed") { %>
+							    <th scope="col">Move</th>   
+                            <% } %>
 						</tr>
 					</thead>
 					<tbody>
@@ -519,7 +593,7 @@
 								<td><%= task.title %></td>
 								<td>
 									<% if (task.priority !== null) { %>
-										<span class="badge text-bg-dark rounded-pill p-2"><%= task.priority %></span>
+										<span class="badge <%=task.priority%>-badge rounded-pill p-2"><%= task.priority %></span>
 									<% } %>
 								</td>
 								<td>
@@ -546,34 +620,27 @@
 											View/Edit
 									</a>  
 								</td>
+                                <% if (sprintStatus !== "Completed") { %>
 								<td>
 									<div class="btn-group dropstart">
 										<a href="#" data-bs-toggle="dropdown">
 											Move To
 										</a>
-										<form action="/moveProgress" method="POST">
-											<input type="hidden" name="id" value="<%=task.id%>">
-											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-												<li><h6 class="dropdown-header">Move to</h6></li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Not Started">
-														Not Started
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
-													</button>
-												</li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="Completed">
-														Completed
-													</button>
-												</li>
-											</ul>
-										</form>
+                                            <form action="/moveProgress" method="POST">
+                                                <input type="hidden" name="id" value="<%=task.id%>">
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <li><h6 class="dropdown-header">Move to</h6></li>
+                                                    <li>
+                                                        <button class="dropdown-item" type="submit" name="destination" value="In Progress">
+                                                            In Progress
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </form>
+
 									</div>
 								</td>
+                                <% } %>
 							</tr>					 
 						<% }) %>
 					</tbody>
@@ -601,9 +668,9 @@
 
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
-              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" 
-			  <% if (sprintStatus === "In Progress") { %>
-				readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
+              <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required
+			  <% if (sprintStatus !== "Not Started") { %>
+				readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
 			  <% } %>
 			  >
               <!--Assignee (prefill + save)-->
@@ -612,7 +679,15 @@
               <% if (task.assignee !== null) { %>
                 value="<%=task.assignee%>"
               <% } %>
-              name="taskAssignee" autocomplete="off">
+
+              name="taskAssignee" autocomplete="off"
+              <% if (task.status !== "Not Started") { %>
+                required
+                <% } %>
+                <% if (sprintStatus === "Completed") { %>
+                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+                  <% } %>>
+
 
 			  <div class="row mt-3">
 				<div class="col">
@@ -620,29 +695,82 @@
 					<label for="tagOptions<%= task.id %>" class="form-label">Tags</label>
 					<div id="tagOptions<%= task.id %>">
 						<label><input type="checkbox" name="taskTags[]" value="Back-End" 
-							<%= task.tags && task.tags.includes('Back-End') ? 'checked' : '' %>> Back-End</label><br>
-						
+							<%= task.tags && task.tags.includes('Back-End') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                            disabled
+                            <% } %>> Back-End</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('Back-End') ? 'checked' : '' ) { %>
+                                <input type="hidden" name="taskTags[]" value="Back-End">
+                            <% } %>
 						<label><input type="checkbox" name="taskTags[]" value="Front-End" 
-							<%= task.tags && task.tags.includes('Front-End') ? 'checked' : '' %>> Front-End</label><br>
+							<%= task.tags && task.tags.includes('Front-End') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                                disabled
+                            <% } %>> Front-End</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('Front-End') ? 'checked' : '' ) { %>
+                                    <input type="hidden" name="taskTags[]" value="Front-End">
+                            <% } %>
 						
 						<label><input type="checkbox" name="taskTags[]" value="API" 
-							<%= task.tags && task.tags.includes('API') ? 'checked' : '' %>> API</label><br>
+							<%= task.tags && task.tags.includes('API') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                                disabled
+                            <% } %>> API</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('API') ? 'checked' : '' ) { %>
+                                    <input type="hidden" name="taskTags[]" value="API">
+                            <% } %>
 						
 						<label><input type="checkbox" name="taskTags[]" value="Databases" 
-							<%= task.tags && task.tags.includes('Databases') ? 'checked' : '' %>> Databases</label><br>
+							<%= task.tags && task.tags.includes('Databases') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                                disabled
+                            <% } %>> Databases</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('Databases') ? 'checked' : '' ) { %>
+                                    <input type="hidden" name="taskTags[]" value="Databases">
+                            <% } %>
 						
 						<label><input type="checkbox" name="taskTags[]" value="Testing" 
-							<%= task.tags && task.tags.includes('Testing') ? 'checked' : '' %>> Testing</label><br>
+							<%= task.tags && task.tags.includes('Testing') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                                disabled
+                            <% } %>> Testing</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('Testing') ? 'checked' : '' ) { %>
+                                    <input type="hidden" name="taskTags[]" value="Testing">
+                            <% } %>
 						
 						<label><input type="checkbox" name="taskTags[]" value="UIUX" 
-							<%= task.tags && task.tags.includes('UIUX') ? 'checked' : '' %>> UI/UX</label><br>
+							<%= task.tags && task.tags.includes('UIUX') ? 'checked' : '' %>
+                            <% if (sprintStatus === "Completed") { %>
+                                disabled
+                            <% } %>> UI/UX</label><br>
+                            <% if (sprintStatus === "Completed" && task.tags && task.tags.includes('UIUX') ? 'checked' : '' ) { %>
+                                    <input type="hidden" name="taskTags[]" value="UIUX">
+                            <% } %>
 					</div>						
 				</div>
 
 				<div class="col">
+                    <% if (task.status === "In Progress") { %>
+                    <!--Stage (dropdown prefill + save)-->
+					<label for="stage<%= task.id %>" class="form-label">Stage</label>
+					<select class="form-control form-control-sm" id="stage<%= task.id %>" name="taskStage">
+					<% if (task.stage !== null) { %>
+						<option value="<%=task.stage%>" selected><%=task.stage%></option>
+						<% } else {%>
+						<option value="" selected>None</option>
+						<% } %>
+                    <option value="Planning">Planning</option>
+                    <option value="Development">Development</option>
+					<option value="Integration">Integration</option>
+					<option value="Testing">Testing</option>
+					</select>
+                    <% } %>
 					<!--Priority (dropdown prefill + save)-->
 					<label for="priority<%= task.id %>" class="form-label">Priority</label>
-					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority">
+					<select class="form-control form-control-sm" id="priority<%= task.id %>" name="taskPriority"
+                    <% if (sprintStatus === "Completed") { %>
+                        disabled data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+                    <% } %>>
 					<% if (task.priority !== null) { %>
 						<option value="<%=task.priority%>" selected><%=task.priority%></option>
 						<% } else {%>
@@ -653,34 +781,45 @@
 					<option value="Medium">Medium</option>
 					<option value="Important">Important</option>
 					</select>
+                    <% if (sprintStatus === "Completed") { %>
+                        <input type="hidden" name="taskPriority" value="<%= task.priority?task.priority:"" %>">
+                    <% } %>
 
 					<!--Story Points (prefill + save)-->
 					<label for="storyInput<%= task.id %>" class="form-label">Story Points</label>
-					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock"
+					<input class="form-control form-control-sm" id="storyInput<%= task.id %>" type="number" aria-describedby="spHelpBlock" required
 					<% if (task.story_points !== null) { %>
 					value="<%=task.story_points%>"
 					<% } %>
 					name="taskStoryPoint" autocomplete="off" min="1" max="10"
 					<% if (sprintStatus === "In Progress") { %>
-						readonly data-bs-toggle="tooltip" data-bs-title="Locked During Active Sprint"
-					  <% } %>>
+						readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified during Active Sprint"
+					  <% } %>
+                      <% if (sprintStatus === "Completed") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+                      <% } %>>
 					<div id="spHelpBlock" class="form-text">
 						Story Points must be between 1-10
 					</div>
+
+
 				</div>
 
 			</div>
 
               <!--Description (prefill + save)-->
               <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
+              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
+                <% if (sprintStatus === "Completed") { %>
+                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+                  <% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
 			  
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
               
-			  <!-- Moving a task back to the backlog (IF sprint if not in progress)-->
+			  <!-- Moving a task back to the backlog (IF sprint is not started)-->
             </form>
-			<% if (sprintStatus !== "In Progress") { %>
+			<% if (sprintStatus === "Not Started") { %>
 				<form action="/moveToBacklog" method="POST">
 					<input type="hidden" name="taskId" value="<%=task.id%>">
 					<button type="submit" class="btn bg-body-secondary mt-3">Move to Backlog</button>
@@ -703,22 +842,34 @@
 
 			<!--Sprint Name at top (prefill + save)-->
 			<label for="titleEditSprint" class="form-label">Sprint Name</label>
-			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off">
+			<input class="form-control form-control" id="titleEditSprint" type="text" value="<%=sprintDetails.name%>" name="name" autocomplete="off"
+            <% if (sprintStatus !== "Not Started") { %>
+             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+            <% } %>>
 			
 			<!--Start and end date for sprint-->
 			<div class="row mt-4">
 				<!-- Start Date for the sprint -->
 				<div class="col">
 					<label for="startDateEdit" class="form-label">Start Date</label>
-					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
-						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" min="<%= date %>" required aria-describedby="sdHelpBlock"
+						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
+                        <% if (sprintStatus !== "Not Started") { %>
+                            readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                           <% } %>>
+					<div id="sdHelpBlock" class="form-text">
+						Sprint must be 1-3 weeks long
+					</div>
 				</div>
 			
 				<!-- End Date for the sprint -->
 				<div class="col">
 					<label for="endDateEdit" class="form-label">End Date</label>
-					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
-						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>">
+					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" min="<%= new Date(new Date(sprintDetails.start_date).getTime() + 7 * 24 * 60 * 60 * 1000 - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" max="<%= new Date(new Date(sprintDetails.start_date).getTime() + 21 * 24 * 60 * 60 * 1000 - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" required
+						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
+                        <% if (sprintStatus !== "Not Started") { %>
+                            readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                           <% } %>>
 				</div>
 			</div>
 			
@@ -728,25 +879,37 @@
 				<!--Scrum Master-->
 					<div class="col">
 					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
-					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off">
+					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off" required
+                    <% if (sprintStatus !== "Not Started") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                       <% } %>>
 					</div>
 	
 				<!--Product Owner-->
 					<div class="col">
 					<label for="productOwnerEdit" class="form-label">Product Owner</label>
-					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off">					</div>
+					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off" required
+                    <% if (sprintStatus !== "Not Started") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                       <% } %>>				
+                    </div>
 			</div>
 
 			<!--Description (prefill + save)-->
 			<label for="descriptionEdit" class="form-label mt-3">Description</label>
-			<textarea class="form-control" id="descriptionEdit" rows="3" name="description" autocomplete="off"><% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
+			<textarea class="form-control" id="descriptionEdit" rows="3" name="description" autocomplete="off"<% if (sprintStatus === "Completed") { %>
+                readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+              <% } %>>
+              <% if (sprintDetails.description !== null) { %><%=sprintDetails.description%><% } %></textarea>
 
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
 		  </form>
 			<!--Delete Sprint-->
 			<input type="hidden" name="sprintId" value="<%=sprintDetails.id%>">
-			<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
+			<% if (sprintStatus === "Not Started") { %>
+				<button type="button" class="btn btn-outline-danger mt-3" data-bs-target="#deleteConfirmationSprint" data-bs-toggle="modal"">Delete Sprint</button>
+			<% } %>
 		</div>
 	  </div>
 	</div>

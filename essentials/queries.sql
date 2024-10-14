@@ -51,18 +51,33 @@ ALTER TABLE sprints ADD sprint_status status;
 -- add fromSprint column
 ALTER table tasks ADD from_sprint boolean;
 
+-- change stage tag names
+ALTER TYPE stage RENAME VALUE 'In Planning' TO 'Planning';
+ALTER TYPE stage RENAME VALUE 'In Development' TO 'Development';
+ALTER TYPE stage RENAME VALUE 'In Testing' TO 'Testing';
 
-
-
--- create sprint table
-CREATE TABLE tasklog (
+-- user table
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    task_id INT NOT NULL,  
-    date DATE NOT NULL DEFAULT CURRENT_DATE, 
-    hours DECIMAL(5,2) NOT NULL, 
-    user_id INT NOT NULL, 
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (task_id) REFERENCES tasks(id)  
+    is_admin boolean,
+    is_available boolean,
+    name text,
+    email text,
+    password text,
+    sprint_id int
+);
 
-
+-- tasklog table
+CREATE TABLE tasklogs (
+    task_id int,
+    user_id int,
+    date date,
+    hours int
+);
+-- changelog table
+CREATE TABLE changelogs (
+    task_id int,
+    user_id int,
+    date date,
+    description text
 );
