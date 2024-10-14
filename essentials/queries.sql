@@ -81,3 +81,7 @@ CREATE TABLE changelogs (
     date date,
     description text
 );
+
+-- adding id columns to tasklogs and changelogs
+ALTER TABLE tasklogs ADD id SERIAL PRIMARY KEY;
+ALTER TABLE changelogs ADD id SERIAL PRIMARY KEY;
