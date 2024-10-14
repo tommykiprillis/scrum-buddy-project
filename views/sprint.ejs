@@ -669,25 +669,30 @@
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
               <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required
-			  <% if (sprintStatus !== "Not Started") { %>
-				readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
-			  <% } %>
-			  >
-              <!--Assignee (prefill + save)-->
-              <label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
-              <input class="form-control form-control" id="assigneeInput<%= task.id %>" type="text"
-              <% if (task.assignee !== null) { %>
-                value="<%=task.assignee%>"
+							<% if (sprintStatus !== "Not Started") { %>
+							readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+							<% } %>>
+							
+							<!--Assignee (dropdown prefill + save)-->
+							<label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
+							<select class="form-control form-control-sm" id="assigneeInput<%= task.id %>" name="taskAssignee"
+									<% if (sprintStatus === "Completed") { %>
+											disabled data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+									<% } %>>
+							<% if (task.assignee !== null) { %>
+								<option value="<%=task.assignee%>" selected><%=task.assignee%></option>
+								<% } else {%>
+								<option value="" selected>None</option>
+								<% } %>
+								<% sprintMembers.forEach(member => { %>
+									<% if (member.name !== task.assignee) { %>
+										<option value="<%= member.name %>"><%= member.name %></option>
+									<% } %>
+								<% }) %>
+							</select>
+              <% if (sprintStatus === "Completed") { %>
+                <input type="hidden" name="taskPriority" value="<%= task.assignee%>">
               <% } %>
-
-              name="taskAssignee" autocomplete="off"
-              <% if (task.status !== "Not Started") { %>
-                required
-                <% } %>
-                <% if (sprintStatus === "Completed") { %>
-                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-                  <% } %>>
-
 
 			  <div class="row mt-3">
 				<div class="col">

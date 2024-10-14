@@ -238,6 +238,9 @@ app.get("/viewSprint", async (req,res) => {
 		currentDate1 += "-";
 		currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
 
+		// get a list of all members part of the sprint
+		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[currentSprint]);
+		const sprintMembers = sprintMembersResult.rows;
 
 		const renderOptions = {
 			notStarted: resultNotStarted.rows,
@@ -250,7 +253,8 @@ app.get("/viewSprint", async (req,res) => {
 			sort: sortPreference,
 			filter: filterPreference,
 			order: orderPreference,
-			date: currentDate1
+			date: currentDate1,
+			sprintMembers: sprintMembers
 		};
 
 		if (errorMessage) {
@@ -430,7 +434,7 @@ app.post("/moveToSprint", async (req, res) => {
         } else {
 			await db.query("UPDATE tasks SET location = $1, status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
 		}
-        res.redirect('/');
+        res.redirect('/productBacklog');
 
     } catch (error) {
         console.log("Error moving task:", error);
@@ -698,7 +702,7 @@ app.post("/moveProgress", async (req,res) => {
 
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
-app.get("/completeSprint", async (req,res) =>{
+app.all("/completeSprint", async (req,res) =>{
 	const sprintId = req.cookies.currentSprintId;
 	
 	try {
