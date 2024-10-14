@@ -242,6 +242,10 @@ app.get("/viewSprint", async (req,res) => {
 		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[currentSprint]);
 		const sprintMembers = sprintMembersResult.rows;
 
+		// get the name of the current user
+		const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
+		const currentUser = currentUserResult.rows[0];
+
 		const renderOptions = {
 			notStarted: resultNotStarted.rows,
 			inProgress: resultInProgress.rows,
@@ -254,7 +258,8 @@ app.get("/viewSprint", async (req,res) => {
 			filter: filterPreference,
 			order: orderPreference,
 			date: currentDate1,
-			sprintMembers: sprintMembers
+			sprintMembers: sprintMembers,
+			currentUser: currentUser
 		};
 
 		if (errorMessage) {
@@ -647,7 +652,7 @@ app.post("/assign", async (req,res) => {
 app.post('/logTime', async (req, res) => {
     const { task_id, timeSpent, date} = req.body;
     const currentUserId = req.cookies.currentUserId;
-	
+
 	try {
         await db.query('INSERT INTO tasklogs (task_id, hours, user_id, date) VALUES ($1, $2, $3,$4)',
 		[task_id, timeSpent, currentUserId,date]
