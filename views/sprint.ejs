@@ -27,7 +27,7 @@
 		<% if (locals.displayStartButton) { %>
 			<!-- Start Sprint button-->
 			 <form action="/startSprint" method="POST">
-				<button class="btn btn-outline-primary d-inline-flex align-items-center rounded-pill py-1" type="submit" data-bs-toggle="modal" data-bs-target="#createSprint">
+				<button class="btn btn-outline-primary d-inline-flex align-items-center rounded-pill py-1" type="submit">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rocket-takeoff" viewBox="0 0 16 16">
 						<path d="M9.752 6.193c.599.6 1.73.437 2.528-.362s.96-1.932.362-2.531c-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532"/>
 						<path d="M15.811 3.312c-.363 1.534-1.334 3.626-3.64 6.218l-.24 2.408a2.56 2.56 0 0 1-.732 1.526L8.817 15.85a.51.51 0 0 1-.867-.434l.27-1.899c.04-.28-.013-.593-.131-.956a9 9 0 0 0-.249-.657l-.082-.202c-.815-.197-1.578-.662-2.191-1.277-.614-.615-1.079-1.379-1.275-2.195l-.203-.083a10 10 0 0 0-.655-.248c-.363-.119-.675-.172-.955-.132l-1.896.27A.51.51 0 0 1 .15 7.17l2.382-2.386c.41-.41.947-.67 1.524-.734h.006l2.4-.238C9.005 1.55 11.087.582 12.623.208c.89-.217 1.59-.232 2.08-.188.244.023.435.06.57.093q.1.026.16.045c.184.06.279.13.351.295l.029.073a3.5 3.5 0 0 1 .157.721c.055.485.051 1.178-.159 2.065m-4.828 7.475.04-.04-.107 1.081a1.54 1.54 0 0 1-.44.913l-1.298 1.3.054-.38c.072-.506-.034-.993-.172-1.418a9 9 0 0 0-.164-.45c.738-.065 1.462-.38 2.087-1.006M5.205 5c-.625.626-.94 1.351-1.004 2.09a9 9 0 0 0-.45-.164c-.424-.138-.91-.244-1.416-.172l-.38.054 1.3-1.3c.245-.246.566-.401.91-.44l1.08-.107zm9.406-3.961c-.38-.034-.967-.027-1.746.163-1.558.38-3.917 1.496-6.937 4.521-.62.62-.799 1.34-.687 2.051.107.676.483 1.362 1.048 1.928.564.565 1.25.941 1.924 1.049.71.112 1.429-.067 2.048-.688 3.079-3.083 4.192-5.444 4.556-6.987.183-.771.18-1.345.138-1.713a3 3 0 0 0-.045-.283 3 3 0 0 0-.3-.041Z"/>
@@ -40,7 +40,7 @@
 		<% if (locals.displayCompleteButton) { %>
 			<!-- Complete Sprint button-->
 			 <form action="/completeSprint" method="POST">
-					<button class="btn btn-outline-success d-inline-flex align-items-center rounded-pill py-1" type="submit" data-bs-toggle="modal" data-bs-target="#createSprint">
+					<button class="btn btn-outline-success d-inline-flex align-items-center rounded-pill py-1" type="submit">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
 							<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
 						</svg>&nbsp;Complete Sprint
@@ -119,7 +119,7 @@
 			</div>
 		
 			<div class="btn-group">
-				<button type="button" class="btn bg-body-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn bg-body-secondary dropdown-toggle <%=filter?"border border-primary border-2 border-opacity-50":"" %>" data-bs-toggle="dropdown" aria-expanded="false">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
 						<path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
 					</svg>
@@ -220,24 +220,27 @@
 										<% }) %>
 									</div>
 								<% } %>
-								<div class="btn-group dropend ms-auto">
-									<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-											<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
-										</svg>
-									</button>
-									<form action="/moveProgress" method="POST">
-										<input type="hidden" name="id" value="<%=task.id%>">
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<li><h6 class="dropdown-header">Move to</h6></li>
-											<li>
-												<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-													In Progress
-												</button>
-											</li>
-										</ul>
-									</form>
-								</div>
+                                <% if (sprintStatus !== "Not Started") { %>
+									<div class="btn-group dropend ms-auto">
+										<button class="btn bg-body-secondary rounded-circle p-1 lh-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+												<path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+											</svg>
+										</button>
+	
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>   
+									</div>
+								<% } %>
 							</div>
 						</div>
 					</div>
@@ -407,7 +410,9 @@
 							<th scope="col">Assignee</th>
 							<th scope="col">Story Points</th>
 							<th scope="col">More</th>
-							<th scope="col">Move</th>
+                            <% if (sprintStatus !== "Not Started") { %>
+							    <th scope="col">Move</th>   
+                            <% } %>
 						</tr>
 					</thead>
 					<tbody>
@@ -443,24 +448,26 @@
 											View/Edit
 									</a>  
 								</td>
-								<td>
-									<div class="btn-group dropstart">
-										<a href="#" data-bs-toggle="dropdown">
-											Move To
-										</a>
-										<form action="/moveProgress" method="POST">
-											<input type="hidden" name="id" value="<%=task.id%>">
-											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-												<li><h6 class="dropdown-header">Move to</h6></li>
-												<li>
-													<button class="dropdown-item" type="submit" name="destination" value="In Progress">
-														In Progress
-													</button>
-												</li>
-											</ul>
-										</form>
-									</div>
-								</td>
+								<% if (sprintStatus !== "Not Started") { %>
+									<td>
+										<div class="btn-group dropstart">
+											<a href="#" data-bs-toggle="dropdown">
+												Move To
+											</a>
+											<form action="/moveProgress" method="POST">
+												<input type="hidden" name="id" value="<%=task.id%>">
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+													<li><h6 class="dropdown-header">Move to</h6></li>
+													<li>
+														<button class="dropdown-item" type="submit" name="destination" value="In Progress">
+															In Progress
+														</button>
+													</li>
+												</ul>
+											</form>
+										</div>
+									</td>   
+								<% } %>
 							</tr>					 
 						<% }) %>
 					</tbody>
@@ -662,25 +669,30 @@
               <!--Task Name at top (prefill + save)-->
               <label for="titleInput<%= task.id %>" class="form-label">Task Name</label>
               <input class="form-control form-control" id="titleInput<%= task.id %>" type="text" value="<%=task.title%>" name="taskName" autocomplete="off" required
-			  <% if (sprintStatus !== "Not Started") { %>
-				readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
-			  <% } %>
-			  >
-              <!--Assignee (prefill + save)-->
-              <label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
-              <input class="form-control form-control" id="assigneeInput<%= task.id %>" type="text"
-              <% if (task.assignee !== null) { %>
-                value="<%=task.assignee%>"
+							<% if (sprintStatus !== "Not Started") { %>
+							readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+							<% } %>>
+							
+							<!--Assignee (dropdown prefill + save)-->
+							<label for="assigneeInput<%= task.id %>" class="form-label mt-3">Assignee</label>
+							<select class="form-control form-control-sm" id="assigneeInput<%= task.id %>" name="taskAssignee"
+									<% if (sprintStatus === "Completed") { %>
+											disabled data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+									<% } %>>
+							<% if (task.assignee !== null) { %>
+								<option value="<%=task.assignee%>" selected><%=task.assignee%></option>
+								<% } else {%>
+								<option value="" selected>None</option>
+								<% } %>
+								<% sprintMembers.forEach(member => { %>
+									<% if (member.name !== task.assignee) { %>
+										<option value="<%= member.name %>"><%= member.name %></option>
+									<% } %>
+								<% }) %>
+							</select>
+              <% if (sprintStatus === "Completed") { %>
+                <input type="hidden" name="taskPriority" value="<%= task.assignee%>">
               <% } %>
-
-              name="taskAssignee" autocomplete="off"
-              <% if (task.status !== "Not Started") { %>
-                required
-                <% } %>
-                <% if (sprintStatus === "Completed") { %>
-                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-                  <% } %>>
-
 
 			  <div class="row mt-3">
 				<div class="col">
@@ -800,19 +812,29 @@
 
 			</div>
 
-              <!--Description (prefill + save)-->
-              <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
-                <% if (sprintStatus === "Completed") { %>
-                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-                  <% } %>>
-                  <% if (task.description !== null) { %><%=task.description%><% } %></textarea>
-			  
+			<!--Description (prefill + save)-->
+			<label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
+			<textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
+				<% if (sprintStatus === "Completed") { %>
+						readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+					<% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
+
+			<p for="taskLogInput<%task.id%>" class="form-label mt-3">Time Spent: <%= task.accumulated_time %> hours</p>
+			<% if (sprintStatus === "In Progress" && task.status !== "Not Started" && currentUser.name === task.assignee) { %>
+				<button type="button" id="taskLogInput<%task.id%>" class="btn btn-outline-dark d-flex align-items-center gap-2" data-bs-target="#logTimeSprint<%= task.id %>" data-bs-toggle="modal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+					<path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+					<path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+				</svg> Log Time
+				</button>
+			<% } %>
+			
+
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
               
 			  <!-- Moving a task back to the backlog (IF sprint is not started)-->
             </form>
+						
 			<% if (sprintStatus === "Not Started") { %>
 				<form action="/moveToBacklog" method="POST">
 					<input type="hidden" name="taskId" value="<%=task.id%>">
@@ -823,6 +845,39 @@
         </div>
       </div>
     </div>
+
+			<!--Modal for logging time for a task-->
+	<div class="modal fade" id="logTimeSprint<%= task.id %>" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered" style="max-width: 50rem;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Log Time</h5>
+			</div>
+			<div class="modal-body">
+				<form action="/logTime" method="POST">
+					<!--Name for the sprint-->
+					<input type="hidden" name="task_id" value="<%= task.id %>">
+
+					<div class="row mt-4">
+					<!--Date of log-->
+						<div class="col">
+							<label for="logDateInput" class="form-label">Date</label>
+							<input class="form-control" id="logDateInput" type="date" name="date" autocomplete="off" max="<%= date %>" required>
+						</div>
+
+					<!--Duration of log-->
+						<div class="col">
+							<label for="logTimeInput" class="form-label">Time Spent (hours)</label>
+							<input class="form-control" type="number" id="logTimeInput" name="timeSpent" min="0" required>
+						</div>
+					</div>
+					<!--Saving Changes-->
+					<button type="submit" class="btn btn-primary mt-3">Save</button>
+				</form>
+			</div>
+		</div>
+		</div>
+	</div>
   <% }) %>
 
   <!--Modal for viewing the details of a sprint-->
@@ -846,17 +901,20 @@
 				<!-- Start Date for the sprint -->
 				<div class="col">
 					<label for="startDateEdit" class="form-label">Start Date</label>
-					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" 
+					<input class="form-control" id="startDateEdit" type="date" name="startDate" autocomplete="off" min="<%= date %>" required aria-describedby="sdHelpBlock"
 						value="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
                         <% if (sprintStatus !== "Not Started") { %>
                             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
                            <% } %>>
+					<div id="sdHelpBlock" class="form-text">
+						Sprint must be 1-3 weeks long
+					</div>
 				</div>
 			
 				<!-- End Date for the sprint -->
 				<div class="col">
 					<label for="endDateEdit" class="form-label">End Date</label>
-					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" 
+					<input class="form-control" id="endDateEdit" type="date" name="endDate" autocomplete="off" min="<%= new Date(new Date(sprintDetails.start_date).getTime() + 7 * 24 * 60 * 60 * 1000 - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" max="<%= new Date(new Date(sprintDetails.start_date).getTime() + 21 * 24 * 60 * 60 * 1000 - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" required
 						value="<%= new Date(new Date(sprintDetails.end_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>"
                         <% if (sprintStatus !== "Not Started") { %>
                             readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
