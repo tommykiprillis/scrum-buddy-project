@@ -812,18 +812,29 @@
 
 			</div>
 
-              <!--Description (prefill + save)-->
-              <label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
-              <textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
-                <% if (sprintStatus === "Completed") { %>
-                    readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-                  <% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
-			  
+			<!--Description (prefill + save)-->
+			<label for="descriptionInput<%= task.id %>" class="form-label mt-3">Description</label>
+			<textarea class="form-control" id="descriptionInput<%= task.id %>" rows="3" name="taskDescription" autocomplete="off"
+				<% if (sprintStatus === "Completed") { %>
+						readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
+					<% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
+
+			<p for="taskLogInput<%task.id%>" class="form-label mt-3">Time Spent: <%= task.accumulated_time %> hours</p>
+			<% if (sprintStatus === "In Progress" && task.status !== "Not Started") { %>
+				<button type="button" id="taskLogInput<%task.id%>" class="btn btn-outline-dark d-flex align-items-center gap-2" data-bs-target="#logTimeSprint<%= task.id %>" data-bs-toggle="modal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+					<path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+					<path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+				</svg> Log Time
+				</button>
+			<% } %>
+			
+
 			<!--Saving Changes-->
 			<button type="submit" class="btn btn-primary mt-3">Save Changes</button>
               
 			  <!-- Moving a task back to the backlog (IF sprint is not started)-->
             </form>
+						
 			<% if (sprintStatus === "Not Started") { %>
 				<form action="/moveToBacklog" method="POST">
 					<input type="hidden" name="taskId" value="<%=task.id%>">
@@ -834,6 +845,39 @@
         </div>
       </div>
     </div>
+
+			<!--Modal for logging time for a task-->
+	<div class="modal fade" id="logTimeSprint<%= task.id %>" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered" style="max-width: 50rem;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Log Time</h5>
+			</div>
+			<div class="modal-body">
+				<form action="/logTime" method="POST">
+					<!--Name for the sprint-->
+					<input type="hidden" name="task_id" value="<%= task.id %>">
+
+					<div class="row mt-4">
+					<!--Date of log-->
+						<div class="col">
+							<label for="logDateInput" class="form-label">Date</label>
+							<input class="form-control" id="logDateInput" type="date" name="date" autocomplete="off" max="<%= date %>" required>
+						</div>
+
+					<!--Duration of log-->
+						<div class="col">
+							<label for="logTimeInput" class="form-label">Time Spent (hours)</label>
+							<input class="form-control" type="number" id="logTimeInput" name="timeSpent" min="0" required>
+						</div>
+					</div>
+					<!--Saving Changes-->
+					<button type="submit" class="btn btn-primary mt-3">Save</button>
+				</form>
+			</div>
+		</div>
+		</div>
+	</div>
   <% }) %>
 
   <!--Modal for viewing the details of a sprint-->

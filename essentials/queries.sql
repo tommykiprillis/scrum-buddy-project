@@ -81,3 +81,4 @@ CREATE TABLE changelogs (
     date date,
     description text
 );
+
