@@ -126,8 +126,16 @@ app.get("/productBacklog",async (req,res) => {
         currentDate += "-";
         currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
 
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
+
+
 		// render the page and pass error message if it exists
-		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers};
 		if (errorMessage) {
 			renderOptions.error = errorMessage;
 		}
@@ -242,6 +250,13 @@ app.get("/viewSprint", async (req,res) => {
 		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[currentSprint]);
 		const sprintMembers = sprintMembersResult.rows;
 
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
+
 		// get the name of the current user
 		const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
 		const currentUser = currentUserResult.rows[0];
@@ -259,7 +274,8 @@ app.get("/viewSprint", async (req,res) => {
 			order: orderPreference,
 			date: currentDate1,
 			sprintMembers: sprintMembers,
-			currentUser: currentUser
+			currentUser: currentUser,
+			availableMembers: availableMembers
 		};
 
 		if (errorMessage) {
@@ -354,28 +370,41 @@ app.post("/createSprint", async (req,res) =>{
 		const sprintName = req.body.name;
 		const sprintStartDate = req.body.startDate;
 		const sprintEndDate = req.body.endDate;
-		// Set sprint status to "Not Started" initially
-
-		// check that a sprint with the same name doesn't exist first
-		const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
-		if (nameCheckResult.rows.length !== 0) {
-			res.cookie("error", "Sprint with the same name already exists");
+		const usersArray = req.body.users;
+		
+		// pre check: must be at least 4 people
+		if (usersArray.length < 4) {
+			res.cookie("error", "Must have at least 4 members in a sprint (1 Product Owner, 1 Scrum Master, 2 Developers)");
 			return res.redirect("/");
 		}
 
+		
+		// Set sprint status to "Not Started" initially
 		const result = await db.query(
-			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
-			[sprintName, sprintStartDate, sprintEndDate]
-		  );
+            "INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
+            [sprintName, sprintStartDate, sprintEndDate]
+        );
+		  
 		
 		const newSprintId = result.rows[0].id;
+
+		if (usersArray && usersArray.length > 0){
+			for (const userId of usersArray) {
+                await db.query(
+                    "UPDATE users SET sprint_id = $1 WHERE id = $2",
+                    [newSprintId, userId]
+                );
+			}
+		  }
 
 		res.cookie('currentSprintId', newSprintId);
 		res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
+		res.status(500).send("Server Error");
 	} 
 });
+
 
 // routes for the sprint view
 
@@ -618,6 +647,13 @@ app.get("/viewBurndownChart", async (req, res) => {
 		// Filter the data based on the current day number
 		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
 
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
+
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
 			actualBurndownData: JSON.stringify(filteredActualData),
@@ -629,6 +665,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 			date: currentDate1,
 			displayStartButton: (displayStartButton === true)?true:null,
 			displayCompleteButton: (displayCompleteButton === true)?true:null,
+			availableMembers:availableMembers
 		});
 
 	} catch (err) {

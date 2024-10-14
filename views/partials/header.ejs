@@ -152,6 +152,15 @@
                 <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off" min="<%=new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]%>" max="<%=new Date(new Date().setDate(new Date().getDate() + 21)).toISOString().split('T')[0]%>" required>
               </div>
             </div>
+
+            <!--Selecting Members-->
+					  <label for="userOptions" class="form-label mt-4">Sprint Member Selection (Available Members)</label>
+					  <div id="userOptions" class="form-check">
+              <% availableMembers.forEach(member => { %>
+                <input class="form-check-input" type="checkbox" name="users[]" value="<%= member.id %>">
+                <label class="form-check-label"><%= member.name %></label><br>
+              <% }) %>
+					  </div>	
             <!--Saving Changes-->
             <button type="submit" class="btn btn-primary mt-3">Create</button>
           </form>
