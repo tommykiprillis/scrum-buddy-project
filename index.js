@@ -24,10 +24,55 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// routes for the homepage (product backlog)
+// default route -> login page if no one logged in
+app.get("/",async (req,res) => {
+	try {
+		const userId = req.cookies.currentUserId;
+		if (!userId) {
+			res.clearCookie("userId");
+			return res.render("login.ejs");
+		}
+
+		const userResult = await db.query("SELECT sprint_id FROM users WHERE id = $1", [userId]);
+
+		if (userResult.rows.length > 0) {
+			const sprintId = userResult.rows[0].sprint_id;
+			if (sprintId) {
+				res.cookie('currentSprintId', sprintId);
+				return res.redirect("/viewSprint");
+			} else {
+				return res.redirect("/productBacklog");
+			}
+		} else {
+			res.clearCookie("userId");
+			return res.redirect("/login");
+		}
+	} catch (err) {
+		console.log(err);
+		
+	} 
+});
+
+// login route
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = userResult.rows[0];
+
+        if (user && user.password === password) {
+            res.cookie("currentUserId",user.id);
+            res.redirect("/");
+        } else {
+            res.render("login.ejs",{invalid:"invalidCombination"})
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 // homepage view (product backlog)
-app.get("/",async (req,res) => {
+app.get("/productBacklog",async (req,res) => {
 	try {
 
 		const errorMessage = req.cookies.error;
@@ -81,8 +126,16 @@ app.get("/",async (req,res) => {
         currentDate += "-";
         currentDate += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
 
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
+
+
 		// render the page and pass error message if it exists
-		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate};
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers};
 		if (errorMessage) {
 			renderOptions.error = errorMessage;
 		}
@@ -250,7 +303,7 @@ app.get("/viewSprint", async (req,res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [currentSprint])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate <= endDate && allTasksCompleted && sprintStatus === "In Progress") || currentDate.toDateString() === endDate.toDateString()) {
+		if (((currentDate <= endDate && allTasksCompleted) || (currentDate.toDateString() === endDate.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
@@ -315,6 +368,20 @@ app.get("/viewSprint", async (req,res) => {
 		currentDate1 += "-";
 		currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
 
+		// get a list of all members part of the sprint
+		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[currentSprint]);
+		const sprintMembers = sprintMembersResult.rows;
+
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
+
+		// get the name of the current user
+		const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
+		const currentUser = currentUserResult.rows[0];
 
 		const renderOptions = {
 			notStarted: resultNotStarted.rows,
@@ -327,7 +394,10 @@ app.get("/viewSprint", async (req,res) => {
 			sort: sortPreference,
 			filter: filterPreference,
 			order: orderPreference,
-			date: currentDate1
+			date: currentDate1,
+			sprintMembers: sprintMembers,
+			currentUser: currentUser,
+			availableMembers: availableMembers
 		};
 
 		if (errorMessage) {
@@ -344,6 +414,121 @@ app.get("/viewSprint", async (req,res) => {
 		console.log(err);
 	} 
 });
+
+
+// change the view (product backlog)
+app.post("/changeView", async (req,res) => {
+    const viewPreference = req.body.view;
+    res.cookie('view', viewPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the sort (product backlog)
+app.post("/changeSort", async (req,res) => {
+    const sortPreference = req.body.sort;
+    res.cookie('sort', sortPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the order (product backlog)
+app.post("/changeOrder", async (req,res) =>{
+    const orderPreference = req.body.order;
+    res.cookie('order', orderPreference);
+    res.redirect("/productBacklog");
+});
+
+// change the filter (product backlog)
+app.post("/changeFilter", async (req,res) =>{
+    const filterPreference = req.body.filter;
+    res.cookie('filter', filterPreference);
+    res.redirect("/productBacklog");
+});
+
+// add a new task (product backlog)
+app.post("/add", async (req,res) => {
+	try {
+		const taskName = req.body.taskName;
+		//const taskDescription = req.body.taskDescription;
+		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
+		await db.query(insertQuery, [taskName]);
+		res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+});
+
+// edit a task (product backlog)
+app.post("/edit", async (req,res) => {
+	try {
+        const id = req.body.id;
+	    const newName = req.body.taskName
+	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
+		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
+		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
+		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
+	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
+        res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+
+});
+
+// delete a task (product backlog)
+app.post("/delete", async (req,res) => {
+	try {
+		const taskId = req.body.id;
+		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
+		await db.query(deleteQuery, [taskId]);
+		res.redirect("/productBacklog");
+	} catch (err) {
+		console.log(err);
+	} 
+});
+
+// create a new sprint (product backlog)
+app.post("/createSprint", async (req,res) =>{
+	try {
+		const sprintName = req.body.name;
+		const sprintStartDate = req.body.startDate;
+		const sprintEndDate = req.body.endDate;
+		const usersArray = req.body.users;
+		
+		// pre check: must be at least 4 people
+		if (usersArray.length < 4) {
+			res.cookie("error", "Must have at least 4 members in a sprint (1 Product Owner, 1 Scrum Master, 2 Developers)");
+			return res.redirect("/");
+		}
+
+		
+		// Set sprint status to "Not Started" initially
+		const result = await db.query(
+            "INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
+            [sprintName, sprintStartDate, sprintEndDate]
+        );
+		  
+		
+		const newSprintId = result.rows[0].id;
+
+		if (usersArray && usersArray.length > 0){
+			for (const userId of usersArray) {
+                await db.query(
+                    "UPDATE users SET sprint_id = $1 WHERE id = $2",
+                    [newSprintId, userId]
+                );
+			}
+		  }
+
+		res.cookie('currentSprintId', newSprintId);
+		res.redirect("/viewSprint");
+	} catch (err) {
+		console.log(err);
+		res.status(500).send("Server Error");
+	} 
+});
+
+
+// routes for the sprint view
 
 // change the view (sprint)
 app.post("/changeSprintView", async (req,res) =>{
@@ -426,7 +611,7 @@ app.post("/moveToSprint", async (req, res) => {
 			const description = userName + " moved the task from the product backlog to " + sprintName;
 			await db.query(logQuery, [currentDate, description, userId, taskId]);
 		}
-        res.redirect('/');
+        res.redirect('/productBacklog');
 
     } catch (error) {
         console.log("Error moving task:", error);
@@ -486,7 +671,7 @@ app.post("/deleteSprint", async (req,res) =>{
 		
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
-		res.redirect("/");
+		res.redirect("/productBacklog");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -551,7 +736,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 		const allTasksCompleted = (await db.query("SELECT COUNT(*) FROM tasks WHERE location = $1 AND status != 'Completed'", [sprintId])).rows[0].count === '0';
 
 		// If all tasks are completed, show the complete sprint button before due date
-		if ((currentDate1 <= endDate1 && allTasksCompleted && sprintStatus === "In Progress") || currentDate1.toDateString() === endDate1.toDateString()) {
+		if (((currentDate1 <= endDate1 && allTasksCompleted) || (currentDate1.toDateString() === endDate1.toDateString())) && sprintStatus === "In Progress") {
 			displayCompleteButton = true;
 		}
 
@@ -611,7 +796,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 			});
 
 			// Calculate ideal remaining story points
-			const idealRemainingPoints = totalStoryPoints * (1 - dayNumber / totalDays);
+			const idealRemainingPoints = totalStoryPoints * (1 - (dayNumber-1) / (totalDays-1));
 			idealBurndownData.push({
 				day: dayNumber,
 				storyPoints: idealRemainingPoints
@@ -629,6 +814,12 @@ app.get("/viewBurndownChart", async (req, res) => {
 		// Filter the data based on the current day number
 		const filteredActualData = actualBurndownData.filter(data => data.day <= currentDayNumber);
 
+		// get a list of all members in the project
+		// conditions to be able to be added
+		// 1. available
+		// 2. not in a sprint
+		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+		const availableMembers = availableMembersResult.rows;
 
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
@@ -641,6 +832,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 			date: currentDate1,
 			displayStartButton: (displayStartButton === true)?true:null,
 			displayCompleteButton: (displayCompleteButton === true)?true:null,
+			availableMembers:availableMembers
 		});
 
 	} catch (err) {
@@ -670,6 +862,27 @@ app.post("/assign", async (req,res) => {
         console.log(err);
     }
 });
+
+app.post('/logTime', async (req, res) => {
+    const { task_id, timeSpent, date} = req.body;
+    const currentUserId = req.cookies.currentUserId;
+
+	try {
+        await db.query('INSERT INTO tasklogs (task_id, hours, user_id, date) VALUES ($1, $2, $3,$4)',
+		[task_id, timeSpent, currentUserId,date]
+        );
+
+		await db.query('UPDATE tasks SET accumulated_time = accumulated_time + $1 WHERE id = $2',
+		[timeSpent, task_id]
+        );
+
+		res.redirect('/viewSprint');
+	} catch (err) {
+        console.error(err);
+        
+    }
+});
+
 
 // move the task within the sprint backlog to either to do, in progress, done
 app.post("/moveProgress", async (req,res) => {
@@ -712,7 +925,7 @@ app.post("/moveProgress", async (req,res) => {
 
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
-app.post("/completeSprint", async (req,res) =>{
+app.all("/completeSprint", async (req,res) =>{
 	const sprintId = req.cookies.currentSprintId;
 	
 	try {
