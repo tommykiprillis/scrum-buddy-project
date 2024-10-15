@@ -1168,6 +1168,27 @@ app.post("/changeReportView", async (req,res) =>{
     res.redirect("/viewReport");
 });
 
+app.get("/viewTimeLog", async (req, res) => {
+    try {
+        // get time log data from the database
+        const timeLogResult = await db.query(`
+            SELECT tasklog.date, tasklog.user_id, users.name, SUM(tasklog.hours) as hours
+            FROM tasklog
+            JOIN users ON tasklog.user_id = users.id
+            GROUP BY tasklog.date, tasklog.user_id, users.name
+            ORDER BY tasklog.date
+        `);
+        const timeLogData = timeLogResult.rows;
+
+        // render time log view
+        res.render("timeLog.ejs", { timeLogData: JSON.stringify(timeLogData) });
+    } catch (err) {
+        console.log(err);
+        res.cookie("error", "Error retrieving time log data.");
+        res.redirect("/viewTimeLog");
+    }
+});
+
 // starts the application
 app.listen(port, () => {
   	console.log(`Server running on port ${port}`);
