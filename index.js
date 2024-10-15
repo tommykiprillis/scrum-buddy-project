@@ -911,6 +911,24 @@ app.post("/moveProgress", async (req,res) => {
     } 
 });
 
+app.post("/addNewUser", async (req, res) => {
+	try {
+		const name = req.body.name
+		const email = req.body.email
+		await db.query('INSERT INTO user (is_admin, is_available, name, email, password, sprint_id) VALUES ("false", "true", $1, $2, "12345", NULL', [name, email])
+	} catch (err) {
+        console.log(err);
+    }
+})
+
+app.post("/removeUser", async (req, res) => {
+	try {
+		const user_id = req.body.user_id
+		await db.query('DELETE FROM user WHERE id = $1', user_id)
+	} catch (err) {
+        console.log(err);
+    }
+})
 
 // complete the sprint, moving tasks 'in progress' back to the product backlog, leaving completed tasks in the sprint backlog
 app.all("/completeSprint", async (req,res) =>{
