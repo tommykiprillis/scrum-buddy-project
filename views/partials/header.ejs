@@ -122,11 +122,17 @@
             </svg>&nbsp;Create Sprint
           </button>
         </div>
-        <form>
+        <form method="POST">
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center dropdown-toggle text-dark text-decoration-none" data-bs-toggle="dropdown" aria-expanded="true">Welcome back, <%=currentUser.name%> 👋</a>
                     <ul class="dropdown-menu text-small">
-                        <li class="dropdown-item"><button type="submit" formaction="" class="btn rounded-pill btn-sm bg-success-subtle">Available</button></li>
+                        <li class="dropdown-item" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Click to toggle availability"><button type="submit" formaction="/changeAvailability" class="btn rounded-pill btn-sm 
+                            <% if (currentUser.is_available === true) { %>
+                                bg-success-subtle" name="newAvailability" value="false">Available
+                            <% } else {%>
+                                bg-danger-subtle" name="newAvailability" value="true">Unvailable
+                            <% } %>
+                        </button></li>
                         <li><button type="submit" formaction="" class="dropdown-item" href="#">Change Password</button></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><button type="submit" formaction="" class="dropdown-item text-danger" href="#">Sign out</button></li>
