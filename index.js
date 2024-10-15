@@ -915,8 +915,9 @@ app.post("/addNewUser", async (req, res) => {
 	try {
 		const name = req.body.name
 		const email = req.body.email
-		await db.query('INSERT INTO user (is_admin, is_available, name, email, password, sprint_id) VALUES ("false", "true", $1, $2, "12345", NULL', [name, email])
-	} catch (err) {
+        await db.query('INSERT INTO users (is_admin, is_available, name, email, password, sprint_id) VALUES (false, true, $1, $2, \'12345\', NULL)', [name, email]);
+        res.redirect("/adminView");
+    } catch (err) {
         console.log(err);
     }
 })
