@@ -1257,6 +1257,11 @@ app.get("/viewTimeLog", async (req, res) => {
     }
 });
 
+app.post("/signOut",async (req, res) => {
+    res.clearCookie("currentUserId");
+    res.redirect("/");
+});
+
 // starts the application
 app.listen(port, () => {
   	console.log(`Server running on port ${port}`);
