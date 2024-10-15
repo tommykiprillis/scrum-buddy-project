@@ -115,14 +115,25 @@
             </ul>
           </li>
         </ul>
-        <div class="d-lg-flex col-lg-3 justify-content-lg-end">
+        <div class="d-lg-flex col-lg-3 justify-content-lg-end me-3">
           <button class="btn btn-primary d-inline-flex align-items-center rounded-pill" type="button" data-bs-toggle="modal" data-bs-target="#createSprint">
             <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
             </svg>&nbsp;Create Sprint
           </button>
         </div>
-      </div>
+        <form>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center dropdown-toggle text-dark text-decoration-none" data-bs-toggle="dropdown" aria-expanded="true">Welcome back, <%=currentUser.name%> 👋</a>
+                    <ul class="dropdown-menu text-small">
+                        <li class="dropdown-item"><button type="submit" formaction="" class="btn rounded-pill btn-sm bg-success-subtle">Available</button></li>
+                        <li><button type="submit" formaction="" class="dropdown-item" href="#">Change Password</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button type="submit" formaction="" class="dropdown-item text-danger" href="#">Sign out</button></li>
+                    </ul>
+            </div>
+        </form>
+    </div>
     </div>
   </nav>
 

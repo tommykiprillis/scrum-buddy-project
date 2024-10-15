@@ -82,6 +82,7 @@ app.get("/productBacklog",async (req,res) => {
 		const sortPreference = req.cookies.sort || "priority";
 		const orderPreference = req.cookies.order || "DESC";
 		const filterPreference = req.cookies.filter || "";
+        const userId = req.cookies.currentUserId;
 		
 		
         // get the tasks from each column
@@ -138,8 +139,12 @@ app.get("/productBacklog",async (req,res) => {
 		const historyResult = await db.query("SELECT * FROM changelogs ORDER BY date DESC, id DESC");
 		const history = historyResult.rows;
 
+        // get information about the current user on the site
+        const currentUserResult = await db.query("SELECT * from users WHERE id = $1",[userId]);
+        const currentUser = currentUserResult.rows[0];
+
 		// render the page and pass error message if it exists
-		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers,history:history};
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers,history:history,currentUser:currentUser};
 		if (errorMessage) {
 			renderOptions.error = errorMessage;
 		}
@@ -802,6 +807,10 @@ app.get("/viewBurndownChart", async (req, res) => {
 		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[sprintId]);
 		const sprintMembers = sprintMembersResult.rows;
 
+        // get information about the current user on the site
+        const currentUserResult = await db.query("SELECT * from users WHERE id = $1",[userId]);
+        const currentUser = currentUserResult.rows[0];
+
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
 			actualBurndownData: JSON.stringify(filteredActualData),
@@ -814,7 +823,8 @@ app.get("/viewBurndownChart", async (req, res) => {
 			displayStartButton: (displayStartButton === true)?true:null,
 			displayCompleteButton: (displayCompleteButton === true)?true:null,
 			availableMembers:availableMembers,
-            sprintMembers:sprintMembers
+            sprintMembers:sprintMembers,
+            currentUser:currentUser
 
 		});
 
