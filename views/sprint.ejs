@@ -820,7 +820,7 @@
 					<% } %>><% if (task.description !== null) { %><%=task.description%><% } %></textarea>
 			
 			
-			<div class="d-flex gap-1 align-items-end">
+			<div class="d-flex gap-2 align-items-end">
 				<div>
 					<p for="taskLogInput<%task.id%>" class="form-label mt-3">Time Spent: <%= task.accumulated_time %> hours</p>
 					<% if (sprintStatus === "In Progress" && task.status !== "Not Started" && currentUser.name === task.assignee) { %>
@@ -885,7 +885,7 @@
 					<!--Date of log-->
 						<div class="col">
 							<label for="logDateInput" class="form-label">Date</label>
-							<input class="form-control" id="logDateInput" type="date" name="date" autocomplete="off" max="<%= date %>" required>
+							<input class="form-control" id="logDateInput" type="date" name="date" autocomplete="off" min="<%= new Date(new Date(sprintDetails.start_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] %>" max="<%= date %>" required>
 						</div>
 
 					<!--Duration of log-->
@@ -950,22 +950,52 @@
 			<div class="row mt-4">
 				<!--Scrum Master-->
 					<div class="col">
-					<label for="scrumMasterEdit" class="form-label">Scrum Master</label>
-					<input class="form-control form-control" id="scrumMasterEdit" type="text" value="<%=sprintDetails.scrum_master%>" name="scrumMaster" autocomplete="off" required
-                    <% if (sprintStatus !== "Not Started") { %>
-                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
-                       <% } %>>
-					</div>
-	
-				<!--Product Owner-->
-					<div class="col">
-					<label for="productOwnerEdit" class="form-label">Product Owner</label>
-					<input class="form-control form-control" id="productOwnerEdit" type="text" value="<%=sprintDetails.product_owner%>" name="productOwner" autocomplete="off" required
-                    <% if (sprintStatus !== "Not Started") { %>
-                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
-                       <% } %>>				
+                        <label for="scrumMasterEdit" class="form-label">Scrum Master</label>
+                        <select class="form-control form-control" id="scrumMasterEdit" name="scrumMaster" required
+                        <% if (sprintStatus !== "Not Started") { %>
+                            readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                        <% } %>>
+                        <% if (sprintDetails.scrum_master !== null) { %>
+                            <option value="<%=sprintDetails.scrum_master%>" selected><%=sprintDetails.scrum_master%></option>
+                            <% } else {%>
+                            <option value="" selected>None</option>
+                            <% } %>
+                            <% sprintMembers.forEach(member => { %>
+                                <% if (member.name !== sprintDetails.scrum_master) { %>
+                                    <option value="<%= member.name %>"><%= member.name %></option>
+                                <% } %>
+                            <% }) %>
+                        </select>
                     </div>
+				<!--Product Owner-->
+                <div class="col">
+                    <label for="productOwnerEdit" class="form-label">Product Owner</label>
+                    <select class="form-control form-control" id="productOwnerEdit" name="productOwner" required
+                    <% if (sprintStatus !== "Not Started") { %>
+                        readonly data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has started"
+                    <% } %>>
+                    <% if (sprintDetails.product_owner !== null) { %>
+                        <option value="<%=sprintDetails.product_owner%>" selected><%=sprintDetails.product_owner%></option>
+                        <% } else {%>
+                        <option value="" selected>None</option>
+                        <% } %>
+                        <% sprintMembers.forEach(member => { %>
+                            <% if (member.name !== sprintDetails.product_owner) { %>
+                                <option value="<%= member.name %>"><%= member.name %></option>
+                            <% } %>
+                        <% }) %>
+                    </select>
+                </div>
 			</div>
+
+            <label for="userOptions" class="form-label mt-4">Sprint Members</label>
+            <ul id="userOptions" class="list-group">
+              <% sprintMembers.forEach(member => { %>
+                <li class="list-group-item">
+                    <%= member.name %>
+                </li>
+              <% }) %>
+			</ul>	
 
 			<!--Description (prefill + save)-->
 			<label for="descriptionEdit" class="form-label mt-3">Description</label>

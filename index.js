@@ -91,12 +91,13 @@ app.get("/productBacklog",async (req,res) => {
 		const sprintsResult = await db.query("SELECT * from sprints");
 		const backlogSprints = sprintsResult.rows;
 
-        let query = "SELECT * FROM tasks WHERE location	 IS NULL"
+        let query = "SELECT * FROM tasks WHERE location	IS NULL";
         query += (filterPreference !== "") ? ` AND ('${filterPreference}' = ANY(tags))` : "";
 
 		const fromSprintTasksResult = await db.query(`${query} AND "from_sprint" = true`);
     	const fromSprintTasksArr = fromSprintTasksResult.rows;
 
+        query +=  " AND (from_sprint = false OR from_sprint is NULL)"
 		// sort by alphabetical order
 		if (sortPreference === "name"){
             query += ` ORDER BY title ${orderPreference}`;
@@ -133,9 +134,12 @@ app.get("/productBacklog",async (req,res) => {
 		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
 		const availableMembers = availableMembersResult.rows;
 
+		// get all of the changelogs
+		const historyResult = await db.query("SELECT * FROM changelogs ORDER BY date DESC, id DESC");
+		const history = historyResult.rows;
 
 		// render the page and pass error message if it exists
-		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers};
+		const renderOptions = {tasks: backlogTasks, fromSprintTasks: fromSprintTasksArr, sprints: backlogSprints, view:viewPreference, sort: sortPreference, filter: filterPreference, order: orderPreference, date: currentDate,availableMembers:availableMembers,history:history};
 		if (errorMessage) {
 			renderOptions.error = errorMessage;
 		}
@@ -179,7 +183,7 @@ app.post("/add", async (req,res) => {
 		const taskName = req.body.taskName;
 		//const taskDescription = req.body.taskDescription;
 		
-		const insertQuery = "INSERT INTO tasks(title) VALUES ($1) RETURNING id"
+		const insertQuery = "INSERT INTO tasks(title,accumulated_time) VALUES ($1,0) RETURNING id"
 		let taskId  = await db.query(insertQuery, [taskName]);
 		taskId = taskId.rows[0].id;
 
@@ -242,27 +246,6 @@ app.post("/delete", async (req,res) => {
 		await db.query(logQuery, [currentDate, description, userId, taskId]);
 
 		res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
-// create a new sprint (product backlog)
-app.post("/createSprint", async (req,res) =>{
-	try {
-		const sprintName = req.body.name;
-		const sprintStartDate = req.body.startDate;
-		const sprintEndDate = req.body.endDate;
-		// Set sprint status to "Not Started" initially
-		const result = await db.query(
-			"INSERT INTO sprints (name, start_date, end_date, sprint_status) VALUES ($1, $2, $3, 'Not Started') RETURNING id",
-			[sprintName, sprintStartDate, sprintEndDate]
-		  );
-		
-		const newSprintId = result.rows[0].id;
-
-		res.cookie('currentSprintId', newSprintId);
-		res.redirect("/viewSprint");
 	} catch (err) {
 		console.log(err);
 	} 
@@ -387,7 +370,7 @@ app.get("/viewSprint", async (req,res) => {
 		const currentUser = currentUserResult.rows[0];
 
 		// get all of the changelogs
-		const historyResult = await db.query("SELECT * FROM changelogs ORDER BY date DESC");
+		const historyResult = await db.query("SELECT * FROM changelogs ORDER BY date DESC, id DESC");
 		const history = historyResult.rows;
 
 		const renderOptions = {
@@ -452,48 +435,6 @@ app.post("/changeFilter", async (req,res) =>{
     res.redirect("/productBacklog");
 });
 
-// add a new task (product backlog)
-app.post("/add", async (req,res) => {
-	try {
-		const taskName = req.body.taskName;
-		//const taskDescription = req.body.taskDescription;
-		const insertQuery = "INSERT INTO tasks(title) VALUES ($1)"
-		await db.query(insertQuery, [taskName]);
-		res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
-// edit a task (product backlog)
-app.post("/edit", async (req,res) => {
-	try {
-        const id = req.body.id;
-	    const newName = req.body.taskName
-	    const newDescription = (req.body.taskDescription === '') ? null : req.body.taskDescription
-		const newTags = (req.body.taskTags === '') ? null : req.body.taskTags
-		const newPriority = (req.body.taskPriority === '') ? null : req.body.taskPriority
-		const newStoryPoint = (req.body.taskStoryPoint === '') ? null : req.body.taskStoryPoint
-	    await db.query('UPDATE tasks SET title = $2, description = $3, tags = $4, priority = $5, story_points = $6 WHERE id = $1', [id, newName, newDescription, newTags, newPriority, newStoryPoint])
-        res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-
-});
-
-// delete a task (product backlog)
-app.post("/delete", async (req,res) => {
-	try {
-		const taskId = req.body.id;
-		const deleteQuery = 'DELETE FROM tasks WHERE id = $1';
-		await db.query(deleteQuery, [taskId]);
-		res.redirect("/productBacklog");
-	} catch (err) {
-		console.log(err);
-	} 
-});
-
 // create a new sprint (product backlog)
 app.post("/createSprint", async (req,res) =>{
 	try {
@@ -508,6 +449,13 @@ app.post("/createSprint", async (req,res) =>{
 			return res.redirect("/productBacklog");
 		}
 
+        // pre check: there must not be a spritn with the same name
+        const nameCheckResult = await db.query("SELECT * from sprints where name = $1",[sprintName]);
+        const nameCheck = nameCheckResult.rows;
+        if (nameCheck.length !== 0) {
+            res.cookie("error","A sprint with the same name already exists");
+            return res.redirect("/");
+        }
 		
 		// Set sprint status to "Not Started" initially
 		const result = await db.query(
@@ -611,7 +559,7 @@ app.post("/moveToSprint", async (req, res) => {
         } else if (sprintResult.rows.length === 0 || sprintResult.rows[0].sprint_status !== "Not Started") {
 			res.cookie("error", "Sprint in progress or completed. Can't add task");
         } else {
-			await db.query("UPDATE tasks SET location = $1, status = 'Not Started' WHERE id = $2", [sprintId, taskId]);
+			await db.query("UPDATE tasks SET location = $1, status = 'Not Started', assignee = NULL WHERE id = $2", [sprintId, taskId]);
 
 			//log moving task
 			const logQuery  = "INSERT INTO changelogs (date, description, user_id, task_id) VALUES ($1, $2, $3, $4)";
@@ -632,11 +580,6 @@ app.post("/moveToSprint", async (req, res) => {
     }
 });
 
-  
-
-
-
-
 // update which sprint we are currently viewing (sprint)
 app.post("/setSprintView", async (req,res) =>{
 	const sprintId = req.body.sprintId;
@@ -654,6 +597,12 @@ app.post("/editSprint", async (req,res) =>{
 		const newScrumMaster = (req.body.scrumMaster === '') ? null : req.body.scrumMaster;
 		const newStartDate = (req.body.startDate === '') ? null : req.body.startDate;
 		const newEndDate = (req.body.endDate === '') ? null : req.body.endDate;
+
+        // check: the scum master and product owner cannot be the same person
+        if ((newScrumMaster && newProductOwner) && (newScrumMaster === newProductOwner)) {
+            res.cookie("error","Error: Scrum Master cannot be the same as the Product Owner");
+            return res.redirect("/viewSprint");
+        }
 	    await db.query('UPDATE sprints SET name = $2, description = $3, start_date = $4, end_date = $5, scrum_master = $6, product_owner = $7 WHERE id = $1', [id, newName, newDescription, newStartDate, newEndDate, newScrumMaster, newProductOwner]);
         res.redirect("/viewSprint");
 	} catch (err) {
@@ -676,11 +625,25 @@ app.post("/deleteSprint", async (req,res) =>{
 			const logQuery  = "INSERT INTO changelogs (date, description, user_id, task_id) VALUES ($1, $2, $3, $4)";
 			const currentDate = new Date();
 			const userId = null;
-			const sprintName = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+			const sprintNameResult = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+            const sprintName = sprintNameResult.rows[0].name;
 			const description = sprintName + " deleted, task moved back to the product backlog";
 			await db.query(logQuery, [currentDate, description, userId, taskId]);
 			i++
 		}
+
+        // remove all members from the sprint once completed
+        const usersArrayResult = await db.query("SELECT id from users where sprint_id = $1",[sprintId]);
+        const usersArray = usersArrayResult.rows;
+        if (usersArray && usersArray.length > 0){
+            for (const userId of usersArray) {
+                await db.query(
+                    "UPDATE users SET sprint_id = NULL WHERE id = $1",
+                    [userId.id]
+                );
+            }
+            }
+
 		
 		const deleteQuery = 'DELETE FROM sprints WHERE id = $1';
 		await db.query(deleteQuery, [sprintId]);
@@ -835,6 +798,10 @@ app.get("/viewBurndownChart", async (req, res) => {
 		const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
 		const availableMembers = availableMembersResult.rows;
 
+        // get a list of all members part of the sprint
+		const sprintMembersResult = await db.query("SELECT * from users WHERE sprint_id =  $1",[sprintId]);
+		const sprintMembers = sprintMembersResult.rows;
+
 		// Send the burndown data to burndown.ejs
 		res.render("burndown.ejs", {
 			actualBurndownData: JSON.stringify(filteredActualData),
@@ -846,7 +813,9 @@ app.get("/viewBurndownChart", async (req, res) => {
 			date: currentDate1,
 			displayStartButton: (displayStartButton === true)?true:null,
 			displayCompleteButton: (displayCompleteButton === true)?true:null,
-			availableMembers:availableMembers
+			availableMembers:availableMembers,
+            sprintMembers:sprintMembers
+
 		});
 
 	} catch (err) {
@@ -859,8 +828,16 @@ app.post('/logTime', async (req, res) => {
     const currentUserId = req.cookies.currentUserId;
 
 	try {
-        await db.query('INSERT INTO tasklogs (task_id, hours, user_id, date) VALUES ($1, $2, $3,$4)',
-		[task_id, timeSpent, currentUserId,date]
+        // get the name of the person who worked on the task
+        const userNameResult = await db.query("SELECT name FROM users WHERE id = $1", [currentUserId]);
+        const userName = userNameResult.rows[0].name;
+
+        // create the description
+        const logDescription = userName + " worked on the task for " + timeSpent + " hours";
+        
+        // log it in the changelogs
+        await db.query("INSERT INTO changelogs (date, description, user_id, task_id) VALUES ($1, $2, $3, $4)",
+		[date, logDescription, currentUserId, task_id]
         );
 
 		await db.query('UPDATE tasks SET accumulated_time = accumulated_time + $1 WHERE id = $2',
@@ -934,7 +911,8 @@ app.all("/completeSprint", async (req,res) =>{
 			const logQuery  = "INSERT INTO changelogs (date, description, user_id, task_id) VALUES ($1, $2, $3, $4)";
 			const currentDate = new Date();
 			const userId = null;
-			const sprintName = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+			const sprintNameResult = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+            const sprintName = sprintNameResult.rows[0].name;
 			const description = sprintName + " ended, task moved back to the product backlog";
 			await db.query(logQuery, [currentDate, description, userId, taskId]);
 			i++
@@ -950,7 +928,8 @@ app.all("/completeSprint", async (req,res) =>{
 			const logQuery  = "INSERT INTO changelogs (date, description, user_id, task_id) VALUES ($1, $2, $3, $4)";
 			const currentDate = new Date();
 			const userId = null;
-			const sprintName = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+			const sprintNameResult = await db.query("SELECT name FROM sprints WHERE id = $1", [sprintId]);
+            const sprintName = sprintNameResult.rows[0].name;
 			const description = sprintName + " ended, task moved back to the product backlog";
 			await db.query(logQuery, [currentDate, description, userId, taskId]);
 			i++
@@ -958,6 +937,18 @@ app.all("/completeSprint", async (req,res) =>{
         // update the end date to the current date
         const currentDate = new Date();
         await db.query("UPDATE sprints SET end_date = $1 WHERE id = $2", [currentDate,sprintId]);
+
+        // remove all members from the sprint once completed
+        const usersArrayResult = await db.query("SELECT id from users where sprint_id = $1",[sprintId]);
+        const usersArray = usersArrayResult.rows;
+        if (usersArray && usersArray.length > 0){
+			for (const userId of usersArray) {
+                await db.query(
+                    "UPDATE users SET sprint_id = NULL WHERE id = $1",
+                    [userId.id]
+                );
+			}
+		  }
 
 		res.redirect('/viewSprint')
 	} catch (err) {
@@ -999,19 +990,6 @@ app.post("/startSprint", async (req, res) => {
 		res.redirect("/viewSprint");
 	}
 });
-
-app.post("/viewTaskHistory", async (req, res) => {
-	try {
-		const taskId = req.body.task_id;
-		query = "SELECT * FROM changelogs WHERE task_id = $1 ORDER BY date DESC";
-		history = await db.query(query, [taskId]);
-		res.render("history.ejs", {changes: history.rows});
-	} catch {err} {
-		console.log(err);
-	}
-
-})
-
 
 // starts the application
 app.listen(port, () => {
