@@ -114,7 +114,7 @@
               <% }) %>
             </ul>
           </li>
-          <% if (currentUser.is_admin === true) { %>
+          <% if (currentUser.is_admin || currentUser.is_admin === true) { %>
             <li class="nav-item">
                 <a class="nav-link text-primary" aria-current="page" href="/adminView">Admin View</a>
               </li>

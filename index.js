@@ -698,7 +698,7 @@ app.get("/viewBurndownChart", async (req, res) => {
 	try {
         // get sprint ID from the cookies
 		const sprintId = req.cookies.currentSprintId;
-
+        const userId = req.cookies.currentUserId;
 		const sprintsAll = await db.query("SELECT * from sprints");
 		const arraySprints = sprintsAll.rows;
 
