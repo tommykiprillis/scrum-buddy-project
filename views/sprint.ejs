@@ -678,7 +678,10 @@
 							<select class="form-control form-control-sm" id="assigneeInput<%= task.id %>" name="taskAssignee"
 									<% if (sprintStatus === "Completed") { %>
 											disabled data-bs-toggle="tooltip" data-bs-title="Cannot be modified once sprint has completed"
-									<% } %>>
+									<% } else if (task.status === "Completed") {%>
+											disabled data-bs-toggle="tooltip" data-bs-title="Cannot be modified once task is completed"
+									<% }%>>
+
 							<% if (task.assignee !== null) { %>
 								<option value="<%=task.assignee%>" selected><%=task.assignee%></option>
 								<% } else {%>

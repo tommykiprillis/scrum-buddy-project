@@ -65,6 +65,20 @@
             $("#addTaskIcon").toggleClass("rotate");
             $("#taskNameInput").focus();
         })
+
+        // update the start of the end date
+        $("#startDateInputAdmin").on("change",()=>{
+            const newMin =  $("#startDateInputAdmin").val();
+            if (newMin !== ""){
+                $("#endDateInputAdmin").attr({
+                    "min":newMin
+                })
+            } else {
+                $("#endDateInputAdmin").attr({
+                    "min":""
+                })
+            }
+        });
     </script>
 </body>
 

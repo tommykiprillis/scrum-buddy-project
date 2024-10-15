@@ -57,14 +57,14 @@ app.get("/",async (req,res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const userResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+        const userResult = await db.query("SELECT * FROM users WHERE UPPER(email) LIKE UPPER($1)", [email]);
         const user = userResult.rows[0];
 
         if (user && user.password === password) {
             res.cookie("currentUserId",user.id);
             if (user.password === "12345") {
                 res.cookie("firstLogin",true);
-                res.redirect("/changePassword");
+                return res.redirect("/changePassword");
             }
             res.redirect("/");
         } else {
@@ -681,7 +681,12 @@ app.post("/editInSprint", async (req,res) => {
 		const userId = req.cookies.currentUserId;
 		const userNameResult = await db.query("SELECT name FROM users WHERE id = $1", [userId]);
 		const userName = userNameResult.rows[0].name;
-		const description = userName + " edited the task details";
+		let description;
+		if (newAssignee !== null){
+			description = userName + " assigned the task to " + newAssignee;
+		} else {
+			description = userName + " edited the task details";
+		}
 		await db.query(logQuery, [currentDate, description, userId, id]);
 
 		res.redirect("/viewSprint");
@@ -885,6 +890,16 @@ app.post("/moveProgress", async (req,res) => {
 				return res.redirect("/viewSprint");
 			}
 		}
+
+		// checking if the task has any accumulated time
+		if (newTaskProgress === "Completed"){
+			const taskResults = await db.query("SELECT * from tasks WHERE id = $1",[taskID]);
+			const taskTime = taskResults.rows[0].accumulated_time;
+			if (taskTime === 0) {
+				res.cookie("error", "Task has no logged time. Log time before moving");
+				return res.redirect("/viewSprint");
+			}
+		}
         if (newTaskProgress === "Completed"){
             // if the task is moved to completed, save the day that it was completed
             const currentDate = new Date();
@@ -915,6 +930,15 @@ app.post("/addNewUser", async (req, res) => {
 	try {
 		const name = req.body.name
 		const email = req.body.email
+
+		// check if a user with the same name or email exists
+		const emailCheckResult = await db.query("SELECT * from users WHERE email = $1",[email]);
+		const nameCheckResult = await db.query("SELECT * from users WHERE name = $1",[name]);
+
+		if (emailCheckResult.rows.length !== 0 || nameCheckResult.rows.length !== 0){
+			res.cookie("error","User with same name and/or email exists. Try adding a last name to distinguish users")
+			return res.redirect("/adminView");
+		}
         await db.query('INSERT INTO users (is_admin, is_available, name, email, password, sprint_id) VALUES (false, true, $1, $2, \'12345\', NULL)', [name, email]);
         res.redirect("/adminView");
     } catch (err) {
@@ -1096,6 +1120,9 @@ app.post("/changeAvailability", async (req,res) => {
 
 app.all("/adminView", async (req, res) => {
     try {
+		const errorMessage = req.cookies.error || null;
+		res.clearCookie("error");
+
 		const startDate = req.body.startDate?req.body.startDate:"";
 		const endDate = req.body.endDate?req.body.endDate:"";
         let dateRange;
@@ -1182,7 +1209,14 @@ app.all("/adminView", async (req, res) => {
         const sprintsAll = await db.query("SELECT * from sprints");
         const arraySprints = sprintsAll.rows;
 
-        const currentDate = new Date();
+        // get the current date
+		const currentDateObject = new Date();
+		let currentDate1 = "";
+		currentDate1 += currentDateObject.getFullYear();
+		currentDate1 += "-";
+		currentDate1 += (((currentDateObject.getMonth() < 9)? "0" : "") +  (currentDateObject.getMonth() + 1));
+		currentDate1 += "-";
+		currentDate1 += (((currentDateObject.getDate() < 10)? "0" : "") +  currentDateObject.getDate());
 
         // get a list of all members in the project
         // conditions to be able to be added
@@ -1201,12 +1235,13 @@ app.all("/adminView", async (req, res) => {
         return res.render("admin.ejs",
             {
                 sprints: arraySprints,
-                date: currentDate,
+                date: currentDate1,
                 currentUser: currentUser,
                 availableMembers: availableMembers,
                 allLogs: allLogs,
                 dateRange:dateRange,
-                allUsers:getAllUsers
+                allUsers:getAllUsers,
+				error:errorMessage
             }
         );
 
