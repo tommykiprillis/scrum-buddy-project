@@ -65,6 +65,39 @@
             $("#addTaskIcon").toggleClass("rotate");
             $("#taskNameInput").focus();
         })
+
+        // update the start of the end date
+        $("#startDateInputAdmin").on("change",()=>{
+            const newMin =  $("#startDateInputAdmin").val();
+            if (newMin !== ""){
+                $("#endDateInputAdmin").attr({
+                    "min":newMin
+                })
+            } else {
+                $("#endDateInputAdmin").attr({
+                    "min":""
+                })
+            }
+        });
+
+        // Select all elements with the class 'sprintDropdown'
+        const dropdownToggles = document.querySelectorAll('.sprintDropdown');
+
+        // Add event listeners for each dropdown toggle
+        dropdownToggles.forEach(dropdownToggle => {
+            dropdownToggle.addEventListener('keydown', function(event) {
+                // Check if the key pressed is "Enter" or "Space" (key code 13 or 32)
+                if (event.key === 'Enter' || event.key === ' ' || event.keyCode === 13 || event.keyCode === 32) {
+                    // Prevent default spacebar scroll
+                    event.preventDefault();
+                    
+                    // Toggle the dropdown when Enter or Space is pressed
+                    const dropdown = new bootstrap.Dropdown(dropdownToggle);
+                    dropdown.toggle();
+                }
+            });
+        });
+
     </script>
 </body>
 
