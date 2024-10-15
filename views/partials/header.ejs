@@ -100,13 +100,13 @@
             <a class="nav-link" aria-current="page" href="/productBacklog">Product Backlog</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Sprints</a>
+            <a class="nav-link dropdown-toggle sprintDropdown" data-bs-toggle="dropdown" aria-expanded="false" tabindex="0">Sprints</a>
             <ul class="dropdown-menu">
               <% sprints.forEach(sprint => { %>
                 <li>
                     <form action="/setSprintView" method="POST">
                         <input type="hidden" name="sprintId" value="<%=sprint.id%>">
-                        <button type="submit" class="dropdown-item">
+                        <button type="submit" class="dropdown-item" tabindex="0">
                             <%= sprint.name %>
                         </button>
                     </form>
@@ -190,9 +190,9 @@
             <% } %>
               <% availableMembers.forEach(member => { %>
                 <li class="list-group-item">
-                    <input class="form-check-input" type="checkbox" name="users[]" value="<%= member.id %>" id="<%= member.name %>Checkbox">
-                    <label class="form-check-label stretched-link" for="<%= member.name %>Checkbox"><%= member.name %></label>
-                </li>
+                  <input class="form-check-input" type="checkbox" name="users[]" value="<%= member.id %>" id="<%= member.name %>Checkbox" tabindex="0">
+                  <label class="form-check-label stretched-link" for="<%= member.name %>Checkbox" tabindex="0"><%= member.name %></label>
+              </li>
               <% }) %>
 			</ul>	
             <!--Saving Changes-->
