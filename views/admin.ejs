@@ -30,7 +30,7 @@
 
             <div class="col">
                 <h2>Add Users</h2>
-                <form action="addNewUser" method="POST">
+                <form action="/addNewUser" method="POST">
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Name</label>
                       <input type="text" class="form-control" id="exampleInputEmail1" name="name" autocomplete="off" required>
@@ -41,6 +41,18 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Add</button>
                   </form>
+
+                  <h2 class="mt-3">Remove Users</h2>             
+                    <ul id="userOptions" class="list-group">
+                    <% allUsers.forEach(member => { %>
+                        <li class="list-group-item list-group-item-action">
+                            <form action="/removeUser" method="POST">
+                                <input type="hidden" name="user_id" value="<%= member.id %>">
+                                <button type="submit" class="text-dark" style="background: none; border: none; padding: 0; color: inherit;"><%= member.name %></button>
+                            </form>
+                        </li>
+                    <% }) %>
+                    </ul>	
             </div>
         </div>
 

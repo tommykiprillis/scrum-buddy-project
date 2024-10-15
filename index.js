@@ -924,8 +924,10 @@ app.post("/addNewUser", async (req, res) => {
 
 app.post("/removeUser", async (req, res) => {
 	try {
+        console.log("HERE");
 		const user_id = req.body.user_id
-		await db.query('DELETE FROM user WHERE id = $1', user_id)
+		await db.query('DELETE FROM users WHERE id = $1', [user_id])
+        res.redirect("/adminView");
 	} catch (err) {
         console.log(err);
     }
@@ -1147,8 +1149,6 @@ app.all("/adminView", async (req, res) => {
             userQuery += ` GROUP BY date ORDER BY date ASC`;
         
             try {
-                console.log(userQuery);
-                console.log(params);
                 const logsResult = await db.query(userQuery, params);
                 const logs = logsResult.rows;
         
@@ -1194,6 +1194,10 @@ app.all("/adminView", async (req, res) => {
         // get the name of the current user
         const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
         const currentUser = currentUserResult.rows[0];
+
+        // get all of the users (except the admin)
+        const getAllUsersResult = await db.query("SELECT * from users WHERE is_admin = false OR is_admin is NULL");
+        const getAllUsers = getAllUsersResult.rows;
         return res.render("admin.ejs",
             {
                 sprints: arraySprints,
@@ -1201,7 +1205,8 @@ app.all("/adminView", async (req, res) => {
                 currentUser: currentUser,
                 availableMembers: availableMembers,
                 allLogs: allLogs,
-                dateRange:dateRange
+                dateRange:dateRange,
+                allUsers:getAllUsers
             }
         );
 
