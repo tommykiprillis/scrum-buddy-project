@@ -854,6 +854,11 @@ app.post('/logTime', async (req, res) => {
 		[date, logDescription, currentUserId, task_id]
         );
 
+        // log it to tasklogs
+        await db.query("INSERT INTO tasklogs (task_id, user_id, date, hours) VALUES ($1, $2, $3, $4)",
+            [task_id,currentUserId,date,timeSpent]
+            );
+
 		await db.query('UPDATE tasks SET accumulated_time = accumulated_time + $1 WHERE id = $2',
 		[timeSpent, task_id]
         );
@@ -1068,13 +1073,16 @@ app.post("/changeAvailability", async (req,res) => {
     }
 });
 
-app.post("/viewReport", async (req, res) => {
+app.all("/adminView", async (req, res) => {
     try {
-
-		const userId = req.body.userId;
-		const startDate = req.body.startDate;
-		const endDate = req.body.endDate;
-		const reportViewPreference = req.cookies.reportView || "list";
+		const startDate = req.body.startDate?req.body.startDate:"";
+		const endDate = req.body.endDate?req.body.endDate:"";
+        let dateRange;
+        if (startDate !== "" && endDate !== "") {
+            dateRange = {startDate:startDate,endDate:endDate};
+        } else {
+            dateRange = null;
+        }
 
 		// // Validate inputs
         // if (!userId) {
@@ -1095,16 +1103,88 @@ app.post("/viewReport", async (req, res) => {
 
         // Build the query based on whether date range is provided
         let query = `
-            SELECT date, SUM(hours) as total_hours
-            FROM tasklog
-            WHERE user_id = $1
-        `;
-        const params = [userId];
+            SELECT SUM(hours) as total_hours
+            FROM tasklogs
+            WHERE`;
+        const params = [];
         if (startDate && endDate) {
-            query += ` AND date BETWEEN $2 AND $3`;
+            query += ` date BETWEEN $1 AND $2 AND`;
             params.push(startDate, endDate);
         }
-        query += ` GROUP BY date ORDER BY date ASC`;
+        
+
+        // get all of the users
+        const allUsersResults = await db.query("SELECT * from users");
+        const allUsers = allUsersResults.rows;
+        
+        // render the average time spent by each user, in an array of js objects
+        // format
+        // [{name,hours},{name,hours}]
+        
+        const allLogs = [];
+        for (const user of allUsers) {
+            let userQuery = query;
+            userQuery += ` user_id = ${user.id}`;
+            userQuery += ` GROUP BY date ORDER BY date ASC`;
+        
+            try {
+                console.log(userQuery);
+                console.log(params);
+                const logsResult = await db.query(userQuery, params);
+                const logs = logsResult.rows;
+        
+                if (logs.length === 0) {
+                    allLogs.push({ name: user.name, average: 0 });
+                    continue;
+                } 
+
+                // Calculate the number of days between startDate and endDate 
+                let totalDays;
+                if (!endDate || !startDate) {
+                    const datesResult = await db.query("SELECT date from tasklogs WHERE user_id = $1 ORDER BY date ASC",[user.id]);
+                    const firstDate = datesResult.rows[0].date;
+                    const lastDate = datesResult.rows[datesResult.rows.length - 1].date;
+
+                    totalDays = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+                } else {
+                    totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                }
+
+                // Calculate total hours and number of days worked
+                const totalHours = logs.reduce((acc, log) => acc + parseInt(log.total_hours), 0);
+                const average = (totalHours / totalDays).toFixed(2);
+                allLogs.push({name: user.name,average:parseFloat(average)});
+            } catch (error) {
+                console.error(`Error fetching logs for user ${user.id}:`, error);
+            }
+        }
+
+        // below is for the header
+        const sprintsAll = await db.query("SELECT * from sprints");
+        const arraySprints = sprintsAll.rows;
+
+        const currentDate = new Date();
+
+        // get a list of all members in the project
+        // conditions to be able to be added
+        // 1. available
+        // 2. not in a sprint
+        const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+        const availableMembers = availableMembersResult.rows;
+
+        // get the name of the current user
+        const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
+        const currentUser = currentUserResult.rows[0];
+        return res.render("admin.ejs",
+            {
+                sprints: arraySprints,
+                date: currentDate,
+                currentUser: currentUser,
+                availableMembers: availableMembers,
+                allLogs: allLogs,
+                dateRange:dateRange
+            }
+        );
 
         const logsResult = await db.query(query, params);
         const logs = logsResult.rows;
@@ -1120,19 +1200,7 @@ app.post("/viewReport", async (req, res) => {
             });
         }
 		
-		// Calculate the number of days between startDate and endDate 
- 
-		const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        // Calculate total hours and number of days worked
-        const totalHours = logs.reduce((acc, log) => acc + parseInt(log.total_hours), 0);
-
-		// ###
-        //use this instead of totalDays (when calculating average) if only days that tasks are done on are considered
-		//const uniqueDays = logs.length; 
-		// ###
-
-        const average = (totalHours / totalDays).toFixed(2);
+		
 
         // Prepare data for graph
         const graphData = logs.map(log => ({

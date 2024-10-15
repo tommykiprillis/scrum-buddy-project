@@ -1,0 +1,64 @@
+<%- include ("partials/header.ejs"); -%>
+    <div class="mx-sm-5 mt-5">
+        <h1>Admin Dashboard</h1>
+        <div class="row">
+            <div class="col">
+                <div class="d-flex flex-column">
+                    <h2 class="">User Reports</h2>
+                    <% if (dateRange !== null) { %>
+                        <div class="text-secondary py-1"><%= new Date(dateRange.startDate).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %> - 
+                            <%= new Date(dateRange.endDate).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-secondary py-1">All Time</div>
+                    <% } %>
+                    <ul class="list-group">
+                        <% allLogs.forEach(log => { %>
+                            <li class="list-group-item d-flex justify-content-start">
+                                <p><strong><%= log.name %></strong></p>
+                                <p class="ms-auto"><%= log.average %> hours spent per day</p>
+                            </li>
+        
+                        <% }) %>
+                    </ul>
+                </div>
+
+                <button class="btn bg-body-secondary align-items-center mt-3" type="button" data-bs-toggle="modal" data-bs-target="#changeDates" aria-expanded="false">
+                    Change Date Range
+                </button>
+            </div>
+
+            <div class="col">
+                Add Users Here
+            </div>
+        </div>
+
+    </div>
+
+
+      <!--Modal for creating a sprint-->
+  <div class="modal fade" id="changeDates" tabindex="-1">
+    <div class="modal-dialog" style="max-width: 50rem;">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/adminView" method="POST">
+            <div class="row mt-4">
+              <div class="col">
+                <label for="startDateInputAdmin" class="form-label">Start Date</label>
+                <input class="form-control" id="startDateInputAdmin" type="date" name="startDate" autocomplete="off">
+              </div>
+
+            <!--End Date for the sprint-->
+              <div class="col">
+                <label for="endDateInputAdmin" class="form-label">End Date</label>
+                <input class="form-control" id="endDateInputAdmin" type="date" name="endDate" autocomplete="off">
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-3">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<%- include ("partials/footer.ejs"); -%>
