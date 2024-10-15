@@ -1001,6 +1001,20 @@ app.post("/startSprint", async (req, res) => {
 	}
 });
 
+app.post("/changeAvailability", async (req,res) => {
+	try {
+		const newAvailability = req.body.newAvailability 
+		const userId = req.cookies.currentUserId;
+
+		await db.query("UPDATE user SET is_available = $2 WHERE id = $1", [userId, newAvailability]);
+		res.redirect("/placeholder");
+		
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+
 // starts the application
 app.listen(port, () => {
   	console.log(`Server running on port ${port}`);
