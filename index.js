@@ -1001,6 +1001,14 @@ app.post("/startSprint", async (req, res) => {
 	}
 });
 
+app.post("/changePassword", async (req,res) => {
+	try {
+		const newPassword = req.body.newPassword 
+		const userId = req.cookies.currentUserId;
+
+		await db.query("UPDATE user SET password = $2 WHERE id = $1", [userId, newPassword]);
+		res.redirect("/placeholder");
+
 app.post("/changeAvailability", async (req,res) => {
 	try {
 		const newAvailability = req.body.newAvailability 
@@ -1008,6 +1016,7 @@ app.post("/changeAvailability", async (req,res) => {
 
 		await db.query("UPDATE users SET is_available = $2 WHERE id = $1", [userId, newAvailability]);
 		res.redirect("/");
+
 		
     } catch (err) {
         console.log(err);
