@@ -62,6 +62,10 @@ app.post("/login", async (req, res) => {
 
         if (user && user.password === password) {
             res.cookie("currentUserId",user.id);
+            if (user.password === "12345") {
+                res.cookie("firstLogin",true);
+                res.redirect("/changePassword");
+            }
             res.redirect("/");
         } else {
             res.render("login.ejs",{invalid:"invalidCombination"})
@@ -1000,14 +1004,55 @@ app.post("/startSprint", async (req, res) => {
 		res.redirect("/viewSprint");
 	}
 });
+app.get("/changePassword",async (req,res) => {
+    const firstLogin = req.cookies.firstLogin || null;
+    const loginInvalid = req.cookies.loginInvalid || null;
+    res.clearCookie("loginInvalid");
+    const sprintsAll = await db.query("SELECT * from sprints");
+    const arraySprints = sprintsAll.rows;
+
+    const date = new Date();
+
+    // get a list of all members in the project
+    // conditions to be able to be added
+    // 1. available
+    // 2. not in a sprint
+    const availableMembersResult = await db.query("SELECT * from users WHERE sprint_id is NULL AND is_available = true");
+    const availableMembers = availableMembersResult.rows;
+
+    // get the name of the current user
+    const currentUserResult = await db.query("SELECT * from users where id = $1",[req.cookies.currentUserId]);
+    const currentUser = currentUserResult.rows[0];
+
+
+    res.render("password.ejs",
+        {
+			sprints: arraySprints,
+			date: date,
+			availableMembers: availableMembers,
+            currentUser: currentUser,
+            invalid: loginInvalid,
+            firstLogin:firstLogin
+        }
+    );
+})
 
 app.post("/changePassword", async (req,res) => {
 	try {
-		const newPassword = req.body.newPassword 
+		const password = req.body.password;
+        const passwordCheck = req.body.passwordCheck;
+        if (password !== passwordCheck){
+            res.cookie("loginInvalid",true);
+            return res.redirect("/changePassword");
+        }
 		const userId = req.cookies.currentUserId;
-
-		await db.query("UPDATE user SET password = $2 WHERE id = $1", [userId, newPassword]);
-		res.redirect("/placeholder");
+        res.clearCookie("firstLogin");
+		await db.query("UPDATE users SET password = $2 WHERE id = $1", [userId, password]);
+		res.redirect("/");
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 app.post("/changeAvailability", async (req,res) => {
 	try {
