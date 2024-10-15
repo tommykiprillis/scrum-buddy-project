@@ -1,11 +1,103 @@
     </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
         // Tooltip initialization
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        // updating the min of the second date once the first date has been set
+        $("#startDateInput").on("change",() => {
+            const newMin = $("#startDateInput").val();
+            if (newMin !== ""){
+                let date = new Date(newMin);
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
+                $("#endDateInput").attr({
+                    "min": minDate,
+                    "max": maxDate
+            });
+            } else {
+                let date = new Date();
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
+                $("#endDateInput").attr({
+                    "min": minDate,
+                    "max": maxDate
+                });
+            }
+        });
+
+        // updating the min of the second date once the first date has been set (within a sprint)
+        $("#startDateEdit").on("change",() => {
+            const newMin = $("#startDateEdit").val();
+            if (newMin !== ""){
+                let date = new Date(newMin);
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
+                $("#endDateEdit").attr({
+                    "min": minDate,
+                    "max": maxDate
+            });
+            } else {
+                let date = new Date();
+                date.setDate(date.getDate() + 7);
+                const minDate = date.toISOString().split('T')[0];
+                date.setDate(date.getDate() + 14);
+                const maxDate = date.toISOString().split('T')[0];
+                $("#endDateEdit").attr({
+                    "min": minDate,
+                    "max": maxDate
+                });
+            }
+        });
+
+        // move the cursor of the user once the "+" task is pressed, and rotate the icon to an x
+        $("#addTaskBtn").click(() => {
+            $("#addTaskIcon").toggleClass("rotate");
+            $("#taskNameInput").focus();
+        })
+
+        // update the start of the end date
+        $("#startDateInputAdmin").on("change",()=>{
+            const newMin =  $("#startDateInputAdmin").val();
+            if (newMin !== ""){
+                $("#endDateInputAdmin").attr({
+                    "min":newMin
+                })
+            } else {
+                $("#endDateInputAdmin").attr({
+                    "min":""
+                })
+            }
+        });
+
+        // Select all elements with the class 'sprintDropdown'
+        const dropdownToggles = document.querySelectorAll('.sprintDropdown');
+
+        // Add event listeners for each dropdown toggle
+        dropdownToggles.forEach(dropdownToggle => {
+            dropdownToggle.addEventListener('keydown', function(event) {
+                // Check if the key pressed is "Enter" or "Space" (key code 13 or 32)
+                if (event.key === 'Enter' || event.key === ' ' || event.keyCode === 13 || event.keyCode === 32) {
+                    // Prevent default spacebar scroll
+                    event.preventDefault();
+                    
+                    // Toggle the dropdown when Enter or Space is pressed
+                    const dropdown = new bootstrap.Dropdown(dropdownToggle);
+                    dropdown.toggle();
+                }
+            });
+        });
+
     </script>
 </body>
 

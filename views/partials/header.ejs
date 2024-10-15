@@ -5,7 +5,8 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<title>Scrum Buddy</title>
+	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <title>Scrum Buddy</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<style>
         .burndown-container {
@@ -14,39 +15,68 @@
         }
 		.Front-End-badge {
 			background-color:#70d6ff;
-			color: white;
+			color: black;
 		}
 
 		.Back-End-badge {
 			background-color:#ff70a6;
-			color: white;
+			color: black;
 		}
 
 		.API-badge {
 			background-color:#ff9770;
-			color: white;
+			color: black;
 		}
 
 		.Databases-badge {
 			background-color:#ffd670;
-			color: white;
+			color: black;
 		}
 
 		.Testing-badge {
 			background-color:#7bf1a8;
-			color: white;
+			color: black;
 		}
 
 		.UIUX-badge {
 			background-color:#7161ef;
-			color: white;
-		}
-
-        .merriweather-regular {
-        font-family: "Merriweather", serif;
-        font-weight: 400;
-        font-style: normal;
+			color: black;
+		}        
+        
+        .rotate {
+            transform: rotate(45deg);
         }
+
+        #addTaskIcon {
+            transition: transform 0.5s ease;
+        }
+
+    .merriweather-regular {
+    font-family: "Merriweather", serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+
+    .Low-badge {
+			background-color:#2ECC71;
+			color: black;
+    }
+
+    .Medium-badge {
+			background-color:#F4D03F;
+			color: black;
+    }
+
+    .Important-badge {
+			background-color:#F39C12;
+			color: black;
+    }
+
+    .Urgent-badge {
+			background-color:#E74C3C;
+			color: black;
+    }
+
 
 	</style>
 
@@ -57,7 +87,7 @@
 
 <body class="bg-white">
 
-  <nav class="navbar navbar-expand-sm bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="nav-brand fs-4 merriweather-regular nav-link" href="/">Scrum Buddy.</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,16 +97,16 @@
       <div class="collapse navbar-collapse" id="navbarsExample03">
         <ul class="navbar-nav me-auto mb-2 mb-sm-0">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/">Product Backlog</a>
+            <a class="nav-link" aria-current="page" href="/productBacklog">Product Backlog</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Sprints</a>
+            <a class="nav-link dropdown-toggle sprintDropdown" data-bs-toggle="dropdown" aria-expanded="false" tabindex="0">Sprints</a>
             <ul class="dropdown-menu">
               <% sprints.forEach(sprint => { %>
                 <li>
                     <form action="/setSprintView" method="POST">
                         <input type="hidden" name="sprintId" value="<%=sprint.id%>">
-                        <button type="submit" class="dropdown-item">
+                        <button type="submit" class="dropdown-item" tabindex="0">
                             <%= sprint.name %>
                         </button>
                     </form>
@@ -84,15 +114,37 @@
               <% }) %>
             </ul>
           </li>
+          <% if (currentUser.is_admin || currentUser.is_admin === true) { %>
+            <li class="nav-item">
+                <a class="nav-link text-primary" aria-current="page" href="/adminView"><strong>Admin View</strong></a>
+              </li>
+          <% } %>
         </ul>
-        <div class="d-lg-flex col-lg-3 justify-content-lg-end">
+        <div class="d-lg-flex col-lg-3 justify-content-lg-end me-3">
           <button class="btn btn-primary d-inline-flex align-items-center rounded-pill" type="button" data-bs-toggle="modal" data-bs-target="#createSprint">
             <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
             </svg>&nbsp;Create Sprint
           </button>
         </div>
-      </div>
+        <form method="POST">
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center dropdown-toggle text-dark text-decoration-none" data-bs-toggle="dropdown" aria-expanded="true">Welcome back, <%=currentUser.name%> 👋</a>
+                    <ul class="dropdown-menu text-small">
+                        <li class="dropdown-item" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Click to toggle availability"><button type="submit" formaction="/changeAvailability" class="btn rounded-pill btn-sm 
+                            <% if (currentUser.is_available === true) { %>
+                                bg-success-subtle" name="newAvailability" value="false">Available
+                            <% } else {%>
+                                bg-danger-subtle" name="newAvailability" value="true">Unvailable
+                            <% } %>
+                        </button></li>
+                        <li><a class="dropdown-item" href="/changePassword">Change Password</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button type="submit" formaction="/signOut" class="dropdown-item text-danger">Sign out</button></li>
+                    </ul>
+            </div>
+        </form>
+    </div>
     </div>
   </nav>
 
@@ -104,23 +156,49 @@
           <form action="/createSprint" method="POST">
             <!--Name for the sprint-->
             <label for="nameInput" class="form-label">Sprint Name</label>
-            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off">
+            <input class="form-control" id="nameInput" type="text" name="name" autocomplete="off" required>
 
             <div class="row mt-4">
             <!--Start Date for the sprint-->
               <div class="col">
                 <label for="startDateInput" class="form-label">Start Date</label>
-                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off">
+                <input class="form-control" id="startDateInput" type="date" name="startDate" autocomplete="off" min="<%= date %>" required aria-describedby="sdHelpBlock">
+                <div id="sdHelpBlock" class="form-text">
+                  Sprint must be at least 1-3 weeks long
+                </div>
               </div>
 
             <!--End Date for the sprint-->
               <div class="col">
                 <label for="endDateInput" class="form-label">End Date</label>
-                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off">
+                <input class="form-control" id="endDateInput" type="date" name="endDate" autocomplete="off" min="<%=new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]%>" max="<%=new Date(new Date().setDate(new Date().getDate() + 21)).toISOString().split('T')[0]%>" required>
               </div>
             </div>
+
+            <!--Selecting Members-->
+            <label for="userOptions" class="form-label mt-4">Sprint Member Selection (Available Members)</label>
+            <ul id="userOptions" class="list-group">
+            <% if (availableMembers.length < 4) { %>
+                <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                        </svg>
+                    <div>
+                        Error: Cannot create sprint as there are not enough available members (minimum 4)
+                    </div>
+                </div>
+            <% } %>
+              <% availableMembers.forEach(member => { %>
+                <li class="list-group-item">
+                  <input class="form-check-input" type="checkbox" name="users[]" value="<%= member.id %>" id="<%= member.name %>Checkbox" tabindex="0">
+                  <label class="form-check-label stretched-link" for="<%= member.name %>Checkbox" tabindex="0"><%= member.name %></label>
+              </li>
+              <% }) %>
+			</ul>	
             <!--Saving Changes-->
-            <button type="submit" class="btn btn-primary mt-3">Create</button>
+            <% if (availableMembers.length >= 4) { %>
+                <button type="submit" class="btn btn-primary mt-3">Create</button>
+            <% } %>
           </form>
         </div>
       </div>
